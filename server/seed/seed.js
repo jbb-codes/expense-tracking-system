@@ -9,28 +9,31 @@
 
 require("dotenv").config();
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const connectDB = require("../src/utils/db");
 const User = require("../src/models/User");
 const Category = require("../src/models/Category");
 const Expense = require("../src/models/Expense");
 
+const SALT_ROUNDS = 10;
+
 const users = [
   {
     userId: 1000,
     username: "jbess",
-    password: "hashed-password-1",
+    password: "Sample-Password-1",
     email: "jbess@example.com",
   },
   {
     userId: 1001,
     username: "amiller",
-    password: "hashed-password-2",
+    password: "Sample-Password-2",
     email: "amiller@example.com",
   },
   {
     userId: 1002,
     username: "ktran",
-    password: "hashed-password-3",
+    password: "Sample-Password-3",
     email: "ktran@example.com",
   },
 ];
@@ -102,7 +105,14 @@ async function seed() {
     Expense.deleteMany({}),
   ]);
 
-  await User.insertMany(users);
+  const hashedUsers = await Promise.all(
+    users.map(async (user) => ({
+      ...user,
+      password: await bcrypt.hash(user.password, SALT_ROUNDS),
+    })),
+  );
+
+  await User.insertMany(hashedUsers);
   await Category.insertMany(categories);
   await Expense.insertMany(expenses);
 
