@@ -4,6 +4,5 @@ import { CreateExpenseComponent } from './expenses/create-expense/create-expense
 
 export const routes: Routes = [
   { path: 'create-expense', component: CreateExpenseComponent },
-  { path: '', redirectTo: 'create-expense', pathMatch: 'full' },
   { path: 'style-test', component: StyleTestComponent }
 ];

@@ -4,10 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-style-test',
   standalone: true,
   template: `
-    <nav>
-      <a href="/">Test Link 1</a>
-      <a href="/">Test Link 2</a>
-    </nav>
 
 <main>
   <h1>H1 Heading</h1>
