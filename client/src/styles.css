@@ -1,1 +1,83 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap');
+
+/* Reset */
+html, body, main, nav, a, h1, h2, table, th, tr, td, button {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+html {
+  background-color: #f6f3f3;
+}
+
+nav {
+  background-color: #edecf1;
+}
+
+nav a:hover {
+  background-color: #c8d4ef;
+}
+
+nav a:visited {
+  color: #424e63;
+}
+
+h1 {
+  font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #000;
+}
+
+h2 {
+  font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
+  font-size: 1.7rem;
+  font-weight: 400;
+  color: #000;
+}
+
+p, a, tr, td, button {
+  font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
+  font-size: 1rem;
+  font-weight: 400;
+  color: #000;
+}
+
+th {
+  font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #000;
+}
+
+button[type="submit"] {
+  background-color: #b9c9ed;
+  cursor: pointer;
+  padding: 0.2rem 0.8rem;
+  border: 1px solid #192a53;
+  border-radius: 10px;
+}
+
+button[type="submit"]:hover {
+  background-color: #798dbd;
+}
+
+button:not([type="submit"]) {
+  background-color: #dde5cb;
+  cursor: pointer;
+  padding: 0.2rem 0.8rem;
+  border: 1px solid #354612;
+  border-radius: 10px;
+}
+
+button:not([type="submit"]):hover {
+  background-color: #8eaa4c;
+}
+
+.error-msg {
+  color: #f11212;
+}
