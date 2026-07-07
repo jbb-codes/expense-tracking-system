@@ -1,18 +1,12 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  template: `
-
-    <!-- added for style-test.component -->
-    <!-- build out further as needed once actual dev starts -->
-    <router-outlet></router-outlet>
-
-  `,
-  styles: ``
+  imports: [RouterOutlet, RouterLink],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'client';
