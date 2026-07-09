@@ -14,8 +14,23 @@ html {
   background-color: #f6f3f3;
 }
 
+.layout {
+  display: flex;
+}
+
 nav {
   background-color: #edecf1;
+  height: 100vh;
+  box-shadow: 8px 0 8px -4px #89888b;
+  display: flex;
+  flex-direction: column;
+  width: 14rem;
+}
+
+nav a {
+  display: block;
+  padding: 1rem 4rem 1rem 1rem;
+  text-decoration: none;
 }
 
 nav a:hover {
@@ -24,6 +39,12 @@ nav a:hover {
 
 nav a:visited {
   color: #424e63;
+}
+
+main {
+  height: 90vh;
+  flex: 1;
+  padding-left: 2rem;
 }
 
 h1 {
@@ -40,7 +61,13 @@ h2 {
   color: #000;
 }
 
-p, a, tr, td, button {
+h3, label, nav a {
+  font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+
+p, a, tr, td, button, input, footer {
   font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
   font-size: 1rem;
   font-weight: 400;
@@ -80,4 +107,10 @@ button:not([type="submit"]):hover {
 
 .error-msg {
   color: #f11212;
+}
+
+footer {
+  padding: 1rem 0;
+  text-align: center;
+  height: 10vh;
 }

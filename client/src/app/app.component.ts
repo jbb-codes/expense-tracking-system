@@ -7,20 +7,22 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   imports: [RouterOutlet, RouterLink],
   template: `
 
-    <!-- basic nav -->
-    <nav>
-      <a routerLink="/">Home</a><br>
-      <a routerLink="/create-expense">Create Expense</a><br>
-      <a routerLink="/style-test">Style Test Page</a>
-    </nav>
+    <div class="layout">
+      <nav>
+        <a routerLink="/">Home</a>
+        <a routerLink="/create-expense">Create Expense</a>
+        <a routerLink="/list-expenses">List Expenses</a>
+        <a routerLink="/style-test">Style Test Page</a>
+      </nav>
 
-    <main>
-      <p>Main and/or Route Content Here</p>
-      <router-outlet></router-outlet>
-    </main>
+      <main>
+        <router-outlet></router-outlet>
+      </main>
+    </div>
 
     <footer>
-      <p>Footer Content Here</p>
+      <p>&copy; 2026 Bellevue University</p>
+      <p>Created by: Jarren Bess, Kaitlyn Kelly, & Amanda Ruff</p>
     </footer>
   `,
   styles: ``
