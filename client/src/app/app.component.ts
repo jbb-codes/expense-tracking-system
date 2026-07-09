@@ -12,7 +12,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
         <a routerLink="/">Home</a>
         <a routerLink="/create-expense">Create Expense</a>
         <a routerLink="/list-expenses">List Expenses</a>
-        <a routerLink="/style-test">Style Test Page</a>
+        <a routerLink="/read-expense-by-id">Read Expense by ID</a>
       </nav>
 
       <main>

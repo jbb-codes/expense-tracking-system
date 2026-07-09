@@ -24,7 +24,8 @@ nav {
   box-shadow: 8px 0 8px -4px #89888b;
   display: flex;
   flex-direction: column;
-  width: 14rem;
+  width: 16rem;
+  padding-top: 2rem;
 }
 
 nav a {
@@ -45,6 +46,7 @@ main {
   height: 90vh;
   flex: 1;
   padding-left: 2rem;
+  padding-top: 2rem;
 }
 
 h1 {
@@ -52,6 +54,7 @@ h1 {
   font-size: 2.2rem;
   font-weight: 700;
   color: #000;
+  margin-bottom: 1.5rem;
 }
 
 h2 {
@@ -74,6 +77,12 @@ p, a, tr, td, button, input, footer {
   color: #000;
 }
 
+input {
+  border-radius: 10px;
+  border: 1px solid #192a53;
+  padding: 0.3rem 0.8rem;
+}
+
 th {
   font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
   font-size: 1.5rem;
@@ -81,12 +90,20 @@ th {
   color: #000;
 }
 
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+}
+
 button[type="submit"] {
   background-color: #b9c9ed;
   cursor: pointer;
-  padding: 0.2rem 0.8rem;
+  padding: 0.3rem 0.8rem;
   border: 1px solid #192a53;
   border-radius: 10px;
+  margin-top: 2rem;
 }
 
 button[type="submit"]:hover {
@@ -99,6 +116,7 @@ button:not([type="submit"]) {
   padding: 0.2rem 0.8rem;
   border: 1px solid #354612;
   border-radius: 10px;
+  margin-top: 2rem;
 }
 
 button:not([type="submit"]):hover {
@@ -109,8 +127,13 @@ button:not([type="submit"]):hover {
   color: #f11212;
 }
 
+.success-msg {
+  color: #1d9e4f;
+}
+
 footer {
   padding: 1rem 0;
   text-align: center;
   height: 10vh;
+  background-color: #edecf1;
 }
