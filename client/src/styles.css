@@ -1,10 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap");
 
 /* Reset */
-html, body, main, nav, a, h1, h2, table, th, tr, td, button {
+html,
+body,
+main,
+nav,
+a,
+h1,
+h2,
+table,
+th,
+tr,
+td,
+button {
   padding: 0;
   margin: 0;
   border: 0;
@@ -43,14 +54,32 @@ nav a:visited {
 }
 
 main {
-  height: 90vh;
+  min-height: 90vh;
   flex: 1;
-  padding-left: 2rem;
-  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10rem 1rem 2rem;
+}
+
+main > * {
+  width: 100%;
+  max-width: 900px;
+}
+
+main form,
+main table {
+  margin: 0 auto;
+}
+
+main h1,
+main h2,
+main p {
+  text-align: center;
 }
 
 h1 {
-  font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
+  font-family: "Baloo Da 2", "Arial", "sans-serif";
   font-size: 2.2rem;
   font-weight: 700;
   color: #000;
@@ -58,26 +87,35 @@ h1 {
 }
 
 h2 {
-  font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
+  font-family: "Baloo Da 2", "Arial", "sans-serif";
   font-size: 1.7rem;
   font-weight: 400;
   color: #000;
 }
 
-h3, label, nav a {
-  font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
+h3,
+label,
+nav a {
+  font-family: "Baloo Da 2", "Arial", "sans-serif";
   font-size: 1.3rem;
   font-weight: 400;
 }
 
-p, a, tr, button, input, select, footer {
-  font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
+p,
+a,
+tr,
+button,
+input,
+select,
+footer {
+  font-family: "Baloo Da 2", "Arial", "sans-serif";
   font-size: 1rem;
   font-weight: 400;
   color: #000;
 }
 
-input, select {
+input,
+select {
   border-radius: 10px;
   border: 1px solid #192a53;
   padding: 0.3rem 0.8rem;
@@ -89,7 +127,7 @@ table {
 }
 
 th {
-  font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
+  font-family: "Baloo Da 2", "Arial", "sans-serif";
   font-size: 1.3rem;
   font-weight: 500;
   color: #000;
