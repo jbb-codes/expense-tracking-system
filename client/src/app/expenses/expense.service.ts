@@ -23,6 +23,7 @@ import { environment } from '../../environments/environment';
 
 export interface Expense {
   userId: number;
+  username: string;
   categoryId: number;
   amount: number;
   description?: string;
@@ -54,4 +55,24 @@ export class ExpenseService {
   getExpenses(): Observable<Expense[]> {
     return this.http.get<Expense[]>(this.apiUrl);
   }
+
+  /**
+   * Kaitlyn Kelly
+   * Added service methods to allow the ReadExpenseByIdComponent to:
+   * 1. Authenticate a user by userId and passsword,
+   * 2. Retrieve all expenses for a user,
+   * 3. Fetch a selected expense to display its details
+   */
+  login(username: string, password: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/auth/login`, { username, password });
+  }
+
+  getExpenseByUser(userId: number): Observable<Expense[]> {
+    return this.http.get<Expense[]>(`${this.apiUrl}/user/${userId}`);
+  }
+
+  getExpenseById(expenseId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${expenseId}`);
+  }
+
 }

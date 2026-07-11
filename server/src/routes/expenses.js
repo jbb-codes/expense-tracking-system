@@ -8,6 +8,10 @@
  * Changes (Jarren Bess, 7/7/2026):
  * - Added GET / so the client's expense list view can load existing records
  *   instead of only being able to submit new ones.
+ *
+ * Changes (Kaitlyn Kelly, 7/10/2026):
+ * - Added GET /user/:userId to support loading expenses for a specific user
+ * - Added GET /:id to support loading a single expense by its MonogoDB _id
  */
 
 "use strict";
@@ -85,4 +89,47 @@ router.get("/", async (req, res) => {
   }
 });
 
+/**
+ * GET /user/:userId
+ * Retrieves all expenses for a specific user
+ */
+
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const userId = Number(req.params.userId);
+
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "userId must be numeric." });
+    }
+
+    const expenses = await Expense.find({ userId });
+    return res.status(200).json(expenses);
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error fetching user expenses",
+      error: err.message,
+    });
+  }
+});
+
+/**
+ * GET /:id
+ * Retrieves a single expense by its MongoDB _id
+ */
+router.get("/:id", async (req, res) => {
+  try {
+    const expense = await Expense.findById(req.params.id);
+
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found." });
+    }
+
+    return res.status(200).json(expense);
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error fetching expense.",
+      error: err.message,
+    });
+  }
+});
 module.exports = router;

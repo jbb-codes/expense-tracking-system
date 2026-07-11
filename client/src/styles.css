@@ -70,7 +70,7 @@ h3, label, nav a {
   font-weight: 400;
 }
 
-p, a, tr, td, button, input, footer {
+p, a, tr, button, input, footer {
   font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
   font-size: 1rem;
   font-weight: 400;
@@ -83,11 +83,25 @@ input {
   padding: 0.3rem 0.8rem;
 }
 
+table {
+  border: 1px solid #192a53;
+  border-collapse: collapse;
+}
+
 th {
   font-family: 'Baloo Da 2', 'Arial', 'sans-serif';
   font-size: 1.5rem;
   font-weight: 500;
   color: #000;
+  text-align: center;
+  padding: 1rem;
+  border: 1px solid #192a53;
+}
+
+td {
+  text-align: center;
+  padding: 0.2rem;
+  border: 1px solid #192a53;
 }
 
 form {

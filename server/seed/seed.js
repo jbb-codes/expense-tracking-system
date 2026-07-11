@@ -21,19 +21,19 @@ const users = [
   {
     userId: 1000,
     username: "jbess",
-    password: "Sample-Password-1",
+    password: "Password1",
     email: "jbess@example.com",
   },
   {
     userId: 1001,
     username: "amiller",
-    password: "Sample-Password-2",
+    password: "Password2",
     email: "amiller@example.com",
   },
   {
     userId: 1002,
     username: "ktran",
-    password: "Sample-Password-3",
+    password: "Password3",
     email: "ktran@example.com",
   },
 ];
