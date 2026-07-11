@@ -3,6 +3,9 @@
  * Week 6 - Sprint 1
  * File: create-expense.component.spec.ts
  * Description: Unit tests for the Create Expense Angular component.
+ *
+ * Changes (Kaitlyn Kelly 7/11/2026):
+ * -Added username to mockExpenses
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -49,6 +52,7 @@ describe('CreateExpenseComponent', () => {
   it('should call createExpense when the form is valid', () => {
     expenseServiceSpy.createExpense.and.returnValue(of({
       userId: 1000,
+      username: 'testuser',
       categoryId: 1,
       amount: 25.5,
       description: 'Lunch',

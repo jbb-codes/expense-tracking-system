@@ -27,11 +27,12 @@ html {
 
 .layout {
   display: flex;
+  align-items: stretch;
 }
 
 nav {
   background-color: #edecf1;
-  height: 100vh;
+  height: auto;
   box-shadow: 8px 0 8px -4px #89888b;
   display: flex;
   flex-direction: column;
@@ -51,6 +52,18 @@ nav a:hover {
 
 nav a:visited {
   color: #424e63;
+}
+
+.nav-button-wrapper {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+nav button {
+  margin-bottom: 20px;
+  width: 80%;
 }
 
 main {
