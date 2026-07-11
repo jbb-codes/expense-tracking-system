@@ -19,34 +19,34 @@ const router = express.Router();
  */
 router.post("/login", async (req, res) => {
 
-  const { username, password } = req.body;
+    const { username, password } = req.body;
 
-  try {
-    const user = await User.findOne({ username });
+    try {
+        const user = await User.findOne({ username });
 
 
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials." });
+        if (!user) {
+            return res.status(401).json({ message: "Invalid credentials." });
+        }
+
+        const passwordMatches = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatches) {
+            return res.status(401).json({ message: "Invalid credentials." });
+        }
+
+        return res.status(200).json({
+            message: "Login successful.",
+            userId: user.userId,
+            username: user.username
+        });
+
+    } catch (err) {
+        return res.status(500).json({
+            message: "Error during login.",
+            error: err.message,
+        });
     }
-
-    const passwordMatches = await bcrypt.compare(password, user.password);
-
-    if (!passwordMatches) {
-      return res.status(401).json({ message: "Invalid credentials." });
-    }
-
-    return res.status(200).json({
-      message: "Login successful.",
-      userId: user.userId,
-      username: user.username
-    });
-
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error during login.",
-      error: err.message,
-    });
-  }
 });
 
 module.exports = router;

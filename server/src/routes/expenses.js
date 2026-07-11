@@ -27,42 +27,42 @@ const router = express.Router();
  * Creates a new expense record.
  */
 router.post("/", async (req, res) => {
-  try {
-    const { userId, categoryId, amount, description, date } = req.body;
+    try {
+        const { userId, categoryId, amount, description, date } = req.body;
 
-    if (!userId || !categoryId || amount === undefined || !date) {
-      return res.status(400).json({
-        message: "userId, categoryId, amount, and date are required.",
-      });
+        if (!userId || !categoryId || amount === undefined || !date) {
+            return res.status(400).json({
+                message: "userId, categoryId, amount, and date are required.",
+            });
+        }
+
+        if (isNaN(userId) || isNaN(categoryId)) {
+            return res.status(400).json({
+                message: "userId and categoryId must be numeric values.",
+            });
+        }
+
+        if (isNaN(amount) || Number(amount) <= 0) {
+            return res.status(400).json({
+                message: "Amount must be greater than zero.",
+            });
+        }
+
+        const expense = await Expense.create({
+            userId,
+            categoryId,
+            amount: Number(amount),
+            description,
+            date,
+        });
+
+        return res.status(201).json(expense);
+    } catch (err) {
+        return res.status(500).json({
+            message: "Error creating expense.",
+            error: err.message,
+        });
     }
-
-    if (isNaN(userId) || isNaN(categoryId)) {
-      return res.status(400).json({
-        message: "userId and categoryId must be numeric values.",
-      });
-    }
-
-    if (isNaN(amount) || Number(amount) <= 0) {
-      return res.status(400).json({
-        message: "Amount must be greater than zero.",
-      });
-    }
-
-    const expense = await Expense.create({
-      userId,
-      categoryId,
-      amount: Number(amount),
-      description,
-      date,
-    });
-
-    return res.status(201).json(expense);
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error creating expense.",
-      error: err.message,
-    });
-  }
 });
 
 /**
@@ -78,15 +78,15 @@ router.post("/", async (req, res) => {
  *  .then(data => console.log(data));
  */
 router.get("/", async (req, res) => {
-  try {
-    const expenses = await Expense.find();
-    return res.status(200).json(expenses);
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error fetching expenses.",
-      error: err.message,
-    });
-  }
+    try {
+        const expenses = await Expense.find();
+        return res.status(200).json(expenses);
+    } catch (err) {
+        return res.status(500).json({
+            message: "Error fetching expenses.",
+            error: err.message,
+        });
+    }
 });
 
 /**
@@ -94,32 +94,32 @@ router.get("/", async (req, res) => {
  * Retrieves a single expense by its MongoDB _id
  */
 router.get("/:id", async (req, res) => {
-  try {
-    const expense = await Expense.findById(req.params.id);
+    try {
+        const expense = await Expense.findById(req.params.id);
 
-    if (!expense) {
-      return res.status(404).json({ message: "Expense not found." });
+        if (!expense) {
+            return res.status(404).json({ message: "Expense not found." });
+        }
+
+        // Fetch category for this expense
+        const category = await Category.findOne({
+            userId: expense.userId,
+            categoryId: expense.categoryId
+        });
+
+        // Enrich the expense with categoryName
+        const enrichedExpense = {
+            ...expense.toObject(),
+            categoryName: category ? category.name : "Unknown"
+        };
+
+        return res.status(200).json(enrichedExpense);
+    } catch (err) {
+        return res.status(500).json({
+            message: "Error fetching expense.",
+            error: err.message,
+        });
     }
-
-    // Fetch category for this expense
-    const category = await Category.findOne({
-      userId: expense.userId,
-      categoryId: expense.categoryId
-    });
-
-    // Enrich the expense with categoryName
-    const enrichedExpense = {
-      ...expense.toObject(),
-      categoryName: category ? category.name : "Unknown"
-    };
-
-    return res.status(200).json(enrichedExpense);
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error fetching expense.",
-      error: err.message,
-    });
-  }
 });
 
 /**
@@ -128,21 +128,21 @@ router.get("/:id", async (req, res) => {
  */
 
 router.get("/user/:userId", async (req, res) => {
-  try {
-    const userId = Number(req.params.userId);
+    try {
+        const userId = Number(req.params.userId);
 
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: "userId must be numeric." });
+        if (isNaN(userId)) {
+            return res.status(400).json({ message: "userId must be numeric." });
+        }
+
+        const expenses = await Expense.find({ userId });
+        return res.status(200).json(expenses);
+    } catch (err) {
+        return res.status(500).json({
+            message: "Error fetching user expenses",
+            error: err.message,
+        });
     }
-
-    const expenses = await Expense.find({ userId });
-    return res.status(200).json(expenses);
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error fetching user expenses",
-      error: err.message,
-    });
-  }
 });
 
 
