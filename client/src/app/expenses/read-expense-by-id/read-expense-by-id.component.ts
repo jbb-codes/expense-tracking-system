@@ -6,9 +6,10 @@
  **/
 
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Expense, ExpenseService } from '../expense.service';
+import { ExpenseService } from '../expense.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-read-expense-by-id',
@@ -25,65 +26,54 @@ import { Expense, ExpenseService } from '../expense.service';
         <p class="error-msg">{{ errorMessage }}</p>
       }
 
-    <!-- STEP 1: Login -->
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-      <label for="username">Enter Your Username</label>
-      <input id="username" type="username" formControlName="username">
-
-      <label for="password">Enter Your Password</label>
-      <input id="password" type="password" formControlName="password">
-
-      <button type="submit">Sign In</button>
-    </form>
-
-    <!-- STEP 2: Select expense -->
-    @if (isAuthenticated) {
+    <!-- Step1: Select expense -->
     <form [formGroup]="expenseSelectForm" (ngSubmit)="onSelectExpense()">
       <label for="expenseId">Select Expense</label>
       <select id="expenseId" formControlName="expenseId">
         @for (exp of userExpenses; track exp._id) {
           <option [value]="exp._id">
-            {{ exp._id }} – {{ exp.description }}
+            {{ exp._id }}
           </option>
         }
       </select>
 
       <button type="submit">Load Expense</button>
     </form>
-    }
 
-    <!-- Step 3: Expense details -->
+    <!-- Step 2: Expense details -->
     @if (selectedExpense) {
       <table>
-        <tr>
-          <th>Category Name</th>
-          <td>{{ selectedExpense.categoryName }}</td>
-        </tr>
-        <tr>
-          <th>Amount</th>
-          <td>{{ selectedExpense.amount }}</td>
-        </tr>
-        <tr>
-          <th>Description</th>
-          <td>{{ selectedExpense.description }}</td>
-        </tr>
-        <tr>
-          <th>Date</th>
-          <td>{{ selectedExpense.date | date }}</td>
-        </tr>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ selectedExpense.categoryName }}</td>
+            <td>{{ selectedExpense.amount | currency:'USD':'symbol':'1.2-2' }}</td>
+            <td>{{ selectedExpense.description }}</td>
+            <td>{{ selectedExpense.date | date }}</td>
+           </tr>
+        </tbody>
       </table>
     }
 
     `,
-  styles: ``
+  styles: `
+
+    button {
+      margin-bottom: 2rem;
+    }
+    `
 })
 
 export class ReadExpenseByIdComponent {
   successMessage = '';
   errorMessage = '';
-  isAuthenticated = false;
-
-  loginForm: FormGroup;
   expenseSelectForm: FormGroup;
 
   userExpenses: any[] = [];
@@ -91,46 +81,20 @@ export class ReadExpenseByIdComponent {
 
   constructor(
     private fb: FormBuilder,
-    private expenseService: ExpenseService
+    private expenseService: ExpenseService,
+    private authService: AuthService
   ) {
-    this.loginForm = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required]
-    });
-
     this.expenseSelectForm = this.fb.group({
       expenseId: ['', Validators.required]
     });
   }
 
-  // STEP 1: Login
-  onLogin(): void {
-    if (this.loginForm.invalid) {
-      this.errorMessage = 'Please enter your user ID and password';
-      return;
-    }
-
-    const { username, password } = this.loginForm.value as {
-      username: string;
-      password: string;
-    }
-
-    this.expenseService.login(username, password).subscribe({
-      next: (res) => {
-        this.errorMessage = '';
-        this.isAuthenticated = true;
-
-        // Load user expenses
-        this.loadUserExpenses(res.userId);
-      },
-      error: () => {
-        this.errorMessage = 'Invalid user ID or password';
-        this.successMessage = '';
-      }
-    });
+  ngOnInit(): void {
+    const userId = this.authService.getUserId();
+    this.loadUserExpenses(userId);
   }
 
-  // STEP 2: Load expenses for dropdown selection
+  // STEP 1: Load expenses for dropdown selection
   loadUserExpenses(userId: number): void {
     this.expenseService.getExpenseByUser(userId).subscribe({
       next: (expenses) => {
@@ -142,7 +106,7 @@ export class ReadExpenseByIdComponent {
     });
   }
 
-  // STEP 3: Select expense
+  // STEP 2: Select expense
   onSelectExpense(): void {
     if (this.expenseSelectForm.invalid) {
       this.errorMessage = 'Please select an expense';

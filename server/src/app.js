@@ -28,6 +28,8 @@ app.use("/api/expenses", expenseRoutes);
 /**
  * Kaitlyn Kelly
  * Week 6 - Sprint 1
+ * Added the authentication API route for the Expense Tracking System.
+ * This mounts all auth-related endpoints (e.g., login) under /api/auth.
  */
 app.use("/api/auth", authRoutes);
 

@@ -18,7 +18,7 @@
 
 const express = require("express");
 const Expense = require("../models/Expense");
-
+const Category = require("../models/Category");
 const router = express.Router();
 
 /**
@@ -90,6 +90,39 @@ router.get("/", async (req, res) => {
 });
 
 /**
+ * GET /:id
+ * Retrieves a single expense by its MongoDB _id
+ */
+router.get("/:id", async (req, res) => {
+  try {
+    const expense = await Expense.findById(req.params.id);
+
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found." });
+    }
+
+    // Fetch category for this expense
+    const category = await Category.findOne({
+      userId: expense.userId,
+      categoryId: expense.categoryId
+    });
+
+    // Enrich the expense with categoryName
+    const enrichedExpense = {
+      ...expense.toObject(),
+      categoryName: category ? category.name : "Unknown"
+    };
+
+    return res.status(200).json(enrichedExpense);
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error fetching expense.",
+      error: err.message,
+    });
+  }
+});
+
+/**
  * GET /user/:userId
  * Retrieves all expenses for a specific user
  */
@@ -112,24 +145,5 @@ router.get("/user/:userId", async (req, res) => {
   }
 });
 
-/**
- * GET /:id
- * Retrieves a single expense by its MongoDB _id
- */
-router.get("/:id", async (req, res) => {
-  try {
-    const expense = await Expense.findById(req.params.id);
 
-    if (!expense) {
-      return res.status(404).json({ message: "Expense not found." });
-    }
-
-    return res.status(200).json(expense);
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error fetching expense.",
-      error: err.message,
-    });
-  }
-});
 module.exports = router;

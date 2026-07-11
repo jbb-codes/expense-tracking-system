@@ -57,7 +57,7 @@ export class ExpenseService {
   }
 
   /**
-   * Kaitlyn Kelly
+   * Kaitlyn Kelly, 7/10/26
    * Added service methods to allow the ReadExpenseByIdComponent to:
    * 1. Authenticate a user by userId and passsword,
    * 2. Retrieve all expenses for a user,

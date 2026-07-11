@@ -3,6 +3,10 @@
  * Date: 7/6/26
  * File: seed.js
  * Description: Seeds the Users, Categories, and Expenses collections with sample data.
+ *
+ *
+ * Changes (Kaitlyn Kelly, 7/10/26):
+ * - Updated users password from format "Sample-Password-1" to "Password1" for ease in testing
  */
 
 "use strict";
