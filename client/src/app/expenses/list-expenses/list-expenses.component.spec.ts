@@ -3,6 +3,9 @@
  * Week 6 - Sprint 1
  * File: list-expenses.component.spec.ts
  * Description: Unit tests for the List Expenses Angular component.
+ *
+ * Changes (Kaitlyn Kelly 7/11/2026):
+ * -Added username to mockExpenses
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -18,6 +21,7 @@ describe('ListExpensesComponent', () => {
   const mockExpenses = [
     {
       userId: 1000,
+      username: 'testuser',
       categoryId: 1,
       amount: 25.5,
       description: 'Lunch',
@@ -25,6 +29,7 @@ describe('ListExpensesComponent', () => {
     },
     {
       userId: 1000,
+      username: 'testuser',
       categoryId: 2,
       amount: 10,
       description: 'Coffee',

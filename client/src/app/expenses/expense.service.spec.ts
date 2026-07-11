@@ -15,6 +15,9 @@
  *   instead of a hardcoded API URL.
  * - This keeps the tests synchronized with expense.service.ts for both
  *   development and production environments.
+ *
+ * Changes (Kaitlyn Kelly 7/11/2026):
+ * -Added username to mockExpenses
  */
 
 import { TestBed } from '@angular/core/testing';
@@ -57,6 +60,7 @@ describe('ExpenseService', () => {
     const mockExpenses = [
       {
         userId: 1000,
+        username: 'testuser',
         categoryId: 1,
         amount: 25.5,
         description: 'Lunch',
