@@ -75,4 +75,23 @@ export class ExpenseService {
     return this.http.get<any>(`${this.apiUrl}/${expenseId}`);
   }
 
+    /**
+   * Amanda Ruff
+   * Week 7 - Sprint 2
+   * Sends an updated expense record to the Express Update Expense API.
+   *
+   * @param expenseId MongoDB ID of the expense being updated.
+   * @param expense Updated expense form values.
+   * @returns The updated expense returned by the API.
+   */
+  updateExpense(
+    expenseId: string,
+    expense: Expense
+  ): Observable<Expense> {
+    return this.http.put<Expense>(
+      `${this.apiUrl}/${expenseId}`,
+      expense
+    );
+  }
+
 }

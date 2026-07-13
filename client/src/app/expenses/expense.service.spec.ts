@@ -76,4 +76,41 @@ describe('ExpenseService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(mockExpenses);
   });
+
+    /**
+   * Amanda Ruff
+   * Week 7 - Sprint 2
+   * Verifies that updateExpense sends a PUT request containing
+   * the modified expense information.
+   */
+  it('should send a PUT request to update an expense', () => {
+    const expenseId = 'exp123';
+
+    const updatedExpense = {
+      userId: 1000,
+      username: 'testuser',
+      categoryId: 2,
+      amount: 75.5,
+      description: 'Updated grocery expense',
+      date: '2026-07-12',
+    };
+
+    service.updateExpense(
+      expenseId,
+      updatedExpense
+    ).subscribe((expense) => {
+      expect(expense).toEqual(updatedExpense);
+    });
+
+    // Amanda Ruff: Confirm the service calls the correct update endpoint.
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/expenses/${expenseId}`
+    );
+
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(updatedExpense);
+
+    // Amanda Ruff: Return the mock updated expense to the subscriber.
+    req.flush(updatedExpense);
+  });
 });
