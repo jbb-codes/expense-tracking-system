@@ -16,7 +16,7 @@
  *   change between development and production without modifying the code.
  */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -35,11 +35,11 @@ export interface Expense {
 })
 export class ExpenseService {
   /**
- * Amanda Ruff
- * Uses the API base URL defined in Angular environment files.
- * This avoids hardcoding localhost and supports different
- * URLs for development and production deployments.
- */
+   * Amanda Ruff
+   * Uses the API base URL defined in Angular environment files.
+   * This avoids hardcoding localhost and supports different
+   * URLs for development and production deployments.
+   */
 
   private apiUrl = `${environment.apiUrl}/expenses`;
 
@@ -50,7 +50,9 @@ export class ExpenseService {
   }
 
   /**
-   * @description - fetches all expense records so the List Expenses view has data to render
+   * Jarren Bess
+   * Week 6 - Sprint 1
+   * Fetches all expense records so the List Expenses view has data to render.
    */
   getExpenses(): Observable<Expense[]> {
     return this.http.get<Expense[]>(this.apiUrl);
@@ -64,7 +66,10 @@ export class ExpenseService {
    * 3. Fetch a selected expense to display its details
    */
   login(username: string, password: string): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/auth/login`, { username, password });
+    return this.http.post(`${environment.apiUrl}/auth/login`, {
+      username,
+      password,
+    });
   }
 
   getExpenseByUser(userId: number): Observable<Expense[]> {
@@ -75,4 +80,32 @@ export class ExpenseService {
     return this.http.get<any>(`${this.apiUrl}/${expenseId}`);
   }
 
+  /**
+   * Amanda Ruff
+   * Week 7 - Sprint 2
+   * Sends an updated expense record to the Express Update Expense API.
+   *
+   * @param expenseId MongoDB ID of the expense being updated.
+   * @param expense Updated expense form values.
+   * @returns The updated expense returned by the API.
+   */
+  updateExpense(expenseId: string, expense: Expense): Observable<Expense> {
+    return this.http.put<Expense>(`${this.apiUrl}/${expenseId}`, expense);
+  }
+
+  /**
+   * Jarren Bess
+   * Week 7 - Sprint 2
+   * Searches a user's expenses by a case-insensitive description match.
+   *
+   * @param userId ID of the user whose expenses are being searched.
+   * @param description Text to match against the expense description field.
+   * @returns The matching expenses for that user.
+   */
+  searchExpenses(userId: number, description: string): Observable<Expense[]> {
+    const params = new HttpParams().set('description', description);
+    return this.http.get<Expense[]>(`${this.apiUrl}/user/${userId}/search`, {
+      params,
+    });
+  }
 }

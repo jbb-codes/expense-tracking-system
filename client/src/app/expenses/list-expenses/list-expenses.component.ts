@@ -33,7 +33,7 @@ import { Expense, ExpenseService } from '../expense.service';
       <tbody>
         @for (expense of expenses; track expense) {
           <tr>
-            <td>{{ expense.date }}</td>
+            <td>{{ expense.date | date }}</td>
             <td>{{ expense.userId }}</td>
             <td>{{ expense.categoryId }}</td>
             <td>{{ expense.amount }}</td>
