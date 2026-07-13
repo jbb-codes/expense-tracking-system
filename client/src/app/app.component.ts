@@ -48,6 +48,7 @@ import { AuthService } from './auth/auth.service';
             Added navigation to the Update Expense page.
           -->
           <a routerLink="/update-expense">Update Expense</a>
+          <a routerLink="/search-expenses">Search Expenses</a>
 
           <!-- Button not functional yet -->
           <div class="nav-button-wrapper">

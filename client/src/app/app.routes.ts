@@ -26,6 +26,7 @@ import { ReadExpenseByIdComponent } from './expenses/read-expense-by-id/read-exp
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './auth/auth.guard';
 import { UpdateExpenseComponent } from './expenses/update-expense/update-expense.component';
+import { SearchExpensesComponent } from './expenses/search-expenses/search-expenses.component';
 
 /**
  * Amanda Ruff
@@ -41,10 +42,18 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
 
   // Protected page used to create a new expense.
-  { path: 'create-expense', component: CreateExpenseComponent, canActivate: [AuthGuard] },
+  {
+    path: 'create-expense',
+    component: CreateExpenseComponent,
+    canActivate: [AuthGuard],
+  },
 
   // Protected page that displays all expenses.
-  { path: 'list-expenses', component: ListExpensesComponent, canActivate: [AuthGuard] },
+  {
+    path: 'list-expenses',
+    component: ListExpensesComponent,
+    canActivate: [AuthGuard],
+  },
 
   /**
    * Amanda Ruff
@@ -52,8 +61,23 @@ export const routes: Routes = [
    * Route for updating an existing expense.
    * Users must be authenticated before accessing this page.
    */
-  { path: 'update-expense', component: UpdateExpenseComponent, canActivate: [AuthGuard] },
+  {
+    path: 'update-expense',
+    component: UpdateExpenseComponent,
+    canActivate: [AuthGuard],
+  },
 
   // Protected page used to view a single expense by its ID.
-  { path: 'read-expense-by-id', component: ReadExpenseByIdComponent, canActivate: [AuthGuard] }
+  {
+    path: 'read-expense-by-id',
+    component: ReadExpenseByIdComponent,
+    canActivate: [AuthGuard],
+  },
+
+  // Protected page used to search a user's expenses by description.
+  {
+    path: 'search-expenses',
+    component: SearchExpensesComponent,
+    canActivate: [AuthGuard],
+  },
 ];
