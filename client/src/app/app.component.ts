@@ -14,6 +14,12 @@ import { AuthService } from './auth/auth.service';
         <a routerLink="/create-expense">Create Expense</a>
         <a routerLink="/list-expenses">List Expenses</a>
         <a routerLink="/read-expense-by-id">Read Expense by ID</a>
+        <!--
+          Amanda Ruff
+          Week 7 - Sprint 2
+          Added navigation to the Update Expense page.
+        -->
+        <a routerLink="/update-expense">Update Expense</a>
 
         <!-- Button not functional yet -->
         <div class="nav-button-wrapper">
