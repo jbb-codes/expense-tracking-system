@@ -43,57 +43,51 @@ app.use("/api/expenses", expenseRoutes);
  * Unit tests for the Create Expense API.
  */
 describe("POST /api/expenses", () => {
-    afterEach(() => {
-        // Clear all mocked model calls after each test.
-        jest.clearAllMocks();
+  afterEach(() => {
+    // Clear all mocked model calls after each test.
+    jest.clearAllMocks();
+  });
+
+  test("should create an expense successfully", async () => {
+    Expense.create.mockResolvedValue({
+      _id: "123",
+      userId: 1000,
+      categoryId: 1,
+      amount: 25.5,
+      description: "Lunch",
+      date: "2026-07-06",
     });
 
-    test("should create an expense successfully", async () => {
-        Expense.create.mockResolvedValue({
-            _id: "123",
-            userId: 1000,
-            categoryId: 1,
-            amount: 25.5,
-            description: "Lunch",
-            date: "2026-07-06",
-        });
-
-        const response = await request(app)
-            .post("/api/expenses")
-            .send({
-                userId: 1000,
-                categoryId: 1,
-                amount: 25.5,
-                description: "Lunch",
-                date: "2026-07-06",
-            });
-
-        expect(response.statusCode).toBe(201);
-        expect(response.body.userId).toBe(1000);
+    const response = await request(app).post("/api/expenses").send({
+      userId: 1000,
+      categoryId: 1,
+      amount: 25.5,
+      description: "Lunch",
+      date: "2026-07-06",
     });
 
-    test("should return 400 when required fields are missing", async () => {
-        const response = await request(app)
-            .post("/api/expenses")
-            .send({
-                amount: 20,
-            });
+    expect(response.statusCode).toBe(201);
+    expect(response.body.userId).toBe(1000);
+  });
 
-        expect(response.statusCode).toBe(400);
+  test("should return 400 when required fields are missing", async () => {
+    const response = await request(app).post("/api/expenses").send({
+      amount: 20,
     });
 
-    test("should return 400 when amount is invalid", async () => {
-        const response = await request(app)
-            .post("/api/expenses")
-            .send({
-                userId: 1000,
-                categoryId: 1,
-                amount: -5,
-                date: "2026-07-06",
-            });
+    expect(response.statusCode).toBe(400);
+  });
 
-        expect(response.statusCode).toBe(400);
+  test("should return 400 when amount is invalid", async () => {
+    const response = await request(app).post("/api/expenses").send({
+      userId: 1000,
+      categoryId: 1,
+      amount: -5,
+      date: "2026-07-06",
     });
+
+    expect(response.statusCode).toBe(400);
+  });
 });
 
 /**
@@ -102,106 +96,96 @@ describe("POST /api/expenses", () => {
  * Unit tests for the Update Expense API.
  */
 describe("PUT /api/expenses/:id", () => {
-    afterEach(() => {
-        // Amanda Ruff: Clear all model mocks after each update test.
-        jest.clearAllMocks();
+  afterEach(() => {
+    // Amanda Ruff: Clear all model mocks after each update test.
+    jest.clearAllMocks();
+  });
+
+  /**
+   * Amanda Ruff
+   * Verifies that valid expense information updates the selected record.
+   */
+  test("should update an expense successfully", async () => {
+    Expense.findByIdAndUpdate.mockResolvedValue({
+      _id: "exp123",
+      userId: 1000,
+      categoryId: 2,
+      amount: 75.5,
+      description: "Updated grocery expense",
+      date: "2026-07-12",
     });
 
-    /**
-     * Amanda Ruff
-     * Verifies that valid expense information updates the selected record.
-     */
-    test("should update an expense successfully", async () => {
-        Expense.findByIdAndUpdate.mockResolvedValue({
-            _id: "exp123",
-            userId: 1000,
-            categoryId: 2,
-            amount: 75.5,
-            description: "Updated grocery expense",
-            date: "2026-07-12",
-        });
-
-        const response = await request(app)
-            .put("/api/expenses/exp123")
-            .send({
-                userId: 1000,
-                categoryId: 2,
-                amount: 75.5,
-                description: "Updated grocery expense",
-                date: "2026-07-12",
-            });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body._id).toBe("exp123");
-        expect(response.body.userId).toBe(1000);
-        expect(response.body.categoryId).toBe(2);
-        expect(response.body.amount).toBe(75.5);
-        expect(response.body.description).toBe(
-            "Updated grocery expense"
-        );
-
-        // Amanda Ruff: Confirm the correct expense ID and values were used.
-        expect(Expense.findByIdAndUpdate).toHaveBeenCalledWith(
-            "exp123",
-            expect.objectContaining({
-                userId: 1000,
-                categoryId: 2,
-                amount: 75.5,
-                description: "Updated grocery expense",
-                date: "2026-07-12",
-                dateModified: expect.any(Date),
-            }),
-            {
-                new: true,
-                runValidators: true,
-            }
-        );
+    const response = await request(app).put("/api/expenses/exp123").send({
+      userId: 1000,
+      categoryId: 2,
+      amount: 75.5,
+      description: "Updated grocery expense",
+      date: "2026-07-12",
     });
 
-    /**
-     * Amanda Ruff
-     * Verifies that an invalid amount prevents the expense from being updated.
-     */
-    test("should return 400 when update data is invalid", async () => {
-        const response = await request(app)
-            .put("/api/expenses/exp123")
-            .send({
-                userId: 1000,
-                categoryId: 2,
-                amount: -10,
-                description: "Invalid update",
-                date: "2026-07-12",
-            });
+    expect(response.statusCode).toBe(200);
+    expect(response.body._id).toBe("exp123");
+    expect(response.body.userId).toBe(1000);
+    expect(response.body.categoryId).toBe(2);
+    expect(response.body.amount).toBe(75.5);
+    expect(response.body.description).toBe("Updated grocery expense");
 
-        expect(response.statusCode).toBe(400);
-        expect(response.body.message).toBe(
-            "Amount must be greater than zero."
-        );
+    // Amanda Ruff: Confirm the correct expense ID and values were used.
+    expect(Expense.findByIdAndUpdate).toHaveBeenCalledWith(
+      "exp123",
+      expect.objectContaining({
+        userId: 1000,
+        categoryId: 2,
+        amount: 75.5,
+        description: "Updated grocery expense",
+        date: "2026-07-12",
+        dateModified: expect.any(Date),
+      }),
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+  });
 
-        // Amanda Ruff: Confirm the database update was never attempted.
-        expect(Expense.findByIdAndUpdate).not.toHaveBeenCalled();
+  /**
+   * Amanda Ruff
+   * Verifies that an invalid amount prevents the expense from being updated.
+   */
+  test("should return 400 when update data is invalid", async () => {
+    const response = await request(app).put("/api/expenses/exp123").send({
+      userId: 1000,
+      categoryId: 2,
+      amount: -10,
+      description: "Invalid update",
+      date: "2026-07-12",
     });
 
-    /**
-     * Amanda Ruff
-     * Verifies that the API returns 404 when the expense does not exist.
-     */
-    test("should return 404 when expense to update is not found", async () => {
-        Expense.findByIdAndUpdate.mockResolvedValue(null);
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe("Amount must be greater than zero.");
 
-        const response = await request(app)
-            .put("/api/expenses/doesNotExist")
-            .send({
-                userId: 1000,
-                categoryId: 2,
-                amount: 25,
-                description: "Updated expense",
-                date: "2026-07-12",
-            });
+    // Amanda Ruff: Confirm the database update was never attempted.
+    expect(Expense.findByIdAndUpdate).not.toHaveBeenCalled();
+  });
 
-        expect(response.statusCode).toBe(404);
-        expect(response.body.message).toBe("Expense not found.");
+  /**
+   * Amanda Ruff
+   * Verifies that the API returns 404 when the expense does not exist.
+   */
+  test("should return 404 when expense to update is not found", async () => {
+    Expense.findByIdAndUpdate.mockResolvedValue(null);
+
+    const response = await request(app).put("/api/expenses/doesNotExist").send({
+      userId: 1000,
+      categoryId: 2,
+      amount: 25,
+      description: "Updated expense",
+      date: "2026-07-12",
     });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe("Expense not found.");
+  });
 });
 
 /**
@@ -210,56 +194,56 @@ describe("PUT /api/expenses/:id", () => {
  * Unit tests for the List All Expenses API.
  */
 describe("GET /api/expenses", () => {
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-    // Confirm the list view has real data to render when expenses exist.
-    test("should return all expenses successfully", async () => {
-        Expense.find.mockResolvedValue([
-            {
-                _id: "123",
-                userId: 1000,
-                categoryId: 1,
-                amount: 25.5,
-                description: "Lunch",
-                date: "2026-07-06",
-            },
-            {
-                _id: "456",
-                userId: 1000,
-                categoryId: 2,
-                amount: 10.0,
-                description: "Coffee",
-                date: "2026-07-05",
-            },
-        ]);
+  // Confirm the list view has real data to render when expenses exist.
+  test("should return all expenses successfully", async () => {
+    Expense.find.mockResolvedValue([
+      {
+        _id: "123",
+        userId: 1000,
+        categoryId: 1,
+        amount: 25.5,
+        description: "Lunch",
+        date: "2026-07-06",
+      },
+      {
+        _id: "456",
+        userId: 1000,
+        categoryId: 2,
+        amount: 10.0,
+        description: "Coffee",
+        date: "2026-07-05",
+      },
+    ]);
 
-        const response = await request(app).get("/api/expenses");
+    const response = await request(app).get("/api/expenses");
 
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveLength(2);
-        expect(response.body[0].userId).toBe(1000);
-    });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveLength(2);
+    expect(response.body[0].userId).toBe(1000);
+  });
 
-    // Guard against a new collection breaking the endpoint before data exists.
-    test("should return an empty array when no expenses exist", async () => {
-        Expense.find.mockResolvedValue([]);
+  // Guard against a new collection breaking the endpoint before data exists.
+  test("should return an empty array when no expenses exist", async () => {
+    Expense.find.mockResolvedValue([]);
 
-        const response = await request(app).get("/api/expenses");
+    const response = await request(app).get("/api/expenses");
 
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual([]);
-    });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual([]);
+  });
 
-    // Ensure a database failure returns a clear server error.
-    test("should return 500 when an error occurs while fetching expenses", async () => {
-        Expense.find.mockRejectedValue(new Error("Database error"));
+  // Ensure a database failure returns a clear server error.
+  test("should return 500 when an error occurs while fetching expenses", async () => {
+    Expense.find.mockRejectedValue(new Error("Database error"));
 
-        const response = await request(app).get("/api/expenses");
+    const response = await request(app).get("/api/expenses");
 
-        expect(response.statusCode).toBe(500);
-    });
+    expect(response.statusCode).toBe(500);
+  });
 });
 
 /**
@@ -268,64 +252,54 @@ describe("GET /api/expenses", () => {
  * Unit tests for the Read Expense by ID API.
  */
 describe("GET /api/expenses/:id", () => {
-    afterEach(() => {
-        jest.clearAllMocks();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  // Verify that an expense and its category name are returned.
+  test("should return an enriched expense by ID successfully", async () => {
+    Expense.findById.mockResolvedValue({
+      _id: "exp123",
+      userId: 1000,
+      categoryId: 1,
+      amount: 45.99,
+      description: "Weekly grocery run",
+      date: "2026-06-01",
+      toObject() {
+        return this;
+      },
     });
 
-    // Verify that an expense and its category name are returned.
-    test("should return an enriched expense by ID successfully", async () => {
-        Expense.findById.mockResolvedValue({
-            _id: "exp123",
-            userId: 1000,
-            categoryId: 1,
-            amount: 45.99,
-            description: "Weekly grocery run",
-            date: "2026-06-01",
-            toObject() {
-                return this;
-            },
-        });
-
-        Category.findOne.mockResolvedValue({
-            name: "Groceries",
-        });
-
-        const response = await request(app).get(
-            "/api/expenses/exp123"
-        );
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body._id).toBe("exp123");
-        expect(response.body.categoryName).toBe("Groceries");
+    Category.findOne.mockResolvedValue({
+      name: "Groceries",
     });
 
-    // Verify that a missing expense returns a 404 response.
-    test("should return 404 when expense is not found", async () => {
-        Expense.findById.mockResolvedValue(null);
+    const response = await request(app).get("/api/expenses/exp123");
 
-        const response = await request(app).get(
-            "/api/expenses/doesNotExist"
-        );
+    expect(response.statusCode).toBe(200);
+    expect(response.body._id).toBe("exp123");
+    expect(response.body.categoryName).toBe("Groceries");
+  });
 
-        expect(response.statusCode).toBe(404);
-        expect(response.body.message).toBe("Expense not found.");
-    });
+  // Verify that a missing expense returns a 404 response.
+  test("should return 404 when expense is not found", async () => {
+    Expense.findById.mockResolvedValue(null);
 
-    // Verify that a database failure returns a server error.
-    test("should return 500 when an error occurs while fetching expense", async () => {
-        Expense.findById.mockRejectedValue(
-            new Error("Database failure")
-        );
+    const response = await request(app).get("/api/expenses/doesNotExist");
 
-        const response = await request(app).get(
-            "/api/expenses/exp123"
-        );
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe("Expense not found.");
+  });
 
-        expect(response.statusCode).toBe(500);
-        expect(response.body.message).toBe(
-            "Error fetching expense."
-        );
-    });
+  // Verify that a database failure returns a server error.
+  test("should return 500 when an error occurs while fetching expense", async () => {
+    Expense.findById.mockRejectedValue(new Error("Database failure"));
+
+    const response = await request(app).get("/api/expenses/exp123");
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body.message).toBe("Error fetching expense.");
+  });
 });
 
 /**
@@ -334,58 +308,106 @@ describe("GET /api/expenses/:id", () => {
  * Unit tests for retrieving expenses by user ID.
  */
 describe("GET /api/expenses/user/:userId", () => {
-    afterEach(() => {
-        jest.clearAllMocks();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  // Verify that expenses are returned for a valid numeric user ID.
+  test("should return expenses for a valid userId", async () => {
+    Expense.find.mockResolvedValue([
+      {
+        _id: "1",
+        userId: 1000,
+        categoryId: 1,
+        amount: 20,
+      },
+      {
+        _id: "2",
+        userId: 1000,
+        categoryId: 2,
+        amount: 50,
+      },
+    ]);
+
+    const response = await request(app).get("/api/expenses/user/1000");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveLength(2);
+  });
+
+  // Verify that a nonnumeric user ID returns a validation error.
+  test("should return 400 when userId is not numeric", async () => {
+    const response = await request(app).get("/api/expenses/user/notANumber");
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe("userId must be numeric.");
+  });
+
+  // Verify that a database failure returns a server error.
+  test("should return 500 when an error occurs while fetching user expenses", async () => {
+    Expense.find.mockRejectedValue(new Error("DB error"));
+
+    const response = await request(app).get("/api/expenses/user/1000");
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body.message).toBe("Error fetching user expenses");
+  });
+});
+
+/**
+ * Jarren Bess
+ * Week 7 - Sprint 2
+ * Unit tests for the Search Expenses API.
+ */
+describe("GET /api/expenses/user/:userId/search", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  // Verify that expenses matching the description query are returned for a valid userId.
+  test("should return matching expenses for a valid userId and description", async () => {
+    Expense.find.mockResolvedValue([
+      {
+        _id: "1",
+        userId: 1000,
+        categoryId: 1,
+        amount: 25.5,
+        description: "Lunch with client",
+        date: "2026-07-06",
+      },
+    ]);
+
+    const response = await request(app).get(
+      "/api/expenses/user/1000/search?description=lunch",
+    );
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveLength(1);
+    expect(Expense.find).toHaveBeenCalledWith({
+      userId: 1000,
+      description: { $regex: "lunch", $options: "i" },
     });
+  });
 
-    // Verify that expenses are returned for a valid numeric user ID.
-    test("should return expenses for a valid userId", async () => {
-        Expense.find.mockResolvedValue([
-            {
-                _id: "1",
-                userId: 1000,
-                categoryId: 1,
-                amount: 20,
-            },
-            {
-                _id: "2",
-                userId: 1000,
-                categoryId: 2,
-                amount: 50,
-            },
-        ]);
+  // Verify that a nonnumeric user ID returns a validation error.
+  test("should return 400 when userId is not numeric", async () => {
+    const response = await request(app).get(
+      "/api/expenses/user/notANumber/search?description=lunch",
+    );
 
-        const response = await request(app).get(
-            "/api/expenses/user/1000"
-        );
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe("userId must be numeric.");
+  });
 
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveLength(2);
-    });
+  // Verify that a database failure returns a server error.
+  test("should return 500 when an error occurs while searching expenses", async () => {
+    Expense.find.mockRejectedValue(new Error("DB error"));
 
-    // Verify that a nonnumeric user ID returns a validation error.
-    test("should return 400 when userId is not numeric", async () => {
-        const response = await request(app).get(
-            "/api/expenses/user/notANumber"
-        );
+    const response = await request(app).get(
+      "/api/expenses/user/1000/search?description=lunch",
+    );
 
-        expect(response.statusCode).toBe(400);
-        expect(response.body.message).toBe(
-            "userId must be numeric."
-        );
-    });
-
-    // Verify that a database failure returns a server error.
-    test("should return 500 when an error occurs while fetching user expenses", async () => {
-        Expense.find.mockRejectedValue(new Error("DB error"));
-
-        const response = await request(app).get(
-            "/api/expenses/user/1000"
-        );
-
-        expect(response.statusCode).toBe(500);
-        expect(response.body.message).toBe(
-            "Error fetching user expenses"
-        );
-    });
+    expect(response.statusCode).toBe(500);
+    expect(response.body.message).toBe("Error searching expenses.");
+  });
 });
