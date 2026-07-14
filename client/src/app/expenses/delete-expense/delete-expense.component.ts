@@ -11,8 +11,10 @@ import { Component } from '@angular/core';
   selector: 'app-delete-expense',
   standalone: true,
   imports: [],
-  templateUrl: './delete-expense.component.html',
-  styleUrl: './delete-expense.component.css'
+  template: `
+
+    <h1>Delete an Expense</h1>`,
+  styles: ``
 })
 export class DeleteExpenseComponent {
 

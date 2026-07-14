@@ -146,7 +146,6 @@ nav a:visited {
 }
 
 .nav-button-wrapper {
-  margin-top: auto;
   width: 100%;
   display: flex;
   justify-content: center;
