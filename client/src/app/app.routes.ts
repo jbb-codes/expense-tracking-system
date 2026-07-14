@@ -17,6 +17,9 @@
  * Changes (Amanda Ruff, 7/12/2026):
  * - Added the Update Expense component route.
  * - Protected the Update Expense page using AuthGuard.
+ *
+ * Changes (Kaitlyn Kelly, 7/14/2026):
+ * - Added Delete Expense component route with AuthGuard.
  */
 
 import { Routes } from '@angular/router';
@@ -27,6 +30,7 @@ import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './auth/auth.guard';
 import { UpdateExpenseComponent } from './expenses/update-expense/update-expense.component';
 import { SearchExpensesComponent } from './expenses/search-expenses/search-expenses.component';
+import { DeleteExpenseComponent } from './expenses/delete-expense/delete-expense.component';
 
 /**
  * Amanda Ruff
@@ -80,4 +84,12 @@ export const routes: Routes = [
     component: SearchExpensesComponent,
     canActivate: [AuthGuard],
   },
+
+  // Protected page used to delete an expense
+  {
+    path: 'delete-expense',
+    component: DeleteExpenseComponent,
+    canActivate: [AuthGuard],
+  },
+
 ];

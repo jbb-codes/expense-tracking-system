@@ -20,6 +20,7 @@ describe('ListExpensesComponent', () => {
 
   const mockExpenses = [
     {
+      _id: '1',
       userId: 1000,
       username: 'testuser',
       categoryId: 1,
@@ -28,6 +29,7 @@ describe('ListExpensesComponent', () => {
       date: '2026-07-06',
     },
     {
+      _id: '2',
       userId: 1000,
       username: 'testuser',
       categoryId: 2,

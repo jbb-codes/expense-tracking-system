@@ -12,6 +12,9 @@
  * Changes (Kaitlyn Kelly, 7/10/2026):
  * - Added GET /user/:userId to support loading expenses for a specific user
  * - Added GET /:id to support loading a single expense by its MonogoDB _id
+ *
+ * Changes (Kaitlyn Kelly, 7/14/2026):
+ * - Added DELETE /:id to support deleting an expense by its MongoDB _id
  */
 
 "use strict";
@@ -246,5 +249,25 @@ router.get("/user/:userId/search", async (req, res) => {
     });
   }
 });
+
+// Delete an expense by its MongoDB _id
+router.delete('/:id', async (req, res) => {
+  try {
+    // Attempt to delete the expense document matching the provided _id
+    const deleted = await Expense.findByIdAndDelete(req.params.id);
+
+    // No matching document found: return 404 so the client knows the ID was invalid
+    if (!deleted) {
+      return res.status(404).json({ message: 'Expense not found' });
+    }
+
+    // Successful deletion — return confirmation message
+    res.json({ message: 'Expense deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting expense:', err);
+    res.status(500).json({ message: 'Server error deleting expense' });
+  }
+});
+
 
 module.exports = router;

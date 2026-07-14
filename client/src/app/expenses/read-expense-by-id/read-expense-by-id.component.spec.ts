@@ -24,7 +24,7 @@ class MockExpenseService {
     return of([
       {
         _id: 'exp1',
-        userId,
+        userId: 'exp1',
         username: 'testuser',
         categoryId: 1,
         categoryName: 'Food',
@@ -34,7 +34,7 @@ class MockExpenseService {
       },
       {
         _id: 'exp2',
-        userId,
+        userId: 'exp2',
         username: 'testuser',
         categoryId: 2,
         categoryName: 'Travel',

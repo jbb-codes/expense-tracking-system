@@ -14,6 +14,11 @@
  * - Replaced the hardcoded API URL with Angular environment configuration.
  * - Updated the service to use environment.apiUrl so API endpoints can
  *   change between development and production without modifying the code.
+ *
+ * Changes (Kaitlyn Kelly, 7/12/2026):
+ * - Added deleteExpense service to support the DeleteExpenseComponent
+ * - Issues an HTTP DELETE request to remove an expense record according to its MongoDB _id
+ * - Updated the Expense interfact to include _id for the functionality above
  */
 
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -22,6 +27,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Expense {
+  _id?: string;
   userId: number;
   username: string;
   categoryId: number;
@@ -107,5 +113,10 @@ export class ExpenseService {
     return this.http.get<Expense[]>(`${this.apiUrl}/user/${userId}/search`, {
       params,
     });
+  }
+
+
+  deleteExpense(id: string) {
+    return this.http.delete(`/api/expenses/${id}`);
   }
 }

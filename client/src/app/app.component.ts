@@ -49,6 +49,7 @@ import { AuthService } from './auth/auth.service';
           -->
           <a routerLink="/update-expense">Update Expense</a>
           <a routerLink="/search-expenses">Search Expenses</a>
+          <a routerLink="/delete-expense">Delete Expense</a>
 
           <!-- Button not functional yet -->
           <div class="nav-button-wrapper">

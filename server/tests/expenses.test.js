@@ -411,3 +411,58 @@ describe("GET /api/expenses/user/:userId/search", () => {
     expect(response.body.message).toBe("Error searching expenses.");
   });
 });
+
+
+/**
+ * Kaitlyn Kelly
+ * Week 7 - Sprint 2
+ * Unit tests for the Delete Expense API.
+ */
+describe("DELETE /api/expenses/:id", () => {
+  afterEach(() => {
+    jest.clearAllMocks(); // Reset mocks after each test
+  });
+
+  //Verifies that a valid expense ID deletes the record successfully.
+  test("should delete an expense successfully", async () => {
+    // Mock a successful deletion
+    Expense.findByIdAndDelete.mockResolvedValue({
+      _id: "exp123",
+      userId: 1000,
+      categoryId: 1,
+      amount: 45.99,
+      description: "Weekly grocery run",
+      date: "2026-06-01",
+    });
+
+    const response = await request(app).delete("/api/expenses/exp123");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe("Expense deleted successfully");
+
+    // Confirm the correct ID was passed to the model
+    expect(Expense.findByIdAndDelete).toHaveBeenCalledWith("exp123");
+  });
+
+  //Verifies that deleting a non-existent expense returns a 404 response.
+  test("should return 404 when expense is not found", async () => {
+    // Mock no matching document
+    Expense.findByIdAndDelete.mockResolvedValue(null);
+
+    const response = await request(app).delete("/api/expenses/doesNotExist");
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe("Expense not found");
+  });
+
+  //Verifies that a database failure returns a server error.
+  test("should return 500 when an error occurs while deleting expense", async () => {
+    // Mock a thrown database error
+    Expense.findByIdAndDelete.mockRejectedValue(new Error("Database failure"));
+
+    const response = await request(app).delete("/api/expenses/exp123");
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body.message).toBe("Server error deleting expense");
+  });
+});

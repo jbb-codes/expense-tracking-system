@@ -19,6 +19,7 @@ describe('SearchExpensesComponent', () => {
 
   const mockExpenses = [
     {
+      _id: '1',
       userId: 1000,
       username: 'testuser',
       categoryId: 1,

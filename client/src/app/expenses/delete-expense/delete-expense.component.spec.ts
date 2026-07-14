@@ -6,25 +6,80 @@
  **/
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { of, throwError } from 'rxjs';
 import { DeleteExpenseComponent } from './delete-expense.component';
+import { ExpenseService } from '../expense.service';
 
 describe('DeleteExpenseComponent', () => {
   let component: DeleteExpenseComponent;
   let fixture: ComponentFixture<DeleteExpenseComponent>;
+  let mockService: jasmine.SpyObj<ExpenseService>;
+
+const mockExpenses = [
+  {
+    _id: '1',
+    userId: 1000,
+    username: 'testuser',
+    categoryId: 1,
+    amount: 10,
+    description: 'Test',
+    date: new Date().toISOString()
+  },
+  {
+    _id: '2',
+    userId: 1000,
+    username: 'testuser',
+    categoryId: 2,
+    amount: 20,
+    description: 'Another',
+    date: new Date().toISOString()
+  }
+]
 
   beforeEach(async () => {
+    mockService = jasmine.createSpyObj('ExpenseService', ['getExpenses', 'deleteExpense']);
+
     await TestBed.configureTestingModule({
-      imports: [DeleteExpenseComponent]
-    })
-    .compileComponents();
+      imports: [DeleteExpenseComponent],
+      providers: [{ provide: ExpenseService, useValue: mockService }]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DeleteExpenseComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
+    it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  // Loads expenses on init
+  it('should load expenses on init', () => {
+    mockService.getExpenses.and.returnValue(of(mockExpenses));
+
+    component.ngOnInit();
+
+    expect(component.expenses.length).toBe(2);
+    expect(component.errorMessage).toBe('');
+  });
+
+    // deleteItem() should call the service
+  it('should call deleteExpense with the correct ID', () => {
+    mockService.deleteExpense.and.returnValue(of({ message: 'deleted' }));
+    component.expenses = [...mockExpenses];
+
+    component.deleteItem('1');
+
+    expect(mockService.deleteExpense).toHaveBeenCalledWith('1');
+  });
+
+    // deleteItem() should remove the item from the UI
+  it('should remove the deleted expense from the list', () => {
+    mockService.deleteExpense.and.returnValue(of({ message: 'deleted' }));
+    component.expenses = [...mockExpenses];
+
+    component.deleteItem('1');
+
+    expect(component.expenses.length).toBe(1);
+    expect(component.expenses[0]._id).toBe('2');
   });
 });

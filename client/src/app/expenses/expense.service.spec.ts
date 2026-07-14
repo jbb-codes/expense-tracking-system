@@ -59,6 +59,7 @@ describe('ExpenseService', () => {
   it('should send a GET request to fetch all expenses', () => {
     const mockExpenses = [
       {
+        _id: '1',
         userId: 1000,
         username: 'testuser',
         categoryId: 1,
@@ -87,6 +88,7 @@ describe('ExpenseService', () => {
     const expenseId = 'exp123';
 
     const updatedExpense = {
+      _id: '1',
       userId: 1000,
       username: 'testuser',
       categoryId: 2,

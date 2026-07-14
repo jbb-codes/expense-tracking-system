@@ -265,19 +265,6 @@ button[type="submit"]:hover {
   background-color: #798dbd;
 }
 
-button:not([type="submit"]) {
-  background-color: #dde5cb;
-  cursor: pointer;
-  padding: 0.2rem 0.8rem;
-  border: 1px solid #354612;
-  border-radius: 10px;
-  margin-top: 2rem;
-}
-
-button:not([type="submit"]):hover {
-  background-color: #8eaa4c;
-}
-
 .error-msg {
   color: #f11212;
 }
