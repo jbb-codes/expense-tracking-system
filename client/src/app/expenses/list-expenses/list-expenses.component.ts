@@ -8,6 +8,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Expense, ExpenseService } from '../expense.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-list-expenses',
@@ -49,10 +50,14 @@ export class ListExpensesComponent implements OnInit {
   expenses: Expense[] = [];
   errorMessage = '';
 
-  constructor(private expenseService: ExpenseService) {}
+  constructor(
+    private expenseService: ExpenseService,
+    private authService: AuthService,
+  ) {}
 
   ngOnInit(): void {
-    this.expenseService.getExpenses().subscribe({
+    const userId = this.authService.getUserId();
+    this.expenseService.getExpenseByUser(userId).subscribe({
       next: (expenses) => {
         this.expenses = expenses;
         this.errorMessage = '';
