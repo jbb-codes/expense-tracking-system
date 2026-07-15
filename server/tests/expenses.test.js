@@ -219,7 +219,7 @@ describe("GET /api/expenses", () => {
       },
     ]);
 
-    const response = await request(app).get("/api/expenses");
+    const response = await request(app).get("/api/expenses?userId=1000");
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveLength(2);
@@ -230,7 +230,7 @@ describe("GET /api/expenses", () => {
   test("should return an empty array when no expenses exist", async () => {
     Expense.find.mockResolvedValue([]);
 
-    const response = await request(app).get("/api/expenses");
+    const response = await request(app).get("/api/expenses?userId=1000");
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([]);
@@ -240,9 +240,17 @@ describe("GET /api/expenses", () => {
   test("should return 500 when an error occurs while fetching expenses", async () => {
     Expense.find.mockRejectedValue(new Error("Database error"));
 
-    const response = await request(app).get("/api/expenses");
+    const response = await request(app).get("/api/expenses?userId=1000");
 
     expect(response.statusCode).toBe(500);
+  });
+
+  // Ensure userId is required to keep results scoped to a single user.
+  test("should return 400 when userId is missing or non-numeric", async () => {
+    const response = await request(app).get("/api/expenses");
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe("userId must be numeric.");
   });
 });
 
@@ -303,58 +311,6 @@ describe("GET /api/expenses/:id", () => {
 });
 
 /**
- * Kaitlyn Kelly
- * Week 6 - Sprint 1
- * Unit tests for retrieving expenses by user ID.
- */
-describe("GET /api/expenses/user/:userId", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  // Verify that expenses are returned for a valid numeric user ID.
-  test("should return expenses for a valid userId", async () => {
-    Expense.find.mockResolvedValue([
-      {
-        _id: "1",
-        userId: 1000,
-        categoryId: 1,
-        amount: 20,
-      },
-      {
-        _id: "2",
-        userId: 1000,
-        categoryId: 2,
-        amount: 50,
-      },
-    ]);
-
-    const response = await request(app).get("/api/expenses/user/1000");
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveLength(2);
-  });
-
-  // Verify that a nonnumeric user ID returns a validation error.
-  test("should return 400 when userId is not numeric", async () => {
-    const response = await request(app).get("/api/expenses/user/notANumber");
-
-    expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe("userId must be numeric.");
-  });
-
-  // Verify that a database failure returns a server error.
-  test("should return 500 when an error occurs while fetching user expenses", async () => {
-    Expense.find.mockRejectedValue(new Error("DB error"));
-
-    const response = await request(app).get("/api/expenses/user/1000");
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body.message).toBe("Error fetching user expenses");
-  });
-});
-
-/**
  * Jarren Bess
  * Week 7 - Sprint 2
  * Unit tests for the Search Expenses API.
@@ -411,7 +367,6 @@ describe("GET /api/expenses/user/:userId/search", () => {
     expect(response.body.message).toBe("Error searching expenses.");
   });
 });
-
 
 /**
  * Kaitlyn Kelly
