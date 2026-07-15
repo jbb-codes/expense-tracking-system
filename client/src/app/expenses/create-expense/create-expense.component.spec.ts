@@ -19,13 +19,13 @@ describe('CreateExpenseComponent', () => {
   let expenseServiceSpy: jasmine.SpyObj<ExpenseService>;
 
   beforeEach(async () => {
-    expenseServiceSpy = jasmine.createSpyObj('ExpenseService', ['createExpense']);
+    expenseServiceSpy = jasmine.createSpyObj('ExpenseService', [
+      'createExpense',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [CreateExpenseComponent],
-      providers: [
-        { provide: ExpenseService, useValue: expenseServiceSpy }
-      ]
+      providers: [{ provide: ExpenseService, useValue: expenseServiceSpy }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CreateExpenseComponent);
@@ -43,28 +43,31 @@ describe('CreateExpenseComponent', () => {
       categoryId: null,
       amount: null,
       description: '',
-      date: ''
+      date: '',
     });
 
     expect(component.expenseForm.invalid).toBeTrue();
   });
 
   it('should call createExpense when the form is valid', () => {
-    expenseServiceSpy.createExpense.and.returnValue(of({
-      userId: 1000,
-      username: 'testuser',
-      categoryId: 1,
-      amount: 25.5,
-      description: 'Lunch',
-      date: '2026-07-06'
-    }));
+    expenseServiceSpy.createExpense.and.returnValue(
+      of({
+        _id: 'exp123',
+        userId: 1000,
+        username: 'testuser',
+        categoryId: 1,
+        amount: 25.5,
+        description: 'Lunch',
+        date: '2026-07-06',
+      }),
+    );
 
     component.expenseForm.setValue({
       userId: 1000,
       categoryId: 1,
       amount: 25.5,
       description: 'Lunch',
-      date: '2026-07-06'
+      date: '2026-07-06',
     });
 
     component.onSubmit();
