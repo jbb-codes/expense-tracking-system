@@ -27,7 +27,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Expense {
-  _id?: string;
+  _id: string;
   userId: number;
   username: string;
   categoryId: number;
