@@ -148,7 +148,13 @@ router.put("/:id", async (req, res) => {
  */
 router.get("/", async (req, res) => {
   try {
-    const expenses = await Expense.find();
+    const userId = Number(req.query.userId);
+
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "userId must be numeric." });
+    }
+
+    const expenses = await Expense.find({ userId });
     return res.status(200).json(expenses);
   } catch (err) {
     return res.status(500).json({
@@ -192,29 +198,6 @@ router.get("/:id", async (req, res) => {
 });
 
 /**
- * GET /user/:userId
- * Retrieves all expenses for a specific user
- */
-
-router.get("/user/:userId", async (req, res) => {
-  try {
-    const userId = Number(req.params.userId);
-
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: "userId must be numeric." });
-    }
-
-    const expenses = await Expense.find({ userId });
-    return res.status(200).json(expenses);
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error fetching user expenses",
-      error: err.message,
-    });
-  }
-});
-
-/**
  * @description
  *
  * GET /user/:userId/search
@@ -251,23 +234,22 @@ router.get("/user/:userId/search", async (req, res) => {
 });
 
 // Delete an expense by its MongoDB _id
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     // Attempt to delete the expense document matching the provided _id
     const deleted = await Expense.findByIdAndDelete(req.params.id);
 
     // No matching document found: return 404 so the client knows the ID was invalid
     if (!deleted) {
-      return res.status(404).json({ message: 'Expense not found' });
+      return res.status(404).json({ message: "Expense not found" });
     }
 
     // Successful deletion — return confirmation message
-    res.json({ message: 'Expense deleted successfully' });
+    res.json({ message: "Expense deleted successfully" });
   } catch (err) {
-    console.error('Error deleting expense:', err);
-    res.status(500).json({ message: 'Server error deleting expense' });
+    console.error("Error deleting expense:", err);
+    res.status(500).json({ message: "Server error deleting expense" });
   }
 });
-
 
 module.exports = router;

@@ -79,7 +79,7 @@ export class ExpenseService {
   }
 
   getExpenseByUser(userId: number): Observable<Expense[]> {
-    return this.http.get<Expense[]>(`${this.apiUrl}/user/${userId}`);
+    return this.http.get<Expense[]>(this.apiUrl, { params: { userId } });
   }
 
   getExpenseById(expenseId: string): Observable<any> {
@@ -114,7 +114,6 @@ export class ExpenseService {
       params,
     });
   }
-
 
   deleteExpense(id: string) {
     return this.http.delete(`/api/expenses/${id}`);
