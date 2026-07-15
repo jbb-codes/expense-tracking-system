@@ -137,12 +137,13 @@ router.put("/:id", async (req, res) => {
 /**
  * @description
  *
- * GET /
+ * GET /?userId=
  *
- * Retrieves all expense records.
+ * Retrieves all expense records belonging to the given userId.
+ * userId is required; missing or non-numeric values return 400.
  *
  * Example:
- * fetch('/api/expenses')
+ * fetch('/api/expenses?userId=1000')
  *  .then(response => response.json())
  *  .then(data => console.log(data));
  */
