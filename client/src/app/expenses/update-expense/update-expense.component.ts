@@ -13,7 +13,7 @@ import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
-  Validators
+  Validators,
 } from '@angular/forms';
 import { ExpenseService } from '../expense.service';
 import { AuthService } from '../../auth/auth.service';
@@ -37,10 +37,7 @@ import { AuthService } from '../../auth/auth.service';
       Amanda Ruff
       Allows the user to select an existing expense before editing it.
     -->
-    <form
-      [formGroup]="expenseSelectForm"
-      (ngSubmit)="onSelectExpense()"
-    >
+    <form [formGroup]="expenseSelectForm" (ngSubmit)="onSelectExpense()">
       <label for="expenseId">Select Expense</label>
 
       <select id="expenseId" formControlName="expenseId">
@@ -61,45 +58,21 @@ import { AuthService } from '../../auth/auth.service';
       Displays the editable expense form after a record is loaded.
     -->
     @if (selectedExpenseId) {
-      <form
-        [formGroup]="expenseForm"
-        (ngSubmit)="onSubmit()"
-      >
+      <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
         <label for="userId">User ID</label>
-        <input
-          id="userId"
-          type="number"
-          formControlName="userId"
-        >
+        <input id="userId" type="number" formControlName="userId" />
 
         <label for="categoryId">Category ID</label>
-        <input
-          id="categoryId"
-          type="number"
-          formControlName="categoryId"
-        >
+        <input id="categoryId" type="number" formControlName="categoryId" />
 
         <label for="amount">Amount</label>
-        <input
-          id="amount"
-          type="number"
-          step="0.01"
-          formControlName="amount"
-        >
+        <input id="amount" type="number" step="0.01" formControlName="amount" />
 
         <label for="description">Description</label>
-        <input
-          id="description"
-          type="text"
-          formControlName="description"
-        >
+        <input id="description" type="text" formControlName="description" />
 
         <label for="date">Date</label>
-        <input
-          id="date"
-          type="date"
-          formControlName="date"
-        >
+        <input id="date" type="date" formControlName="date" />
 
         <button type="submit">Update Expense</button>
       </form>
@@ -124,7 +97,7 @@ import { AuthService } from '../../auth/auth.service';
     button {
       margin-top: 1rem;
     }
-  `
+  `,
 })
 export class UpdateExpenseComponent implements OnInit {
   successMessage = '';
@@ -139,14 +112,14 @@ export class UpdateExpenseComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private expenseService: ExpenseService,
-    private authService: AuthService
+    private authService: AuthService,
   ) {
     /**
      * Amanda Ruff
      * Form used to choose the expense that will be updated.
      */
     this.expenseSelectForm = this.fb.group({
-      expenseId: ['', Validators.required]
+      expenseId: ['', Validators.required],
     });
 
     /**
@@ -156,15 +129,9 @@ export class UpdateExpenseComponent implements OnInit {
     this.expenseForm = this.fb.group({
       userId: [null, Validators.required],
       categoryId: [null, Validators.required],
-      amount: [
-        null,
-        [
-          Validators.required,
-          Validators.min(0.01)
-        ]
-      ],
+      amount: [null, [Validators.required, Validators.min(0.01)]],
       description: [''],
-      date: ['', Validators.required]
+      date: ['', Validators.required],
     });
   }
 
@@ -190,7 +157,7 @@ export class UpdateExpenseComponent implements OnInit {
       error: () => {
         this.errorMessage = 'Unable to load expenses.';
         this.successMessage = '';
-      }
+      },
     });
   }
 
@@ -206,8 +173,7 @@ export class UpdateExpenseComponent implements OnInit {
       return;
     }
 
-    const expenseId =
-      this.expenseSelectForm.value.expenseId;
+    const expenseId = this.expenseSelectForm.value.expenseId;
 
     this.expenseService.getExpenseById(expenseId).subscribe({
       next: (expense) => {
@@ -227,18 +193,16 @@ export class UpdateExpenseComponent implements OnInit {
           categoryId: expense.categoryId,
           amount: expense.amount,
           description: expense.description || '',
-          date: formattedDate
+          date: formattedDate,
         });
 
-        this.successMessage =
-          'Expense loaded successfully.';
+        this.successMessage = 'Expense loaded successfully.';
         this.errorMessage = '';
       },
       error: () => {
-        this.errorMessage =
-          'Unable to load the selected expense.';
+        this.errorMessage = 'Unable to load the selected expense.';
         this.successMessage = '';
-      }
+      },
     });
   }
 
@@ -248,15 +212,13 @@ export class UpdateExpenseComponent implements OnInit {
    */
   onSubmit(): void {
     if (!this.selectedExpenseId) {
-      this.errorMessage =
-        'Please select an expense before updating.';
+      this.errorMessage = 'Please select an expense before updating.';
       this.successMessage = '';
       return;
     }
 
     if (this.expenseForm.invalid) {
-      this.errorMessage =
-        'Please complete all required fields.';
+      this.errorMessage = 'Please complete all required fields.';
       this.successMessage = '';
       return;
     }
@@ -268,28 +230,26 @@ export class UpdateExpenseComponent implements OnInit {
      * on the shared Expense interface but is not used by the API.
      */
     const updatedExpense = {
+      _id: this.selectedExpenseId,
       username: '',
-      ...this.expenseForm.value
+      ...this.expenseForm.value,
     };
 
-    this.expenseService.updateExpense(
-      this.selectedExpenseId,
-      updatedExpense
-    ).subscribe({
-      next: () => {
-        this.successMessage =
-          'Expense updated successfully.';
-        this.errorMessage = '';
+    this.expenseService
+      .updateExpense(this.selectedExpenseId, updatedExpense)
+      .subscribe({
+        next: () => {
+          this.successMessage = 'Expense updated successfully.';
+          this.errorMessage = '';
 
-        // Refresh the dropdown after the update is completed.
-        const userId = this.authService.getUserId();
-        this.loadUserExpenses(userId);
-      },
-      error: () => {
-        this.errorMessage =
-          'Unable to update the expense.';
-        this.successMessage = '';
-      }
-    });
+          // Refresh the dropdown after the update is completed.
+          const userId = this.authService.getUserId();
+          this.loadUserExpenses(userId);
+        },
+        error: () => {
+          this.errorMessage = 'Unable to update the expense.';
+          this.successMessage = '';
+        },
+      });
   }
 }
