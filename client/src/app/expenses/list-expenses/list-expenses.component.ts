@@ -37,7 +37,7 @@ import { AuthService } from '../../auth/auth.service';
             <td>{{ expense.date | date }}</td>
             <td>{{ expense.userId }}</td>
             <td>{{ expense.categoryId }}</td>
-            <td>{{ expense.amount }}</td>
+            <td>{{ expense.amount | currency:'USD':'symbol':'1.2-2' }}</td>
             <td>{{ expense.description }}</td>
           </tr>
         }
