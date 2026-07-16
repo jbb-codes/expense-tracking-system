@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -51,9 +52,8 @@ import { AuthService } from './auth/auth.service';
           <a routerLink="/search-expenses">Search Expenses</a>
           <a routerLink="/delete-expense">Delete Expense</a>
 
-          <!-- Button not functional yet -->
           <div class="nav-button-wrapper">
-            <button type="submit">Logout</button>
+            <button type="submit" (click)="logout()">Logout</button>
           </div>
         }
       </nav>
@@ -73,7 +73,15 @@ import { AuthService } from './auth/auth.service';
 export class AppComponent {
   isNavOpen = false;
 
+  constructor(private authService: AuthService, private router: Router) {}
+
   toggleNav(): void {
     this.isNavOpen = !this.isNavOpen;
+  }
+
+  logout(): void {
+    this.authService.logout(); // clears localStorage
+    this.isNavOpen = false; // close the nav menu
+    this.router.navigate(['/login']); // redirect to login page
   }
 }
