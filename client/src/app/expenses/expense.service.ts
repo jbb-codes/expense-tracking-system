@@ -118,6 +118,6 @@ export class ExpenseService {
   }
 
   deleteExpense(id: string) {
-    return this.http.delete(`/api/expenses/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }
