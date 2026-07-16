@@ -37,6 +37,18 @@ const app = express();
 app.use(express.json());
 app.use("/api/expenses", expenseRoutes);
 
+// Suppress console.error noise from the routes' error-logging paths;
+// the 500-response tests intentionally trigger it.
+let consoleErrorSpy;
+
+beforeEach(() => {
+  consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+});
+
+afterEach(() => {
+  consoleErrorSpy.mockRestore();
+});
+
 /**
  * Amanda Ruff
  * Week 6 - Sprint 1

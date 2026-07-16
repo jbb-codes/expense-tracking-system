@@ -61,10 +61,8 @@ router.post("/", async (req, res) => {
 
     return res.status(201).json(expense);
   } catch (err) {
-    return res.status(500).json({
-      message: "Error creating expense.",
-      error: err.message,
-    });
+    console.error("Error creating expense:", err);
+    return res.status(500).json({ message: "Error creating expense." });
   }
 });
 
@@ -127,10 +125,8 @@ router.put("/:id", async (req, res) => {
     return res.status(200).json(updatedExpense);
   } catch (err) {
     // Amanda Ruff: Return a server error when the update operation fails.
-    return res.status(500).json({
-      message: "Error updating expense.",
-      error: err.message,
-    });
+    console.error("Error updating expense:", err);
+    return res.status(500).json({ message: "Error updating expense." });
   }
 });
 
@@ -158,10 +154,8 @@ router.get("/", async (req, res) => {
     const expenses = await Expense.find({ userId });
     return res.status(200).json(expenses);
   } catch (err) {
-    return res.status(500).json({
-      message: "Error fetching expenses.",
-      error: err.message,
-    });
+    console.error("Error fetching expenses:", err);
+    return res.status(500).json({ message: "Error fetching expenses." });
   }
 });
 
@@ -191,10 +185,8 @@ router.get("/:id", async (req, res) => {
 
     return res.status(200).json(enrichedExpense);
   } catch (err) {
-    return res.status(500).json({
-      message: "Error fetching expense.",
-      error: err.message,
-    });
+    console.error("Error fetching expense:", err);
+    return res.status(500).json({ message: "Error fetching expense." });
   }
 });
 
@@ -227,10 +219,8 @@ router.get("/user/:userId/search", async (req, res) => {
 
     return res.status(200).json(expenses);
   } catch (err) {
-    return res.status(500).json({
-      message: "Error searching expenses.",
-      error: err.message,
-    });
+    console.error("Error searching expenses:", err);
+    return res.status(500).json({ message: "Error searching expenses." });
   }
 });
 
