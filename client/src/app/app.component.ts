@@ -38,7 +38,7 @@ import { AuthService } from './auth/auth.service';
             ></span>
           </button>
 
-          <a routerLink="/">Home</a>
+          <a routerLink="/home">Home</a>
           <a routerLink="/create-expense">Create Expense</a>
           <a routerLink="/list-expenses">List Expenses</a>
           <a routerLink="/read-expense-by-id">Read Expense by ID</a>

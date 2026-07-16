@@ -20,6 +20,9 @@
  *
  * Changes (Kaitlyn Kelly, 7/14/2026):
  * - Added Delete Expense component route with AuthGuard.
+ *
+ * Changes (Kaitlyn Kelly, 7/16/2026):
+ * - Added HomeComponent route with AuthGuard
  */
 
 import { Routes } from '@angular/router';
@@ -31,6 +34,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { UpdateExpenseComponent } from './expenses/update-expense/update-expense.component';
 import { SearchExpensesComponent } from './expenses/search-expenses/search-expenses.component';
 import { DeleteExpenseComponent } from './expenses/delete-expense/delete-expense.component';
+import { HomeComponent } from './home/home.component';
 
 /**
  * Amanda Ruff
@@ -89,6 +93,13 @@ export const routes: Routes = [
   {
     path: 'delete-expense',
     component: DeleteExpenseComponent,
+    canActivate: [AuthGuard],
+  },
+
+  // Protected page used as a landing page after login
+  {
+    path: 'home',
+    component: HomeComponent,
     canActivate: [AuthGuard],
   },
 

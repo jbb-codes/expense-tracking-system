@@ -80,7 +80,7 @@ export class LoginComponent {
 
         this.authService.login(res.userId, res.username);
 
-        this.router.navigate(['/create-expense']);
+        this.router.navigate(['/home']);
       },
       error: () => {
         this.errorMessage = 'Invalid username or password';
