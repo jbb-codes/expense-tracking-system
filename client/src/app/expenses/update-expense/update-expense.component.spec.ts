@@ -26,7 +26,7 @@ describe('UpdateExpenseComponent', () => {
      * require the Express API or authentication system.
      */
     expenseServiceSpy = jasmine.createSpyObj('ExpenseService', [
-      'getExpenseByUser',
+      'getExpenses',
       'getExpenseById',
       'updateExpense',
     ]);
@@ -34,7 +34,7 @@ describe('UpdateExpenseComponent', () => {
     authServiceSpy = jasmine.createSpyObj('AuthService', ['getUserId']);
 
     authServiceSpy.getUserId.and.returnValue(1000);
-    expenseServiceSpy.getExpenseByUser.and.returnValue(of([]));
+    expenseServiceSpy.getExpenses.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [UpdateExpenseComponent],

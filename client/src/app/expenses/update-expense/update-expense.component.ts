@@ -182,7 +182,7 @@ export class UpdateExpenseComponent implements OnInit {
    * Retrieves expenses belonging to the current user for the dropdown.
    */
   loadUserExpenses(userId: number): void {
-    this.expenseService.getExpenseByUser(userId).subscribe({
+    this.expenseService.getExpenses(userId).subscribe({
       next: (expenses) => {
         this.userExpenses = expenses;
         this.errorMessage = '';

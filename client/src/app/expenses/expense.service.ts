@@ -58,10 +58,16 @@ export class ExpenseService {
   /**
    * Jarren Bess
    * Week 6 - Sprint 1
-   * Fetches all expense records so the List Expenses view has data to render.
+   * Modified: 7/16/2026 - now requires userId, matching the
+   * merged GET /expenses?userId= endpoint (server no longer supports an
+   * unscoped list).
+   * Fetches the expense records for a given user so the List Expenses
+   * view has data to render.
+   *
+   * @param userId ID of the user whose expenses are being fetched.
    */
-  getExpenses(): Observable<Expense[]> {
-    return this.http.get<Expense[]>(this.apiUrl);
+  getExpenses(userId: number): Observable<Expense[]> {
+    return this.http.get<Expense[]>(this.apiUrl, { params: { userId } });
   }
 
   /**
@@ -76,10 +82,6 @@ export class ExpenseService {
       username,
       password,
     });
-  }
-
-  getExpenseByUser(userId: number): Observable<Expense[]> {
-    return this.http.get<Expense[]>(this.apiUrl, { params: { userId } });
   }
 
   getExpenseById(expenseId: string): Observable<any> {

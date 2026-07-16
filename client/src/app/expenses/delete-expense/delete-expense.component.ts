@@ -90,7 +90,7 @@ export class DeleteExpenseComponent implements OnInit {
   ngOnInit(): void {
     // Load this user's expenses when the component initializes
     const userId = this.authService.getUserId();
-    this.expenseService.getExpenseByUser(userId).subscribe({
+    this.expenseService.getExpenses(userId).subscribe({
       next: (expenses) => {
         this.expenses = expenses; // Populate table with backend data
         this.errorMessage = '';

@@ -53,10 +53,11 @@ describe('ExpenseService', () => {
 
   /**
    * Amanda Ruff
-   * Verifies that the ExpenseService requests all expense records
+   * Modified: Jarren Bess, 7/16/2026 - updated for getExpenses(userId)
+   * Verifies that the ExpenseService requests a user's expense records
    * using the API URL defined in the Angular environment configuration.
    */
-  it('should send a GET request to fetch all expenses', () => {
+  it('should send a GET request to fetch the expenses for a user', () => {
     const mockExpenses = [
       {
         _id: '1',
@@ -69,16 +70,18 @@ describe('ExpenseService', () => {
       },
     ];
 
-    service.getExpenses().subscribe((expenses) => {
+    service.getExpenses(1000).subscribe((expenses) => {
       expect(expenses).toEqual(mockExpenses);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/expenses`);
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/expenses?userId=1000`,
+    );
     expect(req.request.method).toBe('GET');
     req.flush(mockExpenses);
   });
 
-    /**
+  /**
    * Amanda Ruff
    * Week 7 - Sprint 2
    * Verifies that updateExpense sends a PUT request containing
@@ -97,16 +100,13 @@ describe('ExpenseService', () => {
       date: '2026-07-12',
     };
 
-    service.updateExpense(
-      expenseId,
-      updatedExpense
-    ).subscribe((expense) => {
+    service.updateExpense(expenseId, updatedExpense).subscribe((expense) => {
       expect(expense).toEqual(updatedExpense);
     });
 
     // Amanda Ruff: Confirm the service calls the correct update endpoint.
     const req = httpMock.expectOne(
-      `${environment.apiUrl}/expenses/${expenseId}`
+      `${environment.apiUrl}/expenses/${expenseId}`,
     );
 
     expect(req.request.method).toBe('PUT');

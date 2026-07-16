@@ -57,7 +57,7 @@ export class ListExpensesComponent implements OnInit {
 
   ngOnInit(): void {
     const userId = this.authService.getUserId();
-    this.expenseService.getExpenseByUser(userId).subscribe({
+    this.expenseService.getExpenses(userId).subscribe({
       next: (expenses) => {
         this.expenses = expenses;
         this.errorMessage = '';

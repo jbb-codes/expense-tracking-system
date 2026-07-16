@@ -7,7 +7,12 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ExpenseService } from '../expense.service';
 import { AuthService } from '../../auth/auth.service';
 
@@ -19,12 +24,12 @@ import { AuthService } from '../../auth/auth.service';
     <h1>Read Expense</h1>
 
     @if (successMessage) {
-        <p class="success-msg">{{ successMessage }}</p>
-      }
+      <p class="success-msg">{{ successMessage }}</p>
+    }
 
-      @if (errorMessage) {
-        <p class="error-msg">{{ errorMessage }}</p>
-      }
+    @if (errorMessage) {
+      <p class="error-msg">{{ errorMessage }}</p>
+    }
 
     <!-- Step1: Select expense -->
     <form [formGroup]="expenseSelectForm" (ngSubmit)="onSelectExpense()">
@@ -54,23 +59,24 @@ import { AuthService } from '../../auth/auth.service';
         <tbody>
           <tr>
             <td>{{ selectedExpense.categoryName }}</td>
-            <td>{{ selectedExpense.amount | currency:'USD':'symbol':'1.2-2' }}</td>
+            <td>
+              {{
+                selectedExpense.amount | currency: 'USD' : 'symbol' : '1.2-2'
+              }}
+            </td>
             <td>{{ selectedExpense.description }}</td>
             <td>{{ selectedExpense.date | date }}</td>
-           </tr>
+          </tr>
         </tbody>
       </table>
     }
-
-    `,
+  `,
   styles: `
-
     button {
       margin-bottom: 2rem;
     }
-    `
+  `,
 })
-
 export class ReadExpenseByIdComponent {
   successMessage = '';
   errorMessage = '';
@@ -82,10 +88,10 @@ export class ReadExpenseByIdComponent {
   constructor(
     private fb: FormBuilder,
     private expenseService: ExpenseService,
-    private authService: AuthService
+    private authService: AuthService,
   ) {
     this.expenseSelectForm = this.fb.group({
-      expenseId: ['', Validators.required]
+      expenseId: ['', Validators.required],
     });
   }
 
@@ -96,13 +102,13 @@ export class ReadExpenseByIdComponent {
 
   // STEP 1: Load expenses for dropdown selection
   loadUserExpenses(userId: number): void {
-    this.expenseService.getExpenseByUser(userId).subscribe({
+    this.expenseService.getExpenses(userId).subscribe({
       next: (expenses) => {
         this.userExpenses = expenses;
       },
       error: () => {
         this.errorMessage = 'Unable to load expenses';
-      }
+      },
     });
   }
 
@@ -123,8 +129,7 @@ export class ReadExpenseByIdComponent {
       },
       error: () => {
         this.errorMessage = 'Unable to load expense details';
-      }
+      },
     });
   }
 }
-
