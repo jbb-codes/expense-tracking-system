@@ -15,12 +15,6 @@ const expenseSchema = new mongoose.Schema(
     categoryId: { type: Number, required: true },
     amount: { type: Number, required: true },
     description: { type: String },
-    /**
-    * Amanda Ruff
-    * Week 7 - Sprint 2
-    * Added the expense date field so updated and newly created expenses
-    * store the date required by the project specifications.
-    */
     date: { type: Date, required: true },
   },
   { timestamps: { createdAt: "dateCreated", updatedAt: "dateModified" } },
