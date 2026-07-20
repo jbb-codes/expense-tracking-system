@@ -20,6 +20,7 @@ import { AuthService } from '../auth/auth.service';
       <a routerLink="/update-expense" class="home-link">Update Expense</a>
       <a routerLink="/search-expenses" class="home-link">Search Expenses</a>
       <a routerLink="/delete-expense" class="home-link">Delete Expense</a>
+      <a routerLink="/read-category-by-id" class="home-link">Read Category by ID</a>
     </div>
 
   `,
