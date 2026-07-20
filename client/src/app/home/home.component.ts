@@ -16,15 +16,16 @@ import { AuthService } from '../auth/auth.service';
     <div class="home-link-wrapper">
       <a routerLink="/create-expense" class="home-link">Create Expense</a>
       <a routerLink="/list-expenses" class="home-link">List Expenses</a>
-      <a routerLink="/read-expense-by-id" class="home-link">Read Expense by ID</a>
+      <a routerLink="/read-expense-by-id" class="home-link"
+        >Read Expense by ID</a
+      >
       <a routerLink="/update-expense" class="home-link">Update Expense</a>
       <a routerLink="/search-expenses" class="home-link">Search Expenses</a>
       <a routerLink="/delete-expense" class="home-link">Delete Expense</a>
+      <a routerLink="/list-categories" class="home-link">List Categories</a>
     </div>
-
   `,
   styles: `
-
     .home-link-wrapper {
       display: flex;
       flex-direction: row;
@@ -49,11 +50,9 @@ import { AuthService } from '../auth/auth.service';
     .home-link:hover {
       background-color: #798dbd;
     }
-`
+  `,
 })
-
 export class HomeComponent implements OnInit {
-
   username: string | null = null;
 
   constructor(private authService: AuthService) {}
