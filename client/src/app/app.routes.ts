@@ -1,28 +1,6 @@
 /**
  * Author: Amanda Ruff
  * Week 6 - Sprint 1
- * Modified: Jarren Bess, 7/7/2026
- * Modified: Kaitlyn Kelly, 7/10/2026
- * Modified: Amanda Ruff, 7/12/2026
- * File: app.routes.ts
- * Description: Application routes.
- *
- * Changes (Jarren Bess, 7/7/2026):
- * - Added the List Expenses route.
- *
- * Changes (Kaitlyn Kelly, 7/10/2026):
- * - Added the Login route.
- * - Added AuthGuard to all protected routes.
- *
- * Changes (Amanda Ruff, 7/12/2026):
- * - Added the Update Expense component route.
- * - Protected the Update Expense page using AuthGuard.
- *
- * Changes (Kaitlyn Kelly, 7/14/2026):
- * - Added Delete Expense component route with AuthGuard.
- *
- * Changes (Kaitlyn Kelly, 7/16/2026):
- * - Added HomeComponent route with AuthGuard
  *
  * Changes (Jarren Bess, 7/20/2026):
  * - Added the List Categories route.
