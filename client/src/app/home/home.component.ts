@@ -23,6 +23,7 @@ import { AuthService } from '../auth/auth.service';
       <a routerLink="/search-expenses" class="home-link">Search Expenses</a>
       <a routerLink="/delete-expense" class="home-link">Delete Expense</a>
       <a routerLink="/list-categories" class="home-link">List Categories</a>
+      <a routerLink="/read-category-by-id" class="home-link">Read Category by ID</a>
     </div>
   `,
   styles: `

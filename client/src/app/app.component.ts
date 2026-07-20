@@ -51,6 +51,7 @@ import { Router } from '@angular/router';
           <a routerLink="/update-expense">Update Expense</a>
           <a routerLink="/search-expenses">Search Expenses</a>
           <a routerLink="/delete-expense">Delete Expense</a>
+          <a routerLink="/read-category-by-id">Read Category by ID</a>
 
           <div class="nav-button-wrapper">
             <button type="submit" (click)="logout()">Logout</button>
