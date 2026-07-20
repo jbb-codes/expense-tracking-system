@@ -89,6 +89,16 @@ export class ExpenseService {
   }
 
   /**
+   * Kaitlyn Kelly, 7/20/26
+   * Added service methods to allow the ReadCategoryByIdComponent to:
+   * Retrieve all expenses associated with a categoryId
+   */
+
+  getExpensesByCategory(categoryId: number): Observable<Expense[]> {
+    return this.http.get<Expense[]>(`${this.apiUrl}/category/${categoryId}`);
+  }
+
+  /**
    * Amanda Ruff
    * Week 7 - Sprint 2
    * Sends an updated expense record to the Express Update Expense API.

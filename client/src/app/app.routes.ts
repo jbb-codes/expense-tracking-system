@@ -26,6 +26,9 @@
  *
  * Changes (Jarren Bess, 7/20/2026):
  * - Added the List Categories route.
+ *
+ * Changes (Kaitlyn Kelly, 7/20/2026):
+ * - Added ReadCategoryByIdComponent route with AuthGuard
  */
 
 import { Routes } from '@angular/router';
@@ -39,6 +42,7 @@ import { SearchExpensesComponent } from './expenses/search-expenses/search-expen
 import { DeleteExpenseComponent } from './expenses/delete-expense/delete-expense.component';
 import { HomeComponent } from './home/home.component';
 import { ListCategoriesComponent } from './categories/list-categories/list-categories.component';
+import { ReadCategoryByIdComponent } from './expenses/read-category-by-id/read-category-by-id.component';
 
 /**
  * Amanda Ruff
@@ -111,6 +115,13 @@ export const routes: Routes = [
   {
     path: 'list-categories',
     component: ListCategoriesComponent,
+    canActivate: [AuthGuard],
+  },
+
+  // Protected page used to read category by ID
+  {
+    path: 'read-category-by-id',
+    component: ReadCategoryByIdComponent,
     canActivate: [AuthGuard],
   },
 ];
