@@ -23,6 +23,9 @@
  *
  * Changes (Kaitlyn Kelly, 7/16/2026):
  * - Added HomeComponent route with AuthGuard
+ *
+ * Changes (Jarren Bess, 7/20/2026):
+ * - Added the List Categories route.
  */
 
 import { Routes } from '@angular/router';
@@ -35,6 +38,7 @@ import { UpdateExpenseComponent } from './expenses/update-expense/update-expense
 import { SearchExpensesComponent } from './expenses/search-expenses/search-expenses.component';
 import { DeleteExpenseComponent } from './expenses/delete-expense/delete-expense.component';
 import { HomeComponent } from './home/home.component';
+import { ListCategoriesComponent } from './categories/list-categories/list-categories.component';
 
 /**
  * Amanda Ruff
@@ -103,4 +107,10 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
 
+  // Protected page that displays all categories.
+  {
+    path: 'list-categories',
+    component: ListCategoriesComponent,
+    canActivate: [AuthGuard],
+  },
 ];
