@@ -181,7 +181,18 @@ router.get("/category/:categoryId", async (req, res) => {
       return res.status(404).json({ message: "No expenses found for this category." });
     }
 
-    return res.status(200).json(expenses);
+    // Get userId from the first expense
+    const userId = expenses[0].userId;
+
+    // Fetch the category for THIS user
+    const category = await Category.findOne({ userId, categoryId });
+
+    const enrichedExpenses = expenses.map(exp => ({
+      ...exp.toObject(),
+      categoryName: category ? category.name : "Unknown"
+    }));
+
+    return res.status(200).json(enrichedExpenses);
   } catch (err) {
     console.error("Error fetching expenses by category:", err);
     return res.status(500).json({
