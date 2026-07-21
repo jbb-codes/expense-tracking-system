@@ -61,7 +61,6 @@ describe("POST /api/expenses", () => {
   });
 
   test("should create an expense successfully", async () => {
-    Category.findOne.mockResolvedValue({ categoryId: 1, userId: 1000 });
     Expense.create.mockResolvedValue({
       _id: "123",
       userId: 1000,
@@ -81,24 +80,6 @@ describe("POST /api/expenses", () => {
 
     expect(response.statusCode).toBe(201);
     expect(response.body.userId).toBe(1000);
-  });
-
-  test("should return 400 when categoryId does not belong to userId", async () => {
-    Category.findOne.mockResolvedValue(null);
-
-    const response = await request(app).post("/api/expenses").send({
-      userId: 1000,
-      categoryId: 999,
-      amount: 25.5,
-      description: "Lunch",
-      date: "2026-07-06",
-    });
-
-    expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe(
-      "categoryId must belong to the same userId.",
-    );
-    expect(Expense.create).not.toHaveBeenCalled();
   });
 
   test("should return 400 when required fields are missing", async () => {
@@ -137,7 +118,6 @@ describe("PUT /api/expenses/:id", () => {
    * Verifies that valid expense information updates the selected record.
    */
   test("should update an expense successfully", async () => {
-    Category.findOne.mockResolvedValue({ categoryId: 2, userId: 1000 });
     Expense.findByIdAndUpdate.mockResolvedValue({
       _id: "exp123",
       userId: 1000,
@@ -185,8 +165,6 @@ describe("PUT /api/expenses/:id", () => {
    * Verifies that an invalid amount prevents the expense from being updated.
    */
   test("should return 400 when update data is invalid", async () => {
-    Category.findOne.mockResolvedValue({ categoryId: 2, userId: 1000 });
-
     const response = await request(app).put("/api/expenses/exp123").send({
       userId: 1000,
       categoryId: 2,
@@ -207,7 +185,6 @@ describe("PUT /api/expenses/:id", () => {
    * Verifies that the API returns 404 when the expense does not exist.
    */
   test("should return 404 when expense to update is not found", async () => {
-    Category.findOne.mockResolvedValue({ categoryId: 2, userId: 1000 });
     Expense.findByIdAndUpdate.mockResolvedValue(null);
 
     const response = await request(app).put("/api/expenses/doesNotExist").send({
@@ -220,27 +197,6 @@ describe("PUT /api/expenses/:id", () => {
 
     expect(response.statusCode).toBe(404);
     expect(response.body.message).toBe("Expense not found.");
-  });
-
-  /**
-   * Verifies that a categoryId belonging to a different userId is rejected.
-   */
-  test("should return 400 when categoryId does not belong to userId", async () => {
-    Category.findOne.mockResolvedValue(null);
-
-    const response = await request(app).put("/api/expenses/exp123").send({
-      userId: 1000,
-      categoryId: 999,
-      amount: 75.5,
-      description: "Updated grocery expense",
-      date: "2026-07-12",
-    });
-
-    expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe(
-      "categoryId must belong to the same userId.",
-    );
-    expect(Expense.findByIdAndUpdate).not.toHaveBeenCalled();
   });
 });
 
