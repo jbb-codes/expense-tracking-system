@@ -1,0 +1,53 @@
+/*
+ * Author: Amanda Ruff
+ * Week 8 - Sprint 3
+ * File: create-category.component.css
+ * Description: Styles for the Create Category form.
+ */
+
+.create-category-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #192a53;
+  border-radius: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+input,
+textarea {
+  padding: 0.75rem;
+  border: 1px solid #777;
+  border-radius: 5px;
+  font: inherit;
+}
+
+button {
+  padding: 0.75rem 1.25rem;
+  border: 1px solid #192a53;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.success-message {
+  font-weight: bold;
+}
+
+.error-message {
+  font-weight: bold;
+}
