@@ -2,7 +2,11 @@
  * Author: Jarren Bess
  * Week 8 - Sprint 3
  * File: category.service.spec.ts
- * Description: Unit tests for the List Categories service method.
+ * Description: Unit tests for the CategoryService.
+ *
+ * Changes (Amanda Ruff, 7/20/2026):
+ * - Added a unit test for the createCategory() service method.
+ * - Verified the POST request URL, method, body, and response.
  */
 
 import { TestBed } from '@angular/core/testing';
@@ -56,5 +60,39 @@ describe('CategoryService', () => {
     );
     expect(req.request.method).toBe('GET');
     req.flush(mockCategories);
+  });
+
+    /**
+   * Amanda Ruff
+   * Week 8 - Sprint 3
+   *
+   * Verifies that createCategory() sends a POST request
+   * containing the new category information.
+   */
+  it('should send a POST request to create a category', () => {
+    const newCategory = {
+      userId: 1000,
+      categoryId: 5,
+      name: 'Transportation',
+      description: 'Gas, transit, and vehicle expenses',
+    };
+
+    const mockCreatedCategory = {
+      _id: 'category-object-id',
+      ...newCategory,
+    };
+
+    service.createCategory(newCategory).subscribe((category) => {
+      expect(category).toEqual(mockCreatedCategory);
+    });
+
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/categories`,
+    );
+
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(newCategory);
+
+    req.flush(mockCreatedCategory);
   });
 });

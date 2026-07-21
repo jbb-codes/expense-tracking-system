@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 
+/**
+ * Changes (Amanda Ruff, 7/20/2026):
+ * - Added a HomeComponent navigation link for the Create Category page.
+ */
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -14,18 +18,32 @@ import { AuthService } from '../auth/auth.service';
     <h2>What would you like to do today?</h2>
 
     <div class="home-link-wrapper">
-      <a routerLink="/create-expense" class="home-link">Create Expense</a>
-      <a routerLink="/list-expenses" class="home-link">List Expenses</a>
-      <a routerLink="/read-expense-by-id" class="home-link"
-        >Read Expense by ID</a
-      >
-      <a routerLink="/update-expense" class="home-link">Update Expense</a>
-      <a routerLink="/search-expenses" class="home-link">Search Expenses</a>
-      <a routerLink="/delete-expense" class="home-link">Delete Expense</a>
-      <a routerLink="/list-categories" class="home-link">List Categories</a>
-      <a routerLink="/read-category-by-id" class="home-link"
-        >Read Category by ID</a
-      >
+      <a routerLink="/create-expense" class="home-link"> Create Expense </a>
+
+      <a routerLink="/list-expenses" class="home-link"> List Expenses </a>
+
+      <a routerLink="/read-expense-by-id" class="home-link">
+        Read Expense by ID
+      </a>
+
+      <a routerLink="/update-expense" class="home-link"> Update Expense </a>
+
+      <a routerLink="/search-expenses" class="home-link"> Search Expenses </a>
+
+      <a routerLink="/delete-expense" class="home-link"> Delete Expense </a>
+
+      <a routerLink="/list-categories" class="home-link"> List Categories </a>
+
+      <a routerLink="/read-category-by-id" class="home-link">
+        Read Category by ID
+      </a>
+
+      <!--
+        Amanda Ruff
+        Week 8 - Sprint 3
+        Navigation link for creating a new category.
+      -->
+      <a routerLink="/create-category" class="home-link"> Create Category </a>
     </div>
   `,
   styles: `
@@ -60,6 +78,10 @@ export class HomeComponent implements OnInit {
 
   constructor(private authService: AuthService) {}
 
+  /**
+   * Retrieves the username of the currently authenticated user
+   * and displays it on the Home page.
+   */
   ngOnInit(): void {
     this.username = this.authService.getUsername();
   }

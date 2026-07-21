@@ -7,6 +7,9 @@
  *
  * Changes (Kaitlyn Kelly, 7/20/2026):
  * - Added ReadCategoryByIdComponent route with AuthGuard
+ *
+ * Changes (Amanda Ruff, 7/20/2026):
+ * - Added the protected Create Category route.
  */
 
 import { Routes } from '@angular/router';
@@ -21,6 +24,7 @@ import { DeleteExpenseComponent } from './expenses/delete-expense/delete-expense
 import { HomeComponent } from './home/home.component';
 import { ListCategoriesComponent } from './categories/list-categories/list-categories.component';
 import { ReadCategoryByIdComponent } from './expenses/read-category-by-id/read-category-by-id.component';
+import { CreateCategoryComponent } from './categories/create-category/create-category.component';
 
 /**
  * Amanda Ruff
@@ -100,6 +104,18 @@ export const routes: Routes = [
   {
     path: 'read-category-by-id',
     component: ReadCategoryByIdComponent,
+    canActivate: [AuthGuard],
+  },
+
+  /**
+   * Amanda Ruff
+   * Week 8 - Sprint 3
+   * Route used to display the Create Category page.
+   * Authentication is required before access is granted.
+   */
+  {
+    path: 'create-category',
+    component: CreateCategoryComponent,
     canActivate: [AuthGuard],
   },
 ];
