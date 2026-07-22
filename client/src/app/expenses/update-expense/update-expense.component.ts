@@ -16,7 +16,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ExpenseService } from '../expense.service';
-import { CategoryService, Category } from '../category.service';
+import { Category, CategoryService } from '../../categories/category.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({

@@ -11,7 +11,7 @@ import { of } from 'rxjs';
 
 import { UpdateExpenseComponent } from './update-expense.component';
 import { ExpenseService } from '../expense.service';
-import { CategoryService } from '../category.service';
+import { CategoryService } from '../../categories/category.service';
 import { AuthService } from '../../auth/auth.service';
 
 describe('UpdateExpenseComponent', () => {
@@ -43,8 +43,8 @@ describe('UpdateExpenseComponent', () => {
     expenseServiceSpy.getExpenses.and.returnValue(of([]));
     categoryServiceSpy.getCategories.and.returnValue(
       of([
-        { categoryId: 1, userId: 1000, name: 'Dining' },
-        { categoryId: 2, userId: 1000, name: 'Groceries' },
+        { _id: 'cat1', categoryId: 1, userId: 1000, name: 'Dining' },
+        { _id: 'cat2', categoryId: 2, userId: 1000, name: 'Groceries' },
       ]),
     );
 
@@ -86,8 +86,8 @@ describe('UpdateExpenseComponent', () => {
   it('should load categories for the current user on init', () => {
     expect(categoryServiceSpy.getCategories).toHaveBeenCalledWith(1000);
     expect(component.categories).toEqual([
-      { categoryId: 1, userId: 1000, name: 'Dining' },
-      { categoryId: 2, userId: 1000, name: 'Groceries' },
+      { _id: 'cat1', categoryId: 1, userId: 1000, name: 'Dining' },
+      { _id: 'cat2', categoryId: 2, userId: 1000, name: 'Groceries' },
     ]);
   });
 
