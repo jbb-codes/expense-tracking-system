@@ -11,12 +11,14 @@ import { of } from 'rxjs';
 
 import { UpdateExpenseComponent } from './update-expense.component';
 import { ExpenseService } from '../expense.service';
+import { CategoryService } from '../../categories/category.service';
 import { AuthService } from '../../auth/auth.service';
 
 describe('UpdateExpenseComponent', () => {
   let component: UpdateExpenseComponent;
   let fixture: ComponentFixture<UpdateExpenseComponent>;
   let expenseServiceSpy: jasmine.SpyObj<ExpenseService>;
+  let categoryServiceSpy: jasmine.SpyObj<CategoryService>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
 
   beforeEach(async () => {
@@ -31,10 +33,20 @@ describe('UpdateExpenseComponent', () => {
       'updateExpense',
     ]);
 
+    categoryServiceSpy = jasmine.createSpyObj('CategoryService', [
+      'getCategories',
+    ]);
+
     authServiceSpy = jasmine.createSpyObj('AuthService', ['getUserId']);
 
     authServiceSpy.getUserId.and.returnValue(1000);
     expenseServiceSpy.getExpenses.and.returnValue(of([]));
+    categoryServiceSpy.getCategories.and.returnValue(
+      of([
+        { _id: 'cat1', categoryId: 1, userId: 1000, name: 'Dining' },
+        { _id: 'cat2', categoryId: 2, userId: 1000, name: 'Groceries' },
+      ]),
+    );
 
     await TestBed.configureTestingModule({
       imports: [UpdateExpenseComponent],
@@ -42,6 +54,10 @@ describe('UpdateExpenseComponent', () => {
         {
           provide: ExpenseService,
           useValue: expenseServiceSpy,
+        },
+        {
+          provide: CategoryService,
+          useValue: categoryServiceSpy,
         },
         {
           provide: AuthService,
@@ -62,6 +78,17 @@ describe('UpdateExpenseComponent', () => {
    */
   it('should create the component', () => {
     expect(component).toBeTruthy();
+  });
+
+  /**
+   * Test: Confirms categories are loaded for the dropdown on init.
+   */
+  it('should load categories for the current user on init', () => {
+    expect(categoryServiceSpy.getCategories).toHaveBeenCalledWith(1000);
+    expect(component.categories).toEqual([
+      { _id: 'cat1', categoryId: 1, userId: 1000, name: 'Dining' },
+      { _id: 'cat2', categoryId: 2, userId: 1000, name: 'Groceries' },
+    ]);
   });
 
   /**
