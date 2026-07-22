@@ -25,6 +25,7 @@ import { HomeComponent } from './home/home.component';
 import { ListCategoriesComponent } from './categories/list-categories/list-categories.component';
 import { ReadCategoryByIdComponent } from './expenses/read-category-by-id/read-category-by-id.component';
 import { CreateCategoryComponent } from './categories/create-category/create-category.component';
+import { LandingComponent } from './landing/landing.component';
 
 /**
  * Amanda Ruff
@@ -33,8 +34,8 @@ import { CreateCategoryComponent } from './categories/create-category/create-cat
  * Protected routes require users to be authenticated before access is granted.
  */
 export const routes: Routes = [
-  // Redirect the application to the login page when no route is provided.
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  // Public landing page shown when no route is provided.
+  { path: '', component: LandingComponent, pathMatch: 'full' },
 
   // Public login page.
   { path: 'login', component: LoginComponent },
