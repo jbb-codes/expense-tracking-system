@@ -1,0 +1,17 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - button "Open navigation menu" [ref=e4] [cursor=pointer]
+    - navigation
+    - main [ref=e6]:
+      - generic [ref=e7]:
+        - heading "Expense Tracking System" [level=1] [ref=e8]
+        - generic [ref=e9]:
+          - paragraph [ref=e10]: Track spending, organize it by category, and see where your money goes.
+          - generic [ref=e11]:
+            - link "Sign In" [ref=e12] [cursor=pointer]:
+              - /url: /login
+            - link "Register" [ref=e13] [cursor=pointer]:
+              - /url: /register
+  - contentinfo [ref=e14]:
+    - paragraph [ref=e15]: © 2026 Bellevue University
+    - paragraph [ref=e16]: "Created by: Jarren Bess, Kaitlyn Kelly, & Amanda Ruff"
