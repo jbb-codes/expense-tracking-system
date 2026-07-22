@@ -2,88 +2,112 @@
  * Author: Amanda Ruff
  * Week 8 - Sprint 3
  * File: create-category.component.ts
- * Description: Angular component used to create a new expense category.
+ * Description: Angular component for the Create Category form.
+ *
+ * Changes (Amanda Ruff, 7/20/2026):
+ * - Converted the component to use an inline template and inline styles.
+ * - Updated the form structure to match the Create Expense component.
+ * - Added authenticated user ID handling through AuthService.
  */
 
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import {
-  Category,
-  CategoryService,
-  CreateCategory,
-} from '../category.service';
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { Category, CategoryService } from '../category.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-create-category',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './create-category.component.html',
-  styleUrl: './create-category.component.css',
+  imports: [CommonModule, ReactiveFormsModule],
+  template: `
+    <h1>Create Category</h1>
+
+    @if (successMessage) {
+      <p class="success-msg">{{ successMessage }}</p>
+    }
+
+    @if (errorMessage) {
+      <p class="error-msg">{{ errorMessage }}</p>
+    }
+
+    <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+      <label for="userId">User ID</label>
+      <input id="userId" type="number" formControlName="userId" />
+
+      <label for="categoryId">Category ID</label>
+      <input id="categoryId" type="number" formControlName="categoryId" />
+
+      <label for="name">Category Name</label>
+      <input id="name" type="text" formControlName="name" />
+
+      <label for="description">Description</label>
+      <input id="description" type="text" formControlName="description" />
+
+      <button type="submit">Create Category</button>
+    </form>
+  `,
+  styles: ``,
 })
 export class CreateCategoryComponent {
-  /**
-   * Amanda Ruff
-   * Week 8 - Sprint 3
-   *
-   * Stores the category information entered into the form.
-   */
-  category: CreateCategory = {
-    userId: 1000,
-    categoryId: 0,
-    name: '',
-    description: '',
-  };
-
   successMessage = '';
   errorMessage = '';
-  isSubmitting = false;
+  categoryForm: FormGroup;
 
-  constructor(private categoryService: CategoryService) {}
+  constructor(
+    private fb: FormBuilder,
+    private categoryService: CategoryService,
+    private authService: AuthService,
+  ) {
+    /**
+     * Amanda Ruff
+     * Week 8 - Sprint 3
+     * Creates the reactive form used to collect category information.
+     */
+    this.categoryForm = this.fb.group({
+      userId: [this.authService.getUserId(), [Validators.required]],
+      categoryId: [null, [Validators.required, Validators.min(1)]],
+      name: ['', [Validators.required]],
+      description: [''],
+    });
+  }
 
   /**
    * Amanda Ruff
    * Week 8 - Sprint 3
-   *
-   * Validates the category form and sends the information
-   * to the Express API when the form is submitted.
+   * Validates and submits the Create Category form.
    */
-  createCategory(): void {
+  onSubmit(): void {
     this.successMessage = '';
     this.errorMessage = '';
 
-    if (
-      !this.category.userId ||
-      !this.category.categoryId ||
-      !this.category.name.trim()
-    ) {
-      this.errorMessage =
-        'User ID, category ID, and category name are required.';
+    if (this.categoryForm.invalid) {
+      this.errorMessage = 'Please complete all required fields.';
       return;
     }
 
-    this.isSubmitting = true;
-
-    this.categoryService.createCategory(this.category).subscribe({
+    this.categoryService.createCategory(this.categoryForm.value).subscribe({
       next: (createdCategory: Category) => {
-        this.successMessage =
-          `${createdCategory.name} was created successfully.`;
+        this.successMessage = `${createdCategory.name} was created successfully.`;
         this.errorMessage = '';
-        this.isSubmitting = false;
 
-        // Reset the form after a successful category creation.
-        this.category = {
-          userId: createdCategory.userId,
-          categoryId: 0,
+        // Reset the form while preserving the authenticated user's ID.
+        this.categoryForm.reset({
+          userId: this.authService.getUserId(),
+          categoryId: null,
           name: '',
           description: '',
-        };
+        });
       },
       error: (error) => {
         this.successMessage = '';
         this.errorMessage =
-          error.error?.message || 'Unable to create the category.';
-        this.isSubmitting = false;
+          error.error?.message || 'Error creating category.';
       },
     });
   }

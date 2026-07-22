@@ -3,38 +3,57 @@
  * Week 8 - Sprint 3
  * File: create-category.component.spec.ts
  * Description: Unit tests for the Create Category component.
+ *
+ * Changes (Amanda Ruff, 7/22/2026):
+ * - Updated tests after converting the component to a reactive form.
+ * - Replaced category object assignments with categoryForm.setValue().
+ * - Replaced createCategory() calls with onSubmit().
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 
 import { CreateCategoryComponent } from './create-category.component';
 import { CategoryService } from '../category.service';
+import { AuthService } from '../../auth/auth.service';
 
 describe('CreateCategoryComponent', () => {
   let component: CreateCategoryComponent;
   let fixture: ComponentFixture<CreateCategoryComponent>;
   let categoryServiceSpy: jasmine.SpyObj<CategoryService>;
+  let authServiceSpy: jasmine.SpyObj<AuthService>;
 
   beforeEach(async () => {
     /**
      * Amanda Ruff
      * Week 8 - Sprint 3
      *
-     * Creates a mock CategoryService so the component tests
-     * do not make real HTTP requests.
+     * Creates mock services so these tests do not make
+     * real HTTP requests or depend on localStorage.
      */
     categoryServiceSpy = jasmine.createSpyObj<CategoryService>(
       'CategoryService',
       ['createCategory'],
     );
 
+    authServiceSpy = jasmine.createSpyObj<AuthService>(
+      'AuthService',
+      ['getUserId'],
+    );
+
+    authServiceSpy.getUserId.and.returnValue(1000);
+
     await TestBed.configureTestingModule({
-      imports: [CreateCategoryComponent],
+      imports: [CreateCategoryComponent, ReactiveFormsModule],
       providers: [
         {
           provide: CategoryService,
           useValue: categoryServiceSpy,
+        },
+        {
+          provide: AuthService,
+          useValue: authServiceSpy,
         },
       ],
     }).compileComponents();
@@ -55,21 +74,32 @@ describe('CreateCategoryComponent', () => {
    * Amanda Ruff
    * Week 8 - Sprint 3
    *
-   * Confirms that invalid category information is rejected
-   * before the service method is called.
+   * Confirms that the form starts with the authenticated user's ID.
+   */
+  it('should initialize the form with the authenticated user ID', () => {
+    expect(component.categoryForm.get('userId')?.value).toBe(1000);
+    expect(authServiceSpy.getUserId).toHaveBeenCalled();
+  });
+
+  /**
+   * Amanda Ruff
+   * Week 8 - Sprint 3
+   *
+   * Confirms that an invalid form is rejected before
+   * the service method is called.
    */
   it('should display an error when required fields are missing', () => {
-    component.category = {
+    component.categoryForm.setValue({
       userId: 1000,
-      categoryId: 0,
+      categoryId: null,
       name: '',
       description: '',
-    };
+    });
 
-    component.createCategory();
+    component.onSubmit();
 
     expect(component.errorMessage).toBe(
-      'User ID, category ID, and category name are required.',
+      'Please complete all required fields.',
     );
     expect(categoryServiceSpy.createCategory).not.toHaveBeenCalled();
   });
@@ -98,9 +128,9 @@ describe('CreateCategoryComponent', () => {
       of(createdCategory),
     );
 
-    component.category = { ...newCategory };
+    component.categoryForm.setValue(newCategory);
 
-    component.createCategory();
+    component.onSubmit();
 
     expect(categoryServiceSpy.createCategory).toHaveBeenCalledWith(
       newCategory,
@@ -109,15 +139,22 @@ describe('CreateCategoryComponent', () => {
       'Transportation was created successfully.',
     );
     expect(component.errorMessage).toBe('');
-    expect(component.isSubmitting).toBeFalse();
+
+    // Confirm the form resets but keeps the authenticated user ID.
+    expect(component.categoryForm.value).toEqual({
+      userId: 1000,
+      categoryId: null,
+      name: '',
+      description: '',
+    });
   });
 
   /**
    * Amanda Ruff
    * Week 8 - Sprint 3
    *
-   * Confirms that an API error is displayed to the user
-   * when the category cannot be created.
+   * Confirms that an API error is displayed when the
+   * category cannot be created.
    */
   it('should display an API error when category creation fails', () => {
     categoryServiceSpy.createCategory.and.returnValue(
@@ -128,19 +165,18 @@ describe('CreateCategoryComponent', () => {
       })),
     );
 
-    component.category = {
+    component.categoryForm.setValue({
       userId: 1000,
       categoryId: 5,
       name: 'Transportation',
       description: 'Gas and transit',
-    };
+    });
 
-    component.createCategory();
+    component.onSubmit();
 
     expect(component.successMessage).toBe('');
     expect(component.errorMessage).toBe(
       'Category name already exists.',
     );
-    expect(component.isSubmitting).toBeFalse();
   });
 });
