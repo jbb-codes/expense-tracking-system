@@ -34,6 +34,10 @@ import { AuthService } from '../../auth/auth.service';
       <p class="error-msg">{{ errorMessage }}</p>
     }
 
+    @if (categoryErrorMessage) {
+      <p class="error-msg">{{ categoryErrorMessage }}</p>
+    }
+
     <!--
       Amanda Ruff
       Allows the user to select an existing expense before editing it.
@@ -109,6 +113,7 @@ import { AuthService } from '../../auth/auth.service';
 export class UpdateExpenseComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
+  categoryErrorMessage = '';
 
   userExpenses: any[] = [];
   categories: Category[] = [];
@@ -179,10 +184,10 @@ export class UpdateExpenseComponent implements OnInit {
     this.categoryService.getCategories(userId).subscribe({
       next: (categories) => {
         this.categories = categories;
+        this.categoryErrorMessage = '';
       },
       error: () => {
-        this.errorMessage = 'Unable to load categories.';
-        this.successMessage = '';
+        this.categoryErrorMessage = 'Unable to load categories.';
       },
     });
   }
