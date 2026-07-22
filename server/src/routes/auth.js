@@ -33,6 +33,8 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials." });
     }
 
+    req.session.userId = user.userId;
+
     return res.status(200).json({
       message: "Login successful.",
       userId: user.userId,
@@ -44,6 +46,25 @@ router.post("/login", async (req, res) => {
       error: err.message,
     });
   }
+});
+
+/**
+ * POST /auth/logout
+ * Destroys the authenticated session.
+ */
+router.post("/logout", (req, res) => {
+  if (!req.session) {
+    return res.status(200).json({ message: "Logged out." });
+  }
+
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Error during logout." });
+    }
+
+    res.clearCookie("connect.sid");
+    return res.status(200).json({ message: "Logged out." });
+  });
 });
 
 module.exports = router;

@@ -13,14 +13,22 @@
 
 const express = require("express");
 const cors = require("cors");
+const createSessionMiddleware = require("./utils/session");
+const requireAuth = require("./middleware/requireAuth");
 const expenseRoutes = require("./routes/expenses");
 const categoryRoutes = require("./routes/categories");
 const authRoutes = require("./routes/auth");
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:4200",
+    credentials: true,
+  }),
+);
 app.use(express.json());
+app.use(createSessionMiddleware());
 
 /**
  * Amanda Ruff
@@ -28,7 +36,7 @@ app.use(express.json());
  * Added the Create Expense API route for the Expense Tracking System.
  * This route handles POST requests for creating new expense records.
  */
-app.use("/api/expenses", expenseRoutes);
+app.use("/api/expenses", requireAuth, expenseRoutes);
 
 /**
  * Jarren Bess
@@ -36,7 +44,7 @@ app.use("/api/expenses", expenseRoutes);
  * Added the List All Categories API route for the Expense Tracking System.
  * This route handles GET requests for listing a user's category records.
  */
-app.use("/api/categories", categoryRoutes);
+app.use("/api/categories", requireAuth, categoryRoutes);
 
 /**
  * Kaitlyn Kelly

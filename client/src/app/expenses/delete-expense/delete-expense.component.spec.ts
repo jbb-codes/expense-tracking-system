@@ -7,6 +7,8 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { DeleteExpenseComponent } from './delete-expense.component';
 import { ExpenseService } from '../expense.service';
 
@@ -46,7 +48,11 @@ describe('DeleteExpenseComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [DeleteExpenseComponent],
-      providers: [{ provide: ExpenseService, useValue: mockService }],
+      providers: [
+        { provide: ExpenseService, useValue: mockService },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeleteExpenseComponent);

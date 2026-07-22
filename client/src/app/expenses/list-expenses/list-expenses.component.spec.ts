@@ -10,6 +10,8 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ListExpensesComponent } from './list-expenses.component';
 import { ExpenseService } from '../expense.service';
 
@@ -46,7 +48,11 @@ describe('ListExpensesComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [ListExpensesComponent],
-      providers: [{ provide: ExpenseService, useValue: expenseServiceSpy }],
+      providers: [
+        { provide: ExpenseService, useValue: expenseServiceSpy },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ListExpensesComponent);
