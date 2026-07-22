@@ -16,6 +16,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ExpenseService } from '../expense.service';
+import { CategoryService, Category } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
@@ -62,8 +63,14 @@ import { AuthService } from '../../auth/auth.service';
         <label for="userId">User ID</label>
         <input id="userId" type="number" formControlName="userId" />
 
-        <label for="categoryId">Category ID</label>
-        <input id="categoryId" type="number" formControlName="categoryId" />
+        <label for="categoryId">Category</label>
+        <select id="categoryId" formControlName="categoryId">
+          <option value="">Choose a category</option>
+
+          @for (category of categories; track category.categoryId) {
+            <option [ngValue]="category.categoryId">{{ category.name }}</option>
+          }
+        </select>
 
         <label for="amount">Amount</label>
         <input id="amount" type="number" step="0.01" formControlName="amount" />
@@ -104,6 +111,7 @@ export class UpdateExpenseComponent implements OnInit {
   errorMessage = '';
 
   userExpenses: any[] = [];
+  categories: Category[] = [];
   selectedExpenseId = '';
 
   expenseSelectForm: FormGroup;
@@ -112,6 +120,7 @@ export class UpdateExpenseComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private expenseService: ExpenseService,
+    private categoryService: CategoryService,
     private authService: AuthService,
   ) {
     /**
@@ -142,6 +151,7 @@ export class UpdateExpenseComponent implements OnInit {
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     this.loadUserExpenses(userId);
+    this.loadCategories(userId);
   }
 
   /**
@@ -156,6 +166,22 @@ export class UpdateExpenseComponent implements OnInit {
       },
       error: () => {
         this.errorMessage = 'Unable to load expenses.';
+        this.successMessage = '';
+      },
+    });
+  }
+
+  /**
+   * Retrieves the current user's categories so the category
+   * field can render as a name dropdown instead of a numeric input.
+   */
+  loadCategories(userId: number): void {
+    this.categoryService.getCategories(userId).subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load categories.';
         this.successMessage = '';
       },
     });

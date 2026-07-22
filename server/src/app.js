@@ -11,6 +11,7 @@ const express = require("express");
 const cors = require("cors");
 const expenseRoutes = require("./routes/expenses");
 const authRoutes = require("./routes/auth");
+const categoryRoutes = require("./routes/categories");
 
 const app = express();
 
@@ -32,5 +33,11 @@ app.use("/api/expenses", expenseRoutes);
  * This mounts all auth-related endpoints (e.g., login) under /api/auth.
  */
 app.use("/api/auth", authRoutes);
+
+/**
+ * Mounts the categories API used to populate category-name
+ * dropdowns (e.g., in the Create/Update Expense forms).
+ */
+app.use("/api/categories", categoryRoutes);
 
 module.exports = app;
