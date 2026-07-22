@@ -24,6 +24,7 @@ describe('ListExpensesComponent', () => {
       userId: 1000,
       username: 'testuser',
       categoryId: 1,
+      categoryName: 'Food',
       amount: 25.5,
       description: 'Lunch',
       date: '2026-07-06',
@@ -33,6 +34,7 @@ describe('ListExpensesComponent', () => {
       userId: 1000,
       username: 'testuser',
       categoryId: 2,
+      categoryName: 'Drinks',
       amount: 10,
       description: 'Coffee',
       date: '2026-07-05',
@@ -67,6 +69,17 @@ describe('ListExpensesComponent', () => {
     fixture.detectChanges();
 
     expect(component.expenses).toEqual(mockExpenses);
+  });
+
+  // Verify the table renders the category name rather than the raw category ID
+  it('should display categoryName instead of categoryId in the table', () => {
+    expenseServiceSpy.getExpenses.and.returnValue(of(mockExpenses));
+
+    fixture.detectChanges();
+
+    const cellText = fixture.nativeElement.textContent as string;
+    expect(cellText).toContain('Food');
+    expect(cellText).toContain('Drinks');
   });
 
   // Guard against a failed request leaving stale or partial data on screen
