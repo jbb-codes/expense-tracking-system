@@ -10,4 +10,5 @@ To set up your own local `.env`:
 
 1. Copy the example file: `cp server/.env.example server/.env`
 2. Open `server/.env` and replace the `<username>` and `<password>` placeholders in `MONGODB_URI` with the real Atlas credentials (ask a teammate if you don't have them). The cluster URL and database name are already filled in.
-3. Install dependencies: `cd server && npm install`
+3. Replace `SESSION_SECRET`'s placeholder with your own random string — it signs the server's session cookies.
+4. Install dependencies: `cd server && npm install`

@@ -2,7 +2,8 @@
  * Author: Kaitlyn Kelly
  * Date: 7/10/26
  * File: auth.js
- * Description: API route for user login using username + password.
+ * Description: API routes for user login and logout, backed by
+ * server-side sessions (req.session.userId).
  */
 
 "use strict";

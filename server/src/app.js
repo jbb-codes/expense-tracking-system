@@ -1,12 +1,18 @@
 /**
  * Author: Jarren Bess
  * Date: 7/6/26
- * Modified: Jarren Bess, 7/20/2026
+ * Modified: Jarren Bess, 7/22/2026
  * File: app.js
  * Description: Express application setup.
  *
  * Changes (Jarren Bess, 7/20/2026):
  * - Added the List All Categories API route, mounted under /api/categories.
+ *
+ * Changes (Jarren Bess, 7/22/2026):
+ * - Added session middleware and mounted requireAuth on /api/expenses and
+ *   /api/categories; /api/auth stays unauthenticated.
+ * - CORS now sets credentials: true and reads the allowed origin from
+ *   CLIENT_ORIGIN.
  */
 
 "use strict";
