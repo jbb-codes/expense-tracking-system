@@ -72,6 +72,17 @@ router.post("/", async (req, res) => {
       });
     }
 
+    const category = await Category.findOne({
+      categoryId: Number(categoryId),
+      userId: Number(userId),
+    });
+
+    if (!category) {
+      return res.status(400).json({
+        message: "categoryId must belong to the same userId.",
+      });
+    }
+
     if (isNaN(amount) || Number(amount) <= 0) {
       return res.status(400).json({
         message: "Amount must be greater than zero.",
@@ -115,6 +126,18 @@ router.put("/:id", async (req, res) => {
     if (isNaN(userId) || isNaN(categoryId)) {
       return res.status(400).json({
         message: "userId and categoryId must be numeric values.",
+      });
+    }
+
+    // Confirm the submitted categoryId belongs to the submitted userId.
+    const category = await Category.findOne({
+      categoryId: Number(categoryId),
+      userId: Number(userId),
+    });
+
+    if (!category) {
+      return res.status(400).json({
+        message: "categoryId must belong to the same userId.",
       });
     }
 
