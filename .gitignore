@@ -72,3 +72,7 @@ public/uploads/
 *.key
 *.crt
 *.p12
+
+# Agent-local memory files (not tracked)
+AGENTS.md
+CLAUDE.md
