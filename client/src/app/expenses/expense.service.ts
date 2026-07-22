@@ -31,6 +31,7 @@ export interface Expense {
   userId: number;
   username: string;
   categoryId: number;
+  categoryName?: string;
   amount: number;
   description?: string;
   date: string;

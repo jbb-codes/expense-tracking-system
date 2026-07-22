@@ -25,6 +25,30 @@ const Category = require("../models/Category");
 const router = express.Router();
 
 /**
+ * Enriches a list of expenses with categoryName, looked up in a single
+ * batched Category query keyed by userId + categoryId (avoids N+1 lookups).
+ */
+async function enrichExpensesWithCategoryName(expenses) {
+  const categories = await Category.find({
+    userId: { $in: expenses.map((expense) => expense.userId) },
+    categoryId: { $in: expenses.map((expense) => expense.categoryId) },
+  });
+
+  return expenses.map((expense) => {
+    const category = categories.find(
+      (candidate) =>
+        candidate.userId === expense.userId &&
+        candidate.categoryId === expense.categoryId,
+    );
+
+    return {
+      ...(expense.toObject ? expense.toObject() : expense),
+      categoryName: category ? category.name : "Unknown",
+    };
+  });
+}
+
+/**
  * Amanda Ruff
  * Week 6 - Sprint 1
  * Creates a new expense record.
@@ -152,7 +176,8 @@ router.get("/", async (req, res) => {
     }
 
     const expenses = await Expense.find({ userId });
-    return res.status(200).json(expenses);
+    const enrichedExpenses = await enrichExpensesWithCategoryName(expenses);
+    return res.status(200).json(enrichedExpenses);
   } catch (err) {
     console.error("Error fetching expenses:", err);
     return res.status(500).json({ message: "Error fetching expenses." });
@@ -217,7 +242,8 @@ router.get("/user/:userId/search", async (req, res) => {
       description: { $regex: description || "", $options: "i" },
     });
 
-    return res.status(200).json(expenses);
+    const enrichedExpenses = await enrichExpensesWithCategoryName(expenses);
+    return res.status(200).json(enrichedExpenses);
   } catch (err) {
     console.error("Error searching expenses:", err);
     return res.status(500).json({ message: "Error searching expenses." });

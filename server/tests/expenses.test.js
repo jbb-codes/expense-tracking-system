@@ -220,6 +220,9 @@ describe("GET /api/expenses", () => {
         amount: 25.5,
         description: "Lunch",
         date: "2026-07-06",
+        toObject() {
+          return this;
+        },
       },
       {
         _id: "456",
@@ -228,7 +231,15 @@ describe("GET /api/expenses", () => {
         amount: 10.0,
         description: "Coffee",
         date: "2026-07-05",
+        toObject() {
+          return this;
+        },
       },
+    ]);
+
+    Category.find.mockResolvedValue([
+      { userId: 1000, categoryId: 1, name: "Food" },
+      { userId: 1000, categoryId: 2, name: "Drinks" },
     ]);
 
     const response = await request(app).get("/api/expenses?userId=1000");
@@ -236,11 +247,38 @@ describe("GET /api/expenses", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveLength(2);
     expect(response.body[0].userId).toBe(1000);
+    expect(response.body[0].categoryName).toBe("Food");
+    expect(response.body[1].categoryName).toBe("Drinks");
+  });
+
+  // Verify a category-less expense falls back to "Unknown" instead of breaking the list.
+  test("should return 'Unknown' categoryName when no matching category exists", async () => {
+    Expense.find.mockResolvedValue([
+      {
+        _id: "789",
+        userId: 1000,
+        categoryId: 99,
+        amount: 5.0,
+        description: "Misc",
+        date: "2026-07-04",
+        toObject() {
+          return this;
+        },
+      },
+    ]);
+
+    Category.find.mockResolvedValue([]);
+
+    const response = await request(app).get("/api/expenses?userId=1000");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body[0].categoryName).toBe("Unknown");
   });
 
   // Guard against a new collection breaking the endpoint before data exists.
   test("should return an empty array when no expenses exist", async () => {
     Expense.find.mockResolvedValue([]);
+    Category.find.mockResolvedValue([]);
 
     const response = await request(app).get("/api/expenses?userId=1000");
 
@@ -342,7 +380,14 @@ describe("GET /api/expenses/user/:userId/search", () => {
         amount: 25.5,
         description: "Lunch with client",
         date: "2026-07-06",
+        toObject() {
+          return this;
+        },
       },
+    ]);
+
+    Category.find.mockResolvedValue([
+      { userId: 1000, categoryId: 1, name: "Food" },
     ]);
 
     const response = await request(app).get(
@@ -351,6 +396,7 @@ describe("GET /api/expenses/user/:userId/search", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveLength(1);
+    expect(response.body[0].categoryName).toBe("Food");
     expect(Expense.find).toHaveBeenCalledWith({
       userId: 1000,
       description: { $regex: "lunch", $options: "i" },
