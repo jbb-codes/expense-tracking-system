@@ -18,33 +18,21 @@ import { AuthService } from '../auth/auth.service';
     <h2>What would you like to do today?</h2>
 
     <div class="home-link-wrapper">
-      <a routerLink="/create-expense" class="home-link">
-        Create Expense
-      </a>
+      <a routerLink="/create-expense" class="home-link"> Create Expense </a>
 
-      <a routerLink="/list-expenses" class="home-link">
-        List Expenses
-      </a>
+      <a routerLink="/list-expenses" class="home-link"> List Expenses </a>
 
       <a routerLink="/read-expense-by-id" class="home-link">
         Read Expense by ID
       </a>
 
-      <a routerLink="/update-expense" class="home-link">
-        Update Expense
-      </a>
+      <a routerLink="/update-expense" class="home-link"> Update Expense </a>
 
-      <a routerLink="/search-expenses" class="home-link">
-        Search Expenses
-      </a>
+      <a routerLink="/search-expenses" class="home-link"> Search Expenses </a>
 
-      <a routerLink="/delete-expense" class="home-link">
-        Delete Expense
-      </a>
+      <a routerLink="/delete-expense" class="home-link"> Delete Expense </a>
 
-      <a routerLink="/list-categories" class="home-link">
-        List Categories
-      </a>
+      <a routerLink="/list-categories" class="home-link"> List Categories </a>
 
       <a routerLink="/read-category-by-id" class="home-link">
         Read Category by ID
@@ -55,9 +43,7 @@ import { AuthService } from '../auth/auth.service';
         Week 8 - Sprint 3
         Navigation link for creating a new category.
       -->
-      <a routerLink="/create-category" class="home-link">
-        Create Category
-      </a>
+      <a routerLink="/create-category" class="home-link"> Create Category </a>
     </div>
   `,
   styles: `

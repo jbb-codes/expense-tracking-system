@@ -23,6 +23,7 @@ describe('SearchExpensesComponent', () => {
       userId: 1000,
       username: 'testuser',
       categoryId: 1,
+      categoryName: 'Meals',
       amount: 25.5,
       description: 'Lunch with client',
       date: '2026-07-06',
@@ -83,5 +84,17 @@ describe('SearchExpensesComponent', () => {
 
     expect(component.errorMessage).toBe('Error searching expenses.');
     expect(component.expenses).toEqual([]);
+  });
+
+  // Confirm the table renders the category name, not the raw categoryId
+  it('should display the category name in the results table', () => {
+    expenseServiceSpy.searchExpenses.and.returnValue(of(mockExpenses));
+
+    component.searchForm.setValue({ description: 'lunch' });
+    component.onSearch();
+    fixture.detectChanges();
+
+    const tableText = fixture.nativeElement.textContent;
+    expect(tableText).toContain('Meals');
   });
 });
