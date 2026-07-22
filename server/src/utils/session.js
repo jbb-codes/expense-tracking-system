@@ -12,14 +12,20 @@ const MongoStore = require("connect-mongo");
 
 function createSessionMiddleware() {
   const isTest = process.env.NODE_ENV === "test";
+  let store;
+
+  if (!isTest) {
+    store = MongoStore.create({ mongoUrl: process.env.MONGODB_URI });
+    store.on("error", (error) => {
+      console.error("Session store error", error);
+    });
+  }
 
   return session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: isTest
-      ? undefined
-      : MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+    store,
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

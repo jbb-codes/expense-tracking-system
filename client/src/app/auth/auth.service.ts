@@ -26,7 +26,11 @@ export class AuthService {
 
   // Clears the server-side session and the locally cached authentication state
   logout(): void {
-    this.http.post(`${environment.apiUrl}/auth/logout`, {}).subscribe();
+    this.http.post(`${environment.apiUrl}/auth/logout`, {}).subscribe({
+      error: (error: unknown) => {
+        console.error('Failed to end server session during logout', error);
+      },
+    });
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
   }
