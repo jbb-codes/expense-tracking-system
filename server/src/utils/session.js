@@ -8,7 +8,7 @@
 "use strict";
 
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
+const { MongoStore } = require("connect-mongo");
 
 function createSessionMiddleware() {
   const isTest = process.env.NODE_ENV === "test";
