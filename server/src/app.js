@@ -1,26 +1,40 @@
 /**
  * Author: Jarren Bess
  * Date: 7/6/26
- * Modified: Jarren Bess, 7/20/2026
+ * Modified: Jarren Bess, 7/22/2026
  * File: app.js
  * Description: Express application setup.
  *
  * Changes (Jarren Bess, 7/20/2026):
  * - Added the List All Categories API route, mounted under /api/categories.
+ *
+ * Changes (Jarren Bess, 7/22/2026):
+ * - Added session middleware and mounted requireAuth on /api/expenses and
+ *   /api/categories; /api/auth stays unauthenticated.
+ * - CORS now sets credentials: true and reads the allowed origin from
+ *   CLIENT_ORIGIN.
  */
 
 "use strict";
 
 const express = require("express");
 const cors = require("cors");
+const createSessionMiddleware = require("./utils/session");
+const requireAuth = require("./middleware/requireAuth");
 const expenseRoutes = require("./routes/expenses");
 const categoryRoutes = require("./routes/categories");
 const authRoutes = require("./routes/auth");
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:4200",
+    credentials: true,
+  }),
+);
 app.use(express.json());
+app.use(createSessionMiddleware());
 
 /**
  * Amanda Ruff
@@ -28,7 +42,7 @@ app.use(express.json());
  * Added the Create Expense API route for the Expense Tracking System.
  * This route handles POST requests for creating new expense records.
  */
-app.use("/api/expenses", expenseRoutes);
+app.use("/api/expenses", requireAuth, expenseRoutes);
 
 /**
  * Jarren Bess
@@ -36,7 +50,7 @@ app.use("/api/expenses", expenseRoutes);
  * Added the List All Categories API route for the Expense Tracking System.
  * This route handles GET requests for listing a user's category records.
  */
-app.use("/api/categories", categoryRoutes);
+app.use("/api/categories", requireAuth, categoryRoutes);
 
 /**
  * Kaitlyn Kelly

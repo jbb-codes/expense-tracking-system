@@ -8,11 +8,15 @@
  */
 
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
+  constructor(private http: HttpClient) {}
 
   // Stores the authenticated user's info to stay logged in after redirect or refresh
   login(userId: number, username: string): void {
@@ -20,9 +24,13 @@ export class AuthService {
     localStorage.setItem('username', username);
   }
 
-
-  // Will clear all authenticated data when a logout option is added
+  // Clears the server-side session and the locally cached authentication state
   logout(): void {
+    this.http.post(`${environment.apiUrl}/auth/logout`, {}).subscribe({
+      error: (error: unknown) => {
+        console.error('Failed to end server session during logout', error);
+      },
+    });
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
   }
