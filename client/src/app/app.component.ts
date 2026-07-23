@@ -172,6 +172,6 @@ export class AppComponent {
   logout(): void {
     this.authService.logout();
     this.isUserMenuOpen = false;
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
 }
