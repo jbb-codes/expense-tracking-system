@@ -10,11 +10,7 @@
  */
 
 import { Component } from '@angular/core';
-import {
-  Router,
-  RouterLink,
-  RouterOutlet,
-} from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 
 @Component({
@@ -38,11 +34,7 @@ import { AuthService } from './auth/auth.service';
         </button>
       }
 
-      <nav
-        id="main-nav"
-        data-testid="main-nav"
-        [class.nav--open]="isNavOpen"
-      >
+      <nav id="main-nav" data-testid="main-nav" [class.nav--open]="isNavOpen">
         @if (isNavOpen) {
           <button
             type="button"
@@ -81,14 +73,10 @@ import { AuthService } from './auth/auth.service';
           <a routerLink="/create-category">Create Category</a>
 
           <a routerLink="/list-categories">List Categories</a>
-          <a routerLink="/read-category-by-id">
-            Read Category by ID
-          </a>
+          <a routerLink="/read-category-by-id"> Read Category by ID </a>
 
           <div class="nav-button-wrapper">
-            <button type="button" (click)="logout()">
-              Logout
-            </button>
+            <button type="submit" (click)="logout()">Logout</button>
           </div>
         }
       </nav>
