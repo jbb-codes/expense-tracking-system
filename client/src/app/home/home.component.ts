@@ -16,72 +16,76 @@ const RECENT_EXPENSES_LIMIT = 5;
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <h1>Welcome, {{ username }}</h1>
+    <div class="dashboard">
+      <h1>Welcome, {{ username }}</h1>
 
-    @if (errorMessage) {
-      <p class="error-msg">{{ errorMessage }}</p>
-    }
+      @if (errorMessage) {
+        <p class="error-msg">{{ errorMessage }}</p>
+      }
 
-    <div>
-      <h2>Summary</h2>
-      <div class="summary-grid">
-        <div class="stat-card">
-          <div class="stat-card__label">Total Expenses This Month</div>
-          <div class="stat-card__value">
-            {{ totalThisMonth | currency: 'USD' : 'symbol' : '1.2-2' }}
+      <div>
+        <h2>Summary</h2>
+        <div class="summary-grid">
+          <div class="stat-card">
+            <div class="stat-card__label">Total Expenses This Month</div>
+            <div class="stat-card__value">
+              {{ totalThisMonth | currency: 'USD' : 'symbol' : '1.2-2' }}
+            </div>
           </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card__label">Expenses This Week</div>
-          <div class="stat-card__value">
-            {{ totalThisWeek | currency: 'USD' : 'symbol' : '1.2-2' }}
+          <div class="stat-card">
+            <div class="stat-card__label">Expenses This Week</div>
+            <div class="stat-card__value">
+              {{ totalThisWeek | currency: 'USD' : 'symbol' : '1.2-2' }}
+            </div>
           </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card__label">Expenses Today</div>
-          <div class="stat-card__value">
-            {{ totalToday | currency: 'USD' : 'symbol' : '1.2-2' }}
+          <div class="stat-card">
+            <div class="stat-card__label">Expenses Today</div>
+            <div class="stat-card__value">
+              {{ totalToday | currency: 'USD' : 'symbol' : '1.2-2' }}
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="lower-grid">
-      <div class="panel">
-        <h2>Recent Expenses</h2>
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (expense of recentExpenses; track expense._id) {
+      <div class="lower-grid">
+        <div class="panel">
+          <h2>Recent Expenses</h2>
+          <div class="table-scroll">
+            <table>
+              <thead>
                 <tr>
-                  <td>{{ expense.date | date }}</td>
-                  <td>{{ expense.description }}</td>
-                  <td>{{ expense.categoryName }}</td>
-                  <td>
-                    {{ expense.amount | currency: 'USD' : 'symbol' : '1.2-2' }}
-                  </td>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Amount</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (expense of recentExpenses; track expense._id) {
+                  <tr>
+                    <td>{{ expense.date | date }}</td>
+                    <td>{{ expense.description }}</td>
+                    <td>{{ expense.categoryName }}</td>
+                    <td>
+                      {{
+                        expense.amount | currency: 'USD' : 'symbol' : '1.2-2'
+                      }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <a routerLink="/list-expenses" class="view-all">View All Expenses</a>
         </div>
-        <a routerLink="/list-expenses" class="view-all">View All Expenses</a>
-      </div>
-      <div class="panel">
-        <h2>Quick Actions</h2>
-        <div class="quick-actions">
-          <a routerLink="/create-expense" class="btn">+ Add Expense</a>
-          <a routerLink="/create-category" class="btn btn--success"
-            >+ Add Category</a
-          >
+        <div class="panel">
+          <h2>Quick Actions</h2>
+          <div class="quick-actions">
+            <a routerLink="/create-expense" class="btn">+ Add Expense</a>
+            <a routerLink="/create-category" class="btn btn--success"
+              >+ Add Category</a
+            >
+          </div>
         </div>
       </div>
     </div>
