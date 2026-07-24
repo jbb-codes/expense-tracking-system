@@ -273,12 +273,35 @@ html {
   font-weight: 700;
 }
 
+/* table/form don't stretch to fill their container the way block
+   elements do, so the width-cap above leaves them at their natural
+   (narrower) width, uncentered, inside the now-centered host element. */
+.shell__content table,
+.shell__content form {
+  margin: 0 auto;
+}
+
 /* The dashboard is the one shell__content page with an approved
    left-aligned layout (mockup), so it opts back out of the centered
-   heading treatment every other authenticated page relies on above. */
+   heading treatment and table centering every other authenticated page
+   relies on above. */
 .shell__content .dashboard h1,
 .shell__content .dashboard h2 {
   text-align: left;
+}
+
+.dashboard table {
+  margin: 0;
+}
+
+/* .dashboard is the sole child .shell__content sees now, so its own
+   gap only spaces things apart above this element - the dashboard's
+   internal sections (heading, summary, recent expenses/quick actions)
+   need their own flex+gap to stay apart from each other. */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 /* ---------- Dashboard content ---------- */
@@ -360,6 +383,7 @@ html {
 }
 
 .btn {
+  box-sizing: border-box;
   display: inline-block;
   background-color: #b9c9ed;
   cursor: pointer;
