@@ -23,7 +23,7 @@ import { SearchExpensesComponent } from './expenses/search-expenses/search-expen
 import { DeleteExpenseComponent } from './expenses/delete-expense/delete-expense.component';
 import { HomeComponent } from './home/home.component';
 import { ListCategoriesComponent } from './categories/list-categories/list-categories.component';
-import { ReadCategoryByIdComponent } from './expenses/read-category-by-id/read-category-by-id.component';
+import { ReadCategoryByIdComponent } from './categories/read-category-by-id/read-category-by-id.component';
 import { CreateCategoryComponent } from './categories/create-category/create-category.component';
 
 /**

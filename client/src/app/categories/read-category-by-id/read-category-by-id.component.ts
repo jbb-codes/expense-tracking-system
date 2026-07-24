@@ -9,7 +9,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ExpenseService } from '../expense.service';
+import { Category, CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
@@ -33,7 +33,7 @@ import { AuthService } from '../../auth/auth.service';
       <select id="categoryId" formControlName="categoryId">
         @for (cat of userCategories; track cat.categoryId) {
           <option [value]="cat.categoryId">
-            {{ cat.categoryId }}
+            {{ cat.categoryId }} - {{ cat.name }}
           </option>
         }
       </select>
@@ -46,6 +46,7 @@ import { AuthService } from '../../auth/auth.service';
       <table>
         <thead>
           <tr>
+            <th>Category ID</th>
             <th>Category</th>
             <th>Amount</th>
             <th>Description</th>
@@ -57,6 +58,7 @@ import { AuthService } from '../../auth/auth.service';
           @for (exp of selectedExpenses; track exp._id) {
             <tr>
               <td>{{ exp.categoryId }}</td>
+              <td>{{ exp.categoryName }}</td>
               <td>{{ exp.amount | currency:'USD' }}</td>
               <td>{{ exp.description }}</td>
               <td>{{ exp.date | date }}</td>
@@ -78,13 +80,12 @@ export class ReadCategoryByIdComponent implements OnInit {
 
   categorySelectForm: FormGroup;
 
-  userExpenses: any[] = [];
   userCategories: any[] = [];
   selectedExpenses: any[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private expenseService: ExpenseService,
+    private categoryService: CategoryService,
     private authService: AuthService
   ) {
     this.categorySelectForm = this.fb.group({
@@ -98,21 +99,9 @@ export class ReadCategoryByIdComponent implements OnInit {
   }
 
   loadUserCategories(userId: number): void {
-    this.expenseService.getExpenses(userId).subscribe({
-      next: (expenses) => {
-        this.userExpenses = expenses;
-
-        const categoryMap = new Map();
-
-        expenses.forEach(exp => {
-          if (!categoryMap.has(exp.categoryId)) {
-            categoryMap.set(exp.categoryId, {
-              categoryId: exp.categoryId
-            });
-          }
-        });
-
-        this.userCategories = Array.from(categoryMap.values());
+    this.categoryService.getCategories(userId).subscribe({
+      next: (categories) => {
+        this.userCategories = categories;
       },
       error: () => {
         this.errorMessage = 'Unable to load categories';
@@ -128,16 +117,25 @@ export class ReadCategoryByIdComponent implements OnInit {
 
     const categoryId = Number(this.categorySelectForm.value.categoryId);
 
-    this.selectedExpenses = this.userExpenses.filter(
-      exp => exp.categoryId === categoryId
-    );
+    this.categoryService.getExpensesByCategory(categoryId).subscribe({
+      next: (expenses) => {
+        if (!expenses || expenses.length === 0) {
+          this.selectedExpenses = [];
+          this.errorMessage = 'No expenses found for this category';
+          this.successMessage = '';
+          return;
+        }
 
-    if (this.selectedExpenses.length === 0) {
-      this.errorMessage = 'No expenses found for this category';
-      this.successMessage = '';
-    } else {
-      this.errorMessage = '';
-      this.successMessage = 'Expenses loaded';
-    }
+        this.selectedExpenses = expenses;
+        this.errorMessage = '';
+        this.successMessage = 'Expenses loaded';
+      },
+      error: (err) => {
+        console.error('Backend error:', err);
+        this.selectedExpenses = [];
+        this.errorMessage = err.error?.message || 'No expenses found for this category';
+        this.successMessage = '';
+      }
+    });
   }
 }

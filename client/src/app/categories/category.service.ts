@@ -75,4 +75,20 @@ export class CategoryService {
   createCategory(category: CreateCategory): Observable<Category> {
     return this.http.post<Category>(this.apiUrl, category);
   }
+
+
+  /**
+ * Kaitlyn Kelly
+ * Week 8 - Sprint 3
+ *
+ * Sends a GET request
+ */
+
+  getExpensesByCategory(categoryId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/category/${categoryId}`
+    );
+  }
 }
+
+

@@ -10,13 +10,17 @@
  * - Added validation for required fields.
  * - Added duplicate category validation.
  * - Added appropriate HTTP status codes and error handling.
+ *
+ *
+ * Changes (Kaitlyn Kelly, 7/20/2026):
+ * - Added GET /category/:categoryId to support reading a category by ID
  */
 
 "use strict";
 
 const express = require("express");
 const Category = require("../models/Category");
-
+const Expense = require("../models/Expense");
 const router = express.Router();
 
 /**
@@ -121,5 +125,50 @@ router.post("/", async (req, res) => {
     });
   }
 });
+
+/**
+ * GET /category/:categoryId
+ * Retrieves all expenses for a specific categoryId
+ */
+router.get("/category/:categoryId", async (req, res) => {
+  try {
+    const categoryId = Number(req.params.categoryId);
+
+    if (isNaN(categoryId)) {
+      return res.status(400).json({ message: "categoryId must be numeric." });
+    }
+
+    // Find the category to get the correct userId
+    const category = await Category.findOne({ categoryId });
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found." });
+    }
+
+    const userId = category.userId;
+
+    // Fetch only this user's expenses
+    const expenses = await Expense.find({ userId, categoryId });
+
+    if (!expenses || expenses.length === 0) {
+      return res.status(404).json({ message: "No expenses found for this category." });
+    }
+
+    const enrichedExpenses = expenses.map(exp => ({
+      ...exp.toObject(),
+      categoryName: category.name
+    }));
+
+    return res.status(200).json(enrichedExpenses);
+  } catch (err) {
+    console.error("Error fetching expenses by category:", err);
+    return res.status(500).json({
+      message: "Error fetching expenses by category.",
+      error: err.message,
+    });
+  }
+});
+
+
 
 module.exports = router;
