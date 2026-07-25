@@ -85,6 +85,12 @@ const RECENT_EXPENSES_LIMIT = 5;
             <a routerLink="/create-category" class="btn btn--success"
               >+ Add Category</a
             >
+            <a routerLink="/update-expense" class="btn btn--secondary"
+              >Update Expense</a
+            >
+            <a routerLink="/delete-expense" class="btn btn--danger"
+              >Delete Expense</a
+            >
           </div>
         </div>
       </div>

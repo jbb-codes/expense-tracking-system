@@ -137,6 +137,22 @@ describe('HomeComponent', () => {
     expect(addCategory.getAttribute('href')).toBe('/create-category');
   });
 
+  it('should link Update Expense and Delete Expense to their existing routes', () => {
+    expenseServiceSpy.getExpenses.and.returnValue(of(mockExpenses));
+
+    fixture.detectChanges();
+
+    const updateExpense = fixture.nativeElement.querySelector(
+      '.quick-actions a:nth-child(3)',
+    );
+    const deleteExpense = fixture.nativeElement.querySelector(
+      '.quick-actions a:nth-child(4)',
+    );
+
+    expect(updateExpense.getAttribute('href')).toBe('/update-expense');
+    expect(deleteExpense.getAttribute('href')).toBe('/delete-expense');
+  });
+
   it('should set an error message when loading expenses fails', () => {
     expenseServiceSpy.getExpenses.and.returnValue(
       throwError(() => new Error('Network error')),

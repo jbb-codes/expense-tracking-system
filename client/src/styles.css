@@ -408,6 +408,24 @@ html {
   color: #fff;
 }
 
+.btn--secondary {
+  background-color: #edecf1;
+}
+
+.btn--secondary:hover {
+  background-color: #798dbd;
+  color: #fff;
+}
+
+.btn--danger {
+  background-color: #f6d4d4;
+}
+
+.btn--danger:hover {
+  background-color: #f11212;
+  color: #fff;
+}
+
 main {
   min-height: 90vh;
   flex: 1;
