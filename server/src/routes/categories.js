@@ -85,10 +85,7 @@ router.post("/", async (req, res) => {
     }
 
     // Validate numeric IDs.
-    if (
-      isNaN(Number(userId)) ||
-      isNaN(Number(categoryId))
-    ) {
+    if (isNaN(Number(userId)) || isNaN(Number(categoryId))) {
       return res.status(400).json({
         message: "userId and categoryId must be numeric.",
       });
@@ -96,6 +93,7 @@ router.post("/", async (req, res) => {
 
     // Prevent duplicate category names.
     const existingCategory = await Category.findOne({
+      userId,
       name: name.trim(),
     });
 
@@ -151,12 +149,14 @@ router.get("/category/:categoryId", async (req, res) => {
     const expenses = await Expense.find({ userId, categoryId });
 
     if (!expenses || expenses.length === 0) {
-      return res.status(404).json({ message: "No expenses found for this category." });
+      return res
+        .status(404)
+        .json({ message: "No expenses found for this category." });
     }
 
-    const enrichedExpenses = expenses.map(exp => ({
+    const enrichedExpenses = expenses.map((exp) => ({
       ...exp.toObject(),
-      categoryName: category.name
+      categoryName: category.name,
     }));
 
     return res.status(200).json(enrichedExpenses);
@@ -168,7 +168,5 @@ router.get("/category/:categoryId", async (req, res) => {
     });
   }
 });
-
-
 
 module.exports = router;

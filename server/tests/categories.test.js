@@ -35,9 +35,7 @@ let consoleErrorSpy;
  * Prevents expected error messages from cluttering the Jest output.
  */
 beforeEach(() => {
-  consoleErrorSpy = jest
-    .spyOn(console, "error")
-    .mockImplementation(() => {});
+  consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 });
 
 /**
@@ -75,9 +73,7 @@ describe("GET /api/categories", () => {
       },
     ]);
 
-    const response = await request(app).get(
-      "/api/categories?userId=1000",
-    );
+    const response = await request(app).get("/api/categories?userId=1000");
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveLength(2);
@@ -94,25 +90,17 @@ describe("GET /api/categories", () => {
     const response = await request(app).get("/api/categories");
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe(
-      "userId must be numeric.",
-    );
+    expect(response.body.message).toBe("userId must be numeric.");
   });
 
   // Ensure that database failures return a server error response.
   test("should return 500 when an error occurs while fetching categories", async () => {
-    Category.find.mockRejectedValue(
-      new Error("Database error"),
-    );
+    Category.find.mockRejectedValue(new Error("Database error"));
 
-    const response = await request(app).get(
-      "/api/categories?userId=1000",
-    );
+    const response = await request(app).get("/api/categories?userId=1000");
 
     expect(response.statusCode).toBe(500);
-    expect(response.body.message).toBe(
-      "Error fetching categories.",
-    );
+    expect(response.body.message).toBe("Error fetching categories.");
   });
 });
 
@@ -159,8 +147,9 @@ describe("POST /api/categories", () => {
     expect(response.body.name).toBe("Transportation");
     expect(response.body.userId).toBe(1000);
 
-    // Verify that the route checked for a duplicate name.
+    // Verify that the route checked for a duplicate name scoped to the user.
     expect(Category.findOne).toHaveBeenCalledWith({
+      userId: 1000,
       name: "Transportation",
     });
 
@@ -173,12 +162,10 @@ describe("POST /api/categories", () => {
    * category information is missing.
    */
   test("should return 400 when required fields are missing", async () => {
-    const response = await request(app)
-      .post("/api/categories")
-      .send({
-        userId: 1000,
-        description: "Category is missing an ID and name",
-      });
+    const response = await request(app).post("/api/categories").send({
+      userId: 1000,
+      description: "Category is missing an ID and name",
+    });
 
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toBe(
@@ -202,19 +189,15 @@ describe("POST /api/categories", () => {
       description: "Existing transportation category",
     });
 
-    const response = await request(app)
-      .post("/api/categories")
-      .send({
-        userId: 1000,
-        categoryId: 6,
-        name: "Transportation",
-        description: "Another transportation category",
-      });
+    const response = await request(app).post("/api/categories").send({
+      userId: 1000,
+      categoryId: 6,
+      name: "Transportation",
+      description: "Another transportation category",
+    });
 
     expect(response.statusCode).toBe(409);
-    expect(response.body.message).toBe(
-      "Category name already exists.",
-    );
+    expect(response.body.message).toBe("Category name already exists.");
 
     // A new category should not be created when a duplicate exists.
     expect(Category).not.toHaveBeenCalled();
@@ -228,7 +211,6 @@ describe("POST /api/categories", () => {
  */
 
 describe("GET /api/categories/category/:categoryId", () => {
-
   // Should return 400 when categoryId is not numeric
   it("should return 400 when categoryId is not numeric", async () => {
     const res = await request(app).get("/api/categories/category/abc");
@@ -264,9 +246,9 @@ describe("GET /api/categories/category/:categoryId", () => {
             categoryId: 2,
             amount: 50,
             description: "Test expense",
-            date: "2024-01-01"
+            date: "2024-01-01",
           };
-        }
+        },
       },
       {
         _id: "exp2",
@@ -282,10 +264,10 @@ describe("GET /api/categories/category/:categoryId", () => {
             categoryId: 2,
             amount: 75,
             description: "Another expense",
-            date: "2024-01-02"
+            date: "2024-01-02",
           };
-        }
-      }
+        },
+      },
     ]);
 
     // Category lookup mocked but not asserted
@@ -298,5 +280,4 @@ describe("GET /api/categories/category/:categoryId", () => {
     expect(res.body[0]._id).toBe("exp1");
     expect(res.body[1]._id).toBe("exp2");
   });
-
 });
