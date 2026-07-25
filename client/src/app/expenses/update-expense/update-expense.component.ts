@@ -8,7 +8,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -19,20 +19,14 @@ import { ExpenseService } from '../expense.service';
 import { Category, CategoryService } from '../../categories/category.service';
 import { AuthService } from '../../auth/auth.service';
 
+const SELECT_MESSAGE_DURATION_MS = 3000;
+
 @Component({
   selector: 'app-update-expense',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <h1>Update Expense</h1>
-
-    @if (successMessage) {
-      <p class="success-msg">{{ successMessage }}</p>
-    }
-
-    @if (errorMessage) {
-      <p class="error-msg">{{ errorMessage }}</p>
-    }
 
     @if (categoryErrorMessage) {
       <p class="error-msg">{{ categoryErrorMessage }}</p>
@@ -56,6 +50,14 @@ import { AuthService } from '../../auth/auth.service';
       </select>
 
       <button type="submit">Load Expense</button>
+
+      @if (selectMessage) {
+        <p class="success-msg">{{ selectMessage }}</p>
+      }
+
+      @if (selectErrorMessage) {
+        <p class="error-msg">{{ selectErrorMessage }}</p>
+      }
     </form>
 
     <!--
@@ -83,6 +85,14 @@ import { AuthService } from '../../auth/auth.service';
         <input id="date" type="date" formControlName="date" />
 
         <button type="submit">Update Expense</button>
+
+        @if (successMessage) {
+          <p class="success-msg">{{ successMessage }}</p>
+        }
+
+        @if (errorMessage) {
+          <p class="error-msg">{{ errorMessage }}</p>
+        }
       </form>
     }
   `,
@@ -107,9 +117,11 @@ import { AuthService } from '../../auth/auth.service';
     }
   `,
 })
-export class UpdateExpenseComponent implements OnInit {
+export class UpdateExpenseComponent implements OnInit, OnDestroy {
   successMessage = '';
   errorMessage = '';
+  selectMessage = '';
+  selectErrorMessage = '';
   categoryErrorMessage = '';
 
   userExpenses: any[] = [];
@@ -118,6 +130,8 @@ export class UpdateExpenseComponent implements OnInit {
 
   expenseSelectForm: FormGroup;
   expenseForm: FormGroup;
+
+  private selectMessageTimeoutId?: ReturnType<typeof setTimeout>;
 
   constructor(
     private fb: FormBuilder,
@@ -153,6 +167,10 @@ export class UpdateExpenseComponent implements OnInit {
     const userId = this.authService.getUserId();
     this.loadUserExpenses(userId);
     this.loadCategories(userId);
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.selectMessageTimeoutId);
   }
 
   /**
@@ -195,8 +213,9 @@ export class UpdateExpenseComponent implements OnInit {
    */
   onSelectExpense(): void {
     if (this.expenseSelectForm.invalid) {
-      this.errorMessage = 'Please select an expense.';
-      this.successMessage = '';
+      clearTimeout(this.selectMessageTimeoutId);
+      this.selectErrorMessage = 'Please select an expense.';
+      this.selectMessage = '';
       return;
     }
 
@@ -222,14 +241,30 @@ export class UpdateExpenseComponent implements OnInit {
           date: formattedDate,
         });
 
-        this.successMessage = 'Expense loaded successfully.';
-        this.errorMessage = '';
+        this.showSelectMessage('Expense loaded successfully.');
       },
       error: () => {
-        this.errorMessage = 'Unable to load the selected expense.';
-        this.successMessage = '';
+        clearTimeout(this.selectMessageTimeoutId);
+        this.selectErrorMessage = 'Unable to load the selected expense.';
+        this.selectMessage = '';
       },
     });
+  }
+
+  /**
+   * Shows the "expense loaded" success message and clears it after a
+   * few seconds so it doesn't linger once the user selects another
+   * expense or submits the update form.
+   */
+  private showSelectMessage(message: string): void {
+    clearTimeout(this.selectMessageTimeoutId);
+
+    this.selectMessage = message;
+    this.selectErrorMessage = '';
+
+    this.selectMessageTimeoutId = setTimeout(() => {
+      this.selectMessage = '';
+    }, SELECT_MESSAGE_DURATION_MS);
   }
 
   /**

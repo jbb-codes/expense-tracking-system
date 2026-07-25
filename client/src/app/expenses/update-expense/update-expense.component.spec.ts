@@ -6,7 +6,12 @@
  * Description: Unit tests for the Update Expense Angular component.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { of } from 'rxjs';
 
 import { UpdateExpenseComponent } from './update-expense.component';
@@ -124,6 +129,36 @@ describe('UpdateExpenseComponent', () => {
       date: '2026-07-12',
     });
   });
+
+  /**
+   * Confirms that the "expense loaded" message clears itself after
+   * a few seconds so it doesn't linger once the user moves on to
+   * selecting another expense or submitting the update form.
+   */
+  it('should clear the select message a few seconds after an expense is loaded', fakeAsync(() => {
+    expenseServiceSpy.getExpenseById.and.returnValue(
+      of({
+        _id: 'exp123',
+        userId: 1000,
+        categoryId: 2,
+        amount: 75.5,
+        description: 'Groceries',
+        date: '2026-07-12T00:00:00.000Z',
+      }),
+    );
+
+    component.expenseSelectForm.setValue({
+      expenseId: 'exp123',
+    });
+
+    component.onSelectExpense();
+
+    expect(component.selectMessage).toBe('Expense loaded successfully.');
+
+    tick(3000);
+
+    expect(component.selectMessage).toBe('');
+  }));
 
   /**
    * Amanda Ruff
