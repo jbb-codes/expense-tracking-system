@@ -99,7 +99,6 @@ describe('CreateExpenseComponent', () => {
 
   it('should mark the form invalid when required fields are empty', () => {
     component.expenseForm.setValue({
-      userId: null,
       categoryId: null,
       amount: null,
       description: '',
@@ -109,7 +108,7 @@ describe('CreateExpenseComponent', () => {
     expect(component.expenseForm.invalid).toBeTrue();
   });
 
-  it('should call createExpense with the selected categoryId when the form is valid', () => {
+  it('should call createExpense with the selected categoryId and the authenticated userId when the form is valid', () => {
     expenseServiceSpy.createExpense.and.returnValue(
       of({
         _id: 'exp123',
@@ -123,7 +122,6 @@ describe('CreateExpenseComponent', () => {
     );
 
     component.expenseForm.setValue({
-      userId: 1000,
       categoryId: 2,
       amount: 25.5,
       description: 'Lunch',
@@ -133,7 +131,7 @@ describe('CreateExpenseComponent', () => {
     component.onSubmit();
 
     expect(expenseServiceSpy.createExpense).toHaveBeenCalledWith(
-      jasmine.objectContaining({ categoryId: 2 }),
+      jasmine.objectContaining({ userId: 1000, categoryId: 2 }),
     );
   });
 });

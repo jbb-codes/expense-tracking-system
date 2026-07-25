@@ -118,7 +118,6 @@ describe('UpdateExpenseComponent', () => {
 
     expect(component.selectedExpenseId).toBe('exp123');
     expect(component.expenseForm.value).toEqual({
-      userId: 1000,
       categoryId: 2,
       amount: 75.5,
       description: 'Groceries',
@@ -147,7 +146,6 @@ describe('UpdateExpenseComponent', () => {
     component.selectedExpenseId = 'exp123';
 
     component.expenseForm.setValue({
-      userId: 1000,
       categoryId: 2,
       amount: 85,
       description: 'Updated groceries',

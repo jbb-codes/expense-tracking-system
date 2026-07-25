@@ -64,9 +64,6 @@ import { AuthService } from '../../auth/auth.service';
     -->
     @if (selectedExpenseId) {
       <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
-        <label for="userId">User ID</label>
-        <input id="userId" type="number" formControlName="userId" />
-
         <label for="categoryId">Category</label>
         <select id="categoryId" formControlName="categoryId">
           <option value="">Choose a category</option>
@@ -141,7 +138,6 @@ export class UpdateExpenseComponent implements OnInit {
      * Form containing the editable expense fields.
      */
     this.expenseForm = this.fb.group({
-      userId: [null, Validators.required],
       categoryId: [null, Validators.required],
       amount: [null, [Validators.required, Validators.min(0.01)]],
       description: [''],
@@ -220,7 +216,6 @@ export class UpdateExpenseComponent implements OnInit {
           : '';
 
         this.expenseForm.patchValue({
-          userId: expense.userId,
           categoryId: expense.categoryId,
           amount: expense.amount,
           description: expense.description || '',
@@ -263,6 +258,7 @@ export class UpdateExpenseComponent implements OnInit {
     const updatedExpense = {
       _id: this.selectedExpenseId,
       username: '',
+      userId: this.authService.getUserId(),
       ...this.expenseForm.value,
     };
 

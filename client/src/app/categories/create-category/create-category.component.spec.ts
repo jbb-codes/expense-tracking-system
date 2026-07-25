@@ -37,10 +37,9 @@ describe('CreateCategoryComponent', () => {
       ['createCategory'],
     );
 
-    authServiceSpy = jasmine.createSpyObj<AuthService>(
-      'AuthService',
-      ['getUserId'],
-    );
+    authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', [
+      'getUserId',
+    ]);
 
     authServiceSpy.getUserId.and.returnValue(1000);
 
@@ -74,23 +73,11 @@ describe('CreateCategoryComponent', () => {
    * Amanda Ruff
    * Week 8 - Sprint 3
    *
-   * Confirms that the form starts with the authenticated user's ID.
-   */
-  it('should initialize the form with the authenticated user ID', () => {
-    expect(component.categoryForm.get('userId')?.value).toBe(1000);
-    expect(authServiceSpy.getUserId).toHaveBeenCalled();
-  });
-
-  /**
-   * Amanda Ruff
-   * Week 8 - Sprint 3
-   *
    * Confirms that an invalid form is rejected before
    * the service method is called.
    */
   it('should display an error when required fields are missing', () => {
     component.categoryForm.setValue({
-      userId: 1000,
       categoryId: null,
       name: '',
       description: '',
@@ -98,9 +85,7 @@ describe('CreateCategoryComponent', () => {
 
     component.onSubmit();
 
-    expect(component.errorMessage).toBe(
-      'Please complete all required fields.',
-    );
+    expect(component.errorMessage).toBe('Please complete all required fields.');
     expect(categoryServiceSpy.createCategory).not.toHaveBeenCalled();
   });
 
@@ -112,11 +97,15 @@ describe('CreateCategoryComponent', () => {
    * and a success message is displayed.
    */
   it('should create a category when valid data is provided', () => {
-    const newCategory = {
-      userId: 1000,
+    const formValue = {
       categoryId: 5,
       name: 'Transportation',
       description: 'Gas, transit, and vehicle expenses',
+    };
+
+    const newCategory = {
+      userId: 1000,
+      ...formValue,
     };
 
     const createdCategory = {
@@ -124,25 +113,20 @@ describe('CreateCategoryComponent', () => {
       ...newCategory,
     };
 
-    categoryServiceSpy.createCategory.and.returnValue(
-      of(createdCategory),
-    );
+    categoryServiceSpy.createCategory.and.returnValue(of(createdCategory));
 
-    component.categoryForm.setValue(newCategory);
+    component.categoryForm.setValue(formValue);
 
     component.onSubmit();
 
-    expect(categoryServiceSpy.createCategory).toHaveBeenCalledWith(
-      newCategory,
-    );
+    expect(categoryServiceSpy.createCategory).toHaveBeenCalledWith(newCategory);
     expect(component.successMessage).toBe(
       'Transportation was created successfully.',
     );
     expect(component.errorMessage).toBe('');
 
-    // Confirm the form resets but keeps the authenticated user ID.
+    // Confirm the form resets to its blank state.
     expect(component.categoryForm.value).toEqual({
-      userId: 1000,
       categoryId: null,
       name: '',
       description: '',
@@ -166,7 +150,6 @@ describe('CreateCategoryComponent', () => {
     );
 
     component.categoryForm.setValue({
-      userId: 1000,
       categoryId: 5,
       name: 'Transportation',
       description: 'Gas and transit',
@@ -175,8 +158,6 @@ describe('CreateCategoryComponent', () => {
     component.onSubmit();
 
     expect(component.successMessage).toBe('');
-    expect(component.errorMessage).toBe(
-      'Category name already exists.',
-    );
+    expect(component.errorMessage).toBe('Category name already exists.');
   });
 });

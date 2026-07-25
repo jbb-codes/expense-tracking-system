@@ -33,9 +33,6 @@ import { AuthService } from '../../auth/auth.service';
     }
 
     <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
-      <label for="userId">User ID</label>
-      <input id="userId" type="number" formControlName="userId" />
-
       <label for="categoryId">Category</label>
       <select id="categoryId" formControlName="categoryId">
         @for (category of categories; track category.categoryId) {
@@ -70,7 +67,6 @@ export class CreateExpenseComponent implements OnInit {
     private authService: AuthService,
   ) {
     this.expenseForm = this.fb.group({
-      userId: [1000, [Validators.required]],
       categoryId: [null, [Validators.required]],
       amount: [null, [Validators.required, Validators.min(0.01)]],
       description: [''],
@@ -100,12 +96,16 @@ export class CreateExpenseComponent implements OnInit {
       return;
     }
 
-    this.expenseService.createExpense(this.expenseForm.value).subscribe({
+    const newExpense = {
+      userId: this.authService.getUserId(),
+      ...this.expenseForm.value,
+    };
+
+    this.expenseService.createExpense(newExpense).subscribe({
       next: () => {
         this.successMessage = 'Expense created successfully.';
         this.errorMessage = '';
         this.expenseForm.reset({
-          userId: 1000,
           categoryId: null,
           amount: null,
           description: '',

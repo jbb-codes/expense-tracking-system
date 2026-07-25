@@ -37,9 +37,6 @@ import { AuthService } from '../../auth/auth.service';
     }
 
     <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
-      <label for="userId">User ID</label>
-      <input id="userId" type="number" formControlName="userId" />
-
       <label for="categoryId">Category ID</label>
       <input id="categoryId" type="number" formControlName="categoryId" />
 
@@ -70,7 +67,6 @@ export class CreateCategoryComponent {
      * Creates the reactive form used to collect category information.
      */
     this.categoryForm = this.fb.group({
-      userId: [this.authService.getUserId(), [Validators.required]],
       categoryId: [null, [Validators.required, Validators.min(1)]],
       name: ['', [Validators.required]],
       description: [''],
@@ -91,14 +87,17 @@ export class CreateCategoryComponent {
       return;
     }
 
-    this.categoryService.createCategory(this.categoryForm.value).subscribe({
+    const newCategory = {
+      userId: this.authService.getUserId(),
+      ...this.categoryForm.value,
+    };
+
+    this.categoryService.createCategory(newCategory).subscribe({
       next: (createdCategory: Category) => {
         this.successMessage = `${createdCategory.name} was created successfully.`;
         this.errorMessage = '';
 
-        // Reset the form while preserving the authenticated user's ID.
         this.categoryForm.reset({
-          userId: this.authService.getUserId(),
           categoryId: null,
           name: '',
           description: '',
@@ -106,8 +105,7 @@ export class CreateCategoryComponent {
       },
       error: (error) => {
         this.successMessage = '';
-        this.errorMessage =
-          error.error?.message || 'Error creating category.';
+        this.errorMessage = error.error?.message || 'Error creating category.';
       },
     });
   }
