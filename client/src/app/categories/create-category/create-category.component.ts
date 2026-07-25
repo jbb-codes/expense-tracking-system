@@ -28,14 +28,6 @@ import { AuthService } from '../../auth/auth.service';
   template: `
     <h1>Create Category</h1>
 
-    @if (successMessage) {
-      <p class="success-msg">{{ successMessage }}</p>
-    }
-
-    @if (errorMessage) {
-      <p class="error-msg">{{ errorMessage }}</p>
-    }
-
     <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
       <label for="categoryId">Category ID</label>
       <input id="categoryId" type="number" formControlName="categoryId" />
@@ -47,6 +39,14 @@ import { AuthService } from '../../auth/auth.service';
       <input id="description" type="text" formControlName="description" />
 
       <button type="submit">Create Category</button>
+
+      @if (successMessage) {
+        <p class="success-msg">{{ successMessage }}</p>
+      }
+
+      @if (errorMessage) {
+        <p class="error-msg">{{ errorMessage }}</p>
+      }
     </form>
   `,
   styles: ``,

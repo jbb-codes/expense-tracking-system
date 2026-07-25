@@ -24,14 +24,6 @@ import { AuthService } from '../../auth/auth.service';
   template: `
     <h1>Create Expense</h1>
 
-    @if (successMessage) {
-      <p class="success-msg">{{ successMessage }}</p>
-    }
-
-    @if (errorMessage) {
-      <p class="error-msg">{{ errorMessage }}</p>
-    }
-
     <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
       <label for="categoryId">Category</label>
       <select id="categoryId" formControlName="categoryId">
@@ -50,6 +42,14 @@ import { AuthService } from '../../auth/auth.service';
       <input id="date" type="date" formControlName="date" />
 
       <button type="submit">Create Expense</button>
+
+      @if (successMessage) {
+        <p class="success-msg">{{ successMessage }}</p>
+      }
+
+      @if (errorMessage) {
+        <p class="error-msg">{{ errorMessage }}</p>
+      }
     </form>
   `,
   styles: ``,
