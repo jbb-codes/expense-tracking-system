@@ -542,6 +542,90 @@ button[type="submit"]:hover {
   color: #1d9e4f;
 }
 
+/* ---------- Search / lookup pages (search bar + result table + meta) ---------- */
+
+.field-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 420px;
+}
+
+.search-input-wrap svg {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: #798dbd;
+  pointer-events: none;
+}
+
+.search-input-wrap input {
+  width: 100%;
+  padding: 0.6rem 0.8rem 0.6rem 2.2rem;
+}
+
+.result-table {
+  width: 100%;
+}
+
+/* Spaces the results panel away from the search form above it (general
+   sibling, since read-category-by-id has a .badge-row in between). The
+   panel's own padding already gives the table breathing room on the inside. */
+.field-row ~ .panel {
+  margin-top: 1.25rem;
+}
+
+.results-meta {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.6rem;
+}
+
+.badge-row {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: #666;
+  padding: 2rem 1rem;
+  background: #fff;
+  border: 1px dashed #192a53;
+  border-radius: 10px;
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.badge {
+  display: inline-block;
+  background: #cdeed8;
+  color: #1d9e4f;
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 footer {
   padding: 1rem 0;
   text-align: center;

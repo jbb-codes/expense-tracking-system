@@ -7,15 +7,21 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Expense, ExpenseService } from '../expense.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-list-expenses',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <h1>Expenses</h1>
+
+    <nav class="page-actions">
+      <a routerLink="/search-expenses" class="btn">Search Expenses</a>
+      <a routerLink="/read-expense-by-id" class="btn">Search Expense by ID</a>
+    </nav>
 
     @if (errorMessage) {
       <p class="error">{{ errorMessage }}</p>

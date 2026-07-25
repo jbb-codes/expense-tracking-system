@@ -6,6 +6,7 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { ListCategoriesComponent } from './list-categories.component';
 import { CategoryService } from '../category.service';
@@ -44,6 +45,7 @@ describe('ListCategoriesComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ListCategoriesComponent],
       providers: [
+        provideRouter([]),
         { provide: CategoryService, useValue: categoryServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
       ],
@@ -69,6 +71,20 @@ describe('ListCategoriesComponent', () => {
     fixture.detectChanges();
 
     expect(component.categories).toEqual(mockCategories);
+  });
+
+  // Verify the search-by-ID page is reachable from the categories list
+  it('should render a link to Search Category by ID', () => {
+    categoryServiceSpy.getCategories.and.returnValue(of(mockCategories));
+
+    fixture.detectChanges();
+
+    const links: HTMLAnchorElement[] = Array.from(
+      fixture.nativeElement.querySelectorAll('.page-actions a'),
+    );
+    const hrefs = links.map((a) => a.getAttribute('routerLink'));
+
+    expect(hrefs).toContain('/read-category-by-id');
   });
 
   // Guard against a failed request leaving stale or partial data on screen

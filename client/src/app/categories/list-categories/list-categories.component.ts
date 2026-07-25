@@ -7,15 +7,20 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Category, CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-list-categories',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <h1>Categories</h1>
+
+    <nav class="page-actions">
+      <a routerLink="/read-category-by-id" class="btn">Search Category by ID</a>
+    </nav>
 
     @if (errorMessage) {
       <p class="error">{{ errorMessage }}</p>

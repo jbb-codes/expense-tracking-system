@@ -9,6 +9,7 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { ListExpensesComponent } from './list-expenses.component';
 import { ExpenseService } from '../expense.service';
@@ -46,7 +47,10 @@ describe('ListExpensesComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [ListExpensesComponent],
-      providers: [{ provide: ExpenseService, useValue: expenseServiceSpy }],
+      providers: [
+        provideRouter([]),
+        { provide: ExpenseService, useValue: expenseServiceSpy },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ListExpensesComponent);
@@ -80,6 +84,21 @@ describe('ListExpensesComponent', () => {
     const cellText = fixture.nativeElement.textContent as string;
     expect(cellText).toContain('Food');
     expect(cellText).toContain('Drinks');
+  });
+
+  // Verify the search/lookup pages are reachable from the expenses list
+  it('should render links to Search Expenses and Search Expense by ID', () => {
+    expenseServiceSpy.getExpenses.and.returnValue(of(mockExpenses));
+
+    fixture.detectChanges();
+
+    const links: HTMLAnchorElement[] = Array.from(
+      fixture.nativeElement.querySelectorAll('.page-actions a'),
+    );
+    const hrefs = links.map((a) => a.getAttribute('routerLink'));
+
+    expect(hrefs).toContain('/search-expenses');
+    expect(hrefs).toContain('/read-expense-by-id');
   });
 
   // Guard against a failed request leaving stale or partial data on screen
