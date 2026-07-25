@@ -17,6 +17,7 @@ import { CreateExpenseComponent } from './expenses/create-expense/create-expense
 import { ListExpensesComponent } from './expenses/list-expenses/list-expenses.component';
 import { ReadExpenseByIdComponent } from './expenses/read-expense-by-id/read-expense-by-id.component';
 import { LoginComponent } from './login/login.component';
+import { LandingComponent } from './landing/landing.component';
 import { AuthGuard } from './auth/auth.guard';
 import { UpdateExpenseComponent } from './expenses/update-expense/update-expense.component';
 import { SearchExpensesComponent } from './expenses/search-expenses/search-expenses.component';
@@ -33,8 +34,8 @@ import { CreateCategoryComponent } from './categories/create-category/create-cat
  * Protected routes require users to be authenticated before access is granted.
  */
 export const routes: Routes = [
-  // Redirect the application to the login page when no route is provided.
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  // Public landing page shown at the app root.
+  { path: '', component: LandingComponent },
 
   // Public login page.
   { path: 'login', component: LoginComponent },
