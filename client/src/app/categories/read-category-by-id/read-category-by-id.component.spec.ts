@@ -105,7 +105,6 @@ describe('ReadCategoryByIdComponent', () => {
 
     expect(component.selectedExpenses.length).toBe(2);
     expect(component.selectedExpenses[0].categoryName).toBe('Travel');
-    expect(component.successMessage).toBe('Expenses loaded');
   });
 
   it('should show error when no expenses exist', () => {
@@ -143,16 +142,10 @@ describe('ReadCategoryByIdComponent', () => {
     expect(input.getAttribute('type')).toBe('text');
   });
 
-  // The category name isn't visible anywhere else on this page once results
-  // load, so surface it as a badge rather than leave the user guessing which
-  // category ID they searched for
-  it('should show a category-name badge and results-meta line above the expenses table', () => {
+  it('should show the results-meta line above the expenses table', () => {
     component.categorySelectForm.setValue({ categoryId: '2' });
     component.onSelectCategory();
     fixture.detectChanges();
-
-    const badge = fixture.nativeElement.querySelector('.badge');
-    expect(badge.textContent).toContain('Travel');
 
     expect(fixture.nativeElement.querySelector('.result-table')).not.toBeNull();
     const meta = fixture.nativeElement.querySelector('.results-meta');

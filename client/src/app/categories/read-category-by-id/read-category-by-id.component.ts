@@ -24,10 +24,6 @@ import { AuthService } from '../../auth/auth.service';
   template: `
     <h1>Read Category Expenses</h1>
 
-    @if (successMessage) {
-      <p class="success-msg">{{ successMessage }}</p>
-    }
-
     @if (errorMessage) {
       <p class="error-msg">{{ errorMessage }}</p>
     }
@@ -68,10 +64,7 @@ import { AuthService } from '../../auth/auth.service';
 
     <!-- Step 2: Expense list -->
     @if (selectedExpenses.length > 0) {
-      <div class="badge-row">
-        <span class="badge">{{ selectedExpenses[0].categoryName }}</span>
-      </div>
-      <div class="panel">
+      <div class="results">
         <div class="table-scroll">
           <table class="result-table">
             <thead>
@@ -109,7 +102,6 @@ import { AuthService } from '../../auth/auth.service';
   styles: ``,
 })
 export class ReadCategoryByIdComponent implements OnInit {
-  successMessage = '';
   errorMessage = '';
 
   categorySelectForm: FormGroup;
@@ -156,21 +148,18 @@ export class ReadCategoryByIdComponent implements OnInit {
         if (!expenses || expenses.length === 0) {
           this.selectedExpenses = [];
           this.errorMessage = 'No expenses found for this category';
-          this.successMessage = '';
           this.loadUserCategories(this.authService.getUserId());
           return;
         }
 
         this.selectedExpenses = expenses;
         this.errorMessage = '';
-        this.successMessage = 'Expenses loaded';
       },
       error: (err) => {
         console.error('Backend error:', err);
         this.selectedExpenses = [];
         this.errorMessage =
           err.error?.message || 'No expenses found for this category';
-        this.successMessage = '';
         this.loadUserCategories(this.authService.getUserId());
       },
     });

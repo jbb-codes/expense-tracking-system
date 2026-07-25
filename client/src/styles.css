@@ -546,16 +546,24 @@ button[type="submit"]:hover {
 
 .field-row {
   display: flex;
+  flex-direction: row;
   gap: 0.6rem;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.field-row .btn {
+  flex-shrink: 0;
+  margin-top: 0;
 }
 
 .search-input-wrap {
   position: relative;
   flex: 1;
-  max-width: 420px;
+  min-width: 200px;
 }
 
 .search-input-wrap svg {
@@ -570,6 +578,7 @@ button[type="submit"]:hover {
 }
 
 .search-input-wrap input {
+  box-sizing: border-box;
   width: 100%;
   padding: 0.6rem 0.8rem 0.6rem 2.2rem;
 }
@@ -578,10 +587,9 @@ button[type="submit"]:hover {
   width: 100%;
 }
 
-/* Spaces the results panel away from the search form above it (general
-   sibling, since read-category-by-id has a .badge-row in between). The
-   panel's own padding already gives the table breathing room on the inside. */
-.field-row ~ .panel {
+/* Spaces the results block away from the search form above it (general
+   sibling combinator so it applies regardless of what sits between them). */
+.field-row ~ .results {
   margin-top: 1.25rem;
 }
 
@@ -590,11 +598,6 @@ button[type="submit"]:hover {
   font-size: 0.85rem;
   color: #666;
   margin-top: 0.6rem;
-}
-
-.badge-row {
-  text-align: center;
-  margin: 1rem 0;
 }
 
 .page-actions {
@@ -614,16 +617,6 @@ button[type="submit"]:hover {
   border-radius: 10px;
   margin-top: 1.25rem;
   font-size: 0.9rem;
-}
-
-.badge {
-  display: inline-block;
-  background: #cdeed8;
-  color: #1d9e4f;
-  border-radius: 999px;
-  padding: 0.2rem 0.75rem;
-  font-size: 0.82rem;
-  font-weight: 700;
 }
 
 footer {

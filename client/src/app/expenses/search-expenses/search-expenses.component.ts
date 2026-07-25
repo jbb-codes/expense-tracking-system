@@ -46,7 +46,7 @@ import { AuthService } from '../../auth/auth.service';
     }
 
     @if (expenses.length) {
-      <div class="panel">
+      <div class="results">
         <div class="table-scroll">
           <table class="result-table">
             <thead>

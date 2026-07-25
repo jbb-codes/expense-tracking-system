@@ -67,7 +67,7 @@ import { AuthService } from '../../auth/auth.service';
 
     <!-- Step 2: Expense details -->
     @if (selectedExpense) {
-      <div class="panel">
+      <div class="results">
         <div class="table-scroll">
           <table class="result-table">
             <thead>
