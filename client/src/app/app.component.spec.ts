@@ -1,113 +1,124 @@
-import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
 
 import { AppComponent } from './app.component';
+import { AuthService } from './auth/auth.service';
 import { routes } from './app.routes';
 
 describe('AppComponent', () => {
+  let fixture: ComponentFixture<AppComponent>;
+  let authServiceSpy: jasmine.SpyObj<AuthService>;
+  let router: Router;
+
   beforeEach(async () => {
+    authServiceSpy = jasmine.createSpyObj('AuthService', [
+      'isAuthenticated',
+      'getUsername',
+      'logout',
+    ]);
+
     await TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [provideRouter(routes)],
+      providers: [
+        provideRouter(routes),
+        { provide: AuthService, useValue: authServiceSpy },
+      ],
     }).compileComponents();
+
+    fixture = TestBed.createComponent(AppComponent);
+    router = TestBed.inject(Router);
   });
 
   it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    authServiceSpy.isAuthenticated.and.returnValue(false);
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render the nav closed by default with only the open button visible', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+  describe('when not authenticated', () => {
+    beforeEach(() => {
+      authServiceSpy.isAuthenticated.and.returnValue(false);
+      fixture.detectChanges();
+    });
 
-    const nav = fixture.nativeElement.querySelector('[data-testid="main-nav"]');
-    const openButton = fixture.nativeElement.querySelector(
-      '[data-testid="nav-open-button"]',
-    );
-    const closeButton = fixture.nativeElement.querySelector(
-      '[data-testid="nav-close-button"]',
-    );
-    const navLink = fixture.nativeElement.querySelector(
-      '[data-testid="main-nav"] a',
-    );
-
-    expect(nav.classList.contains('nav--open')).toBeFalse();
-    expect(openButton).not.toBeNull();
-    expect(closeButton).toBeNull();
-    expect(navLink).toBeNull();
+    it('should not render the sidebar or topbar shell', () => {
+      expect(fixture.nativeElement.querySelector('.sidebar')).toBeNull();
+      expect(fixture.nativeElement.querySelector('.topbar')).toBeNull();
+    });
   });
 
-  it('should open the nav and mount the close button and links together when the open button is clicked', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+  describe('when authenticated', () => {
+    beforeEach(() => {
+      authServiceSpy.isAuthenticated.and.returnValue(true);
+      authServiceSpy.getUsername.and.returnValue('Emily');
+      fixture.detectChanges();
+    });
 
-    const openButton = fixture.nativeElement.querySelector(
-      '[data-testid="nav-open-button"]',
-    );
-    openButton.click();
-    fixture.detectChanges();
+    it('should render sidebar links limited to Dashboard, Expenses, Categories', () => {
+      const links = Array.from(
+        fixture.nativeElement.querySelectorAll('.sidebar__link'),
+      ).map((a: any) => a.textContent.trim().replace(/\s+/g, ' '));
 
-    const nav = fixture.nativeElement.querySelector('[data-testid="main-nav"]');
-    const closeButton = fixture.nativeElement.querySelector(
-      '[data-testid="nav-close-button"]',
-    );
-    const navLink = fixture.nativeElement.querySelector(
-      '[data-testid="main-nav"] a',
-    );
+      expect(links.length).toBe(3);
+      expect(links[0]).toContain('Dashboard');
+      expect(links[1]).toContain('Expenses');
+      expect(links[2]).toContain('Categories');
+    });
 
-    expect(nav.classList.contains('nav--open')).toBeTrue();
-    expect(closeButton).not.toBeNull();
-    expect(navLink).not.toBeNull();
-    expect(
-      fixture.nativeElement.querySelector('[data-testid="nav-open-button"]'),
-    ).toBeNull();
-  });
+    it('should show the welcome greeting with the username', () => {
+      const topbarRight = fixture.nativeElement.querySelector('.topbar__right');
+      expect(topbarRight.textContent).toContain('Welcome, Emily!');
+    });
 
-  it('should close the nav and unmount the close button and links together when the close button is clicked', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+    it('should keep the nav closed by default and hide the sidebar', () => {
+      const shell = fixture.nativeElement.querySelector('.shell');
+      expect(shell.classList.contains('shell--nav-closed')).toBeTrue();
+    });
 
-    fixture.nativeElement
-      .querySelector('[data-testid="nav-open-button"]')
-      .click();
-    fixture.detectChanges();
+    it('should toggle the nav open and closed using a single button element', () => {
+      const toggleButtons = () =>
+        fixture.nativeElement.querySelectorAll('.shell__toggle');
 
-    fixture.nativeElement
-      .querySelector('[data-testid="nav-close-button"]')
-      .click();
-    fixture.detectChanges();
+      expect(toggleButtons().length).toBe(1);
 
-    const nav = fixture.nativeElement.querySelector('[data-testid="main-nav"]');
-    const openButton = fixture.nativeElement.querySelector(
-      '[data-testid="nav-open-button"]',
-    );
-    const closeButton = fixture.nativeElement.querySelector(
-      '[data-testid="nav-close-button"]',
-    );
-    const navLink = fixture.nativeElement.querySelector(
-      '[data-testid="main-nav"] a',
-    );
+      toggleButtons()[0].click();
+      fixture.detectChanges();
 
-    expect(nav.classList.contains('nav--open')).toBeFalse();
-    expect(openButton).not.toBeNull();
-    expect(closeButton).toBeNull();
-    expect(navLink).toBeNull();
-  });
+      const shell = fixture.nativeElement.querySelector('.shell');
+      expect(shell.classList.contains('shell--nav-closed')).toBeFalse();
+      expect(toggleButtons().length).toBe(1);
 
-  it('should place the close button inside the nav element', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+      toggleButtons()[0].click();
+      fixture.detectChanges();
+      expect(shell.classList.contains('shell--nav-closed')).toBeTrue();
+    });
 
-    fixture.nativeElement
-      .querySelector('[data-testid="nav-open-button"]')
-      .click();
-    fixture.detectChanges();
+    it('should keep the user menu popover closed until the avatar is clicked', () => {
+      expect(
+        fixture.nativeElement.querySelector('.user-menu__popover'),
+      ).toBeNull();
 
-    const nav = fixture.nativeElement.querySelector('[data-testid="main-nav"]');
-    const closeButton = nav.querySelector('[data-testid="nav-close-button"]');
+      fixture.nativeElement.querySelector('.user-menu__avatar').click();
+      fixture.detectChanges();
 
-    expect(closeButton).not.toBeNull();
+      expect(
+        fixture.nativeElement.querySelector('.user-menu__popover'),
+      ).not.toBeNull();
+    });
+
+    it('should log out, close the user menu, and navigate to /login when Sign Out is clicked', () => {
+      const navigateSpy = spyOn(router, 'navigate');
+
+      fixture.nativeElement.querySelector('.user-menu__avatar').click();
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('.user-menu__signout').click();
+      fixture.detectChanges();
+
+      expect(authServiceSpy.logout).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith(['/login']);
+      expect(
+        fixture.nativeElement.querySelector('.user-menu__popover'),
+      ).toBeNull();
+    });
   });
 });

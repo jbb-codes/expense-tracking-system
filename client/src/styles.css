@@ -30,68 +30,99 @@ html {
   align-items: stretch;
 }
 
-nav {
+/* ---------- App shell: sidebar + topbar (authenticated routes) ---------- */
+
+.shell {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-height: 90vh;
+}
+
+.sidebar {
+  flex: 0 0 170px;
   background-color: #edecf1;
-  height: auto;
-  box-shadow: 8px 0 8px -4px #89888b;
+  border-right: 1px solid #192a53;
   display: flex;
   flex-direction: column;
-  width: 0;
-  padding-top: 0;
-  overflow: hidden;
+  padding: 3.5rem 0 1.25rem;
 }
 
-nav.nav--open {
-  width: 16rem;
-  padding-top: 1.5rem;
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.25rem;
+  text-decoration: none;
+  font-size: 0.95rem;
+  color: #000;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  nav {
-    transition:
-      width 0.2s ease,
-      padding-top 0.2s ease;
-  }
+.sidebar__link:hover {
+  background-color: #b9c9ed;
 }
 
-.nav-toggle-button {
+.sidebar__link--active {
+  background-color: #b9c9ed;
+  font-weight: 700;
+  border-right: 3px solid #192a53;
+}
+
+.sidebar__icon {
+  width: 1.1rem;
+  text-align: center;
+}
+
+.shell--nav-closed .sidebar {
+  display: none;
+}
+
+.shell--nav-closed .topbar {
+  padding-left: 4rem;
+}
+
+.shell__toggle {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.75rem;
+  z-index: 2;
   box-sizing: border-box;
-  width: 2.5rem;
-  height: 2.5rem;
-  margin: 0 0 1rem 1rem;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid #192a53;
+  border-radius: 10px;
+  background-color: #b9c9ed;
   background-image: none;
   -webkit-appearance: none;
   appearance: none;
   outline: none;
   cursor: pointer;
+  font-size: 1.9rem;
+  line-height: 1;
 }
 
-.nav-toggle-button--fixed {
-  position: fixed;
-  top: 1.5rem;
-  left: 1rem;
-  z-index: 10;
-  margin: 0;
-  box-shadow: 0 1px 4px #89888b;
+.shell__toggle:hover {
+  background-color: #798dbd;
 }
 
-.nav-toggle-button__icon {
+.shell__toggle-icon {
   position: relative;
   display: block;
   width: 1.25rem;
 }
 
-.nav-toggle-button__icon--open {
+.shell__toggle-icon--open {
   height: 2px;
   background-color: #424e63;
 }
 
-.nav-toggle-button__icon--open::before,
-.nav-toggle-button__icon--open::after {
+.shell__toggle-icon--open::before,
+.shell__toggle-icon--open::after {
   content: "";
   position: absolute;
   left: 0;
@@ -100,20 +131,20 @@ nav.nav--open {
   background-color: #424e63;
 }
 
-.nav-toggle-button__icon--open::before {
+.shell__toggle-icon--open::before {
   top: -5px;
 }
 
-.nav-toggle-button__icon--open::after {
+.shell__toggle-icon--open::after {
   top: 5px;
 }
 
-.nav-toggle-button__icon--close {
+.shell__toggle-icon--close {
   height: 1.25rem;
 }
 
-.nav-toggle-button__icon--close::before,
-.nav-toggle-button__icon--close::after {
+.shell__toggle-icon--close::before,
+.shell__toggle-icon--close::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -123,37 +154,258 @@ nav.nav--open {
   background-color: #424e63;
 }
 
-.nav-toggle-button__icon--close::before {
+.shell__toggle-icon--close::before {
   transform: rotate(45deg);
 }
 
-.nav-toggle-button__icon--close::after {
+.shell__toggle-icon--close::after {
   transform: rotate(-45deg);
 }
 
-nav a {
+.shell__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 3.5rem;
+  gap: 0.75rem;
+  padding: 0.5rem 1.5rem;
+  border-bottom: 1px solid #192a53;
+}
+
+.topbar__brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-menu__avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #b9c9ed;
+  border: 1px solid #192a53;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.user-menu__avatar:hover {
+  background-color: #798dbd;
+}
+
+.user-menu__popover {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 160px;
+  background-color: #fff;
+  border: 1px solid #192a53;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(25, 42, 83, 0.15);
+  padding: 0.75rem;
+  z-index: 5;
+}
+
+.user-menu__signout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #000;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.user-menu__signout:hover {
+  text-decoration: underline;
+}
+
+.user-menu__signout-icon {
+  flex: 0 0 auto;
+}
+
+.shell__content {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.shell__content > * {
+  width: 100%;
+  max-width: 900px;
+}
+
+.shell__content h1,
+.shell__content h2,
+.shell__content p {
+  text-align: center;
+}
+
+.shell__content h2 {
+  margin: 0 0 1rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/* table/form don't stretch to fill their container the way block
+   elements do, so the width-cap above leaves them at their natural
+   (narrower) width, uncentered, inside the now-centered host element. */
+.shell__content table,
+.shell__content form {
+  margin: 0 auto;
+}
+
+/* The dashboard is the one shell__content page with an approved
+   left-aligned layout (mockup), so it opts back out of the centered
+   heading treatment and table centering every other authenticated page
+   relies on above. */
+.shell__content .dashboard h1,
+.shell__content .dashboard h2 {
+  text-align: left;
+}
+
+.dashboard table {
+  margin: 0;
+}
+
+/* .dashboard is the sole child .shell__content sees now, so its own
+   gap only spaces things apart above this element - the dashboard's
+   internal sections (heading, summary, recent expenses/quick actions)
+   need their own flex+gap to stay apart from each other. */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ---------- Dashboard content ---------- */
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.stat-card {
+  background-color: #f6f3f3;
+  border: 1px solid #192a53;
+  border-radius: 10px;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  min-width: 0;
+}
+
+.stat-card__label {
+  font-size: 0.8rem;
+  color: #444;
+  margin-bottom: 0.4rem;
+}
+
+.stat-card__value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #192a53;
+}
+
+.lower-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 560px) {
+  .lower-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background-color: #f6f3f3;
+  border: 1px solid #192a53;
+  border-radius: 10px;
+  padding: 1.25rem;
+  min-width: 0;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.view-all {
   display: block;
-  padding: 1rem 4rem 1rem 1rem;
+  text-align: right;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #192a53;
   text-decoration: none;
 }
 
-nav a:hover {
-  background-color: #c8d4ef;
+.view-all:hover {
+  text-decoration: underline;
 }
 
-nav a:visited {
-  color: #424e63;
-}
-
-.nav-button-wrapper {
-  width: 100%;
+.quick-actions {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-nav button {
-  margin-bottom: 20px;
-  width: 80%;
+.quick-actions .btn {
+  width: 100%;
+  text-align: center;
+}
+
+.btn {
+  box-sizing: border-box;
+  display: inline-block;
+  background-color: #b9c9ed;
+  cursor: pointer;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid #192a53;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #000;
+}
+
+.btn:hover {
+  background-color: #798dbd;
+}
+
+.btn--success {
+  background-color: #cdeed8;
+}
+
+.btn--success:hover {
+  background-color: #1d9e4f;
+  color: #fff;
 }
 
 main {
@@ -162,7 +414,7 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10rem 1rem 2rem;
+  padding: 2rem 1rem;
 }
 
 main > * {
@@ -197,8 +449,7 @@ h2 {
 }
 
 h3,
-label,
-nav a {
+label {
   font-family: "Baloo Da 2", "Arial", "sans-serif";
   font-size: 1.3rem;
   font-weight: 400;
@@ -267,21 +518,6 @@ button[type="submit"]:hover {
 
 .error-msg {
   color: #f11212;
-}
-
-button.nav-toggle-button,
-button.nav-toggle-button--fixed {
-  box-sizing: border-box;
-  padding: 0;
-  border: 1px solid #192a53;
-  border-radius: 10px;
-  margin-top: 0;
-  background-color: #b9c9ed;
-}
-
-button.nav-toggle-button:hover,
-button.nav-toggle-button--fixed:hover {
-  background-color: #798dbd;
 }
 
 .success-msg {
