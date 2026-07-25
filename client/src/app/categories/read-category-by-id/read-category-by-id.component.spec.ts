@@ -20,8 +20,8 @@ class MockAuthService {
 class MockCategoryService {
   getCategories(userId: number) {
     return of([
-      { _id: "cat1", userId: 123, categoryId: 1, name: "Food" },
-      { _id: "cat2", userId: 123, categoryId: 2, name: "Travel" }
+      { _id: 'cat1', userId: 123, categoryId: 1, name: 'Food' },
+      { _id: 'cat2', userId: 123, categoryId: 2, name: 'Travel' },
     ]);
   }
 
@@ -29,37 +29,37 @@ class MockCategoryService {
     if (categoryId === 1) {
       return of([
         {
-          _id: "exp1",
+          _id: 'exp1',
           userId: 123,
           categoryId: 1,
-          categoryName: "Food",
+          categoryName: 'Food',
           amount: 20,
-          description: "Lunch",
-          date: new Date().toISOString()
-        }
+          description: 'Lunch',
+          date: new Date().toISOString(),
+        },
       ]);
     }
 
     if (categoryId === 2) {
       return of([
         {
-          _id: "exp2",
+          _id: 'exp2',
           userId: 123,
           categoryId: 2,
-          categoryName: "Travel",
+          categoryName: 'Travel',
           amount: 100,
-          description: "Gas",
-          date: new Date().toISOString()
+          description: 'Gas',
+          date: new Date().toISOString(),
         },
         {
-          _id: "exp3",
+          _id: 'exp3',
           userId: 123,
           categoryId: 2,
-          categoryName: "Travel",
+          categoryName: 'Travel',
           amount: 750,
-          description: "Hotel",
-          date: new Date().toISOString()
-        }
+          description: 'Hotel',
+          date: new Date().toISOString(),
+        },
       ]);
     }
 
@@ -77,8 +77,8 @@ describe('ReadCategoryByIdComponent', () => {
       imports: [ReadCategoryByIdComponent],
       providers: [
         { provide: CategoryService, useClass: MockCategoryService },
-        { provide: AuthService, useClass: MockAuthService }
-      ]
+        { provide: AuthService, useClass: MockAuthService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReadCategoryByIdComponent);
@@ -94,8 +94,8 @@ describe('ReadCategoryByIdComponent', () => {
 
   it('should load categories on init', () => {
     expect(component.userCategories.length).toBe(2);
-    expect(component.userCategories[0].name).toBe("Food");
-    expect(component.userCategories[1].name).toBe("Travel");
+    expect(component.userCategories[0].name).toBe('Food');
+    expect(component.userCategories[1].name).toBe('Travel');
   });
 
   it('should load expenses for selected category', () => {
@@ -104,8 +104,8 @@ describe('ReadCategoryByIdComponent', () => {
     component.onSelectCategory();
 
     expect(component.selectedExpenses.length).toBe(2);
-    expect(component.selectedExpenses[0].categoryName).toBe("Travel");
-    expect(component.successMessage).toBe("Expenses loaded");
+    expect(component.selectedExpenses[0].categoryName).toBe('Travel');
+    expect(component.successMessage).toBe('Expenses loaded');
   });
 
   it('should show error when no expenses exist', () => {
@@ -114,7 +114,48 @@ describe('ReadCategoryByIdComponent', () => {
     component.onSelectCategory();
 
     expect(component.selectedExpenses.length).toBe(0);
-    expect(component.errorMessage).toBe("No expenses found for this category");
+    expect(component.errorMessage).toBe('No expenses found for this category');
+  });
+
+  // Guard against the ID datalist going stale: a failed lookup (deleted/renamed
+  // category) refreshes the suggestion list instead of leaving old IDs cached
+  it('should refresh the category datalist after a lookup that finds nothing', () => {
+    const getCategoriesSpy = spyOn(
+      categoryService,
+      'getCategories',
+    ).and.callThrough();
+
+    component.categorySelectForm.setValue({ categoryId: '999' });
+    component.onSelectCategory();
+
+    expect(getCategoriesSpy).toHaveBeenCalledTimes(1);
+  });
+
+  // Free-text search replaces the raw-ID <select> so users don't have to
+  // already know a category's internal ID before they can look it up
+  it('should render a text search input for the category ID instead of a select', () => {
+    expect(fixture.nativeElement.querySelector('select')).toBeNull();
+
+    const input = fixture.nativeElement.querySelector(
+      'input[formControlName="categoryId"]',
+    );
+    expect(input).not.toBeNull();
+    expect(input.getAttribute('type')).toBe('text');
+  });
+
+  // The category name isn't visible anywhere else on this page once results
+  // load, so surface it as a badge rather than leave the user guessing which
+  // category ID they searched for
+  it('should show a category-name badge and results-meta line above the expenses table', () => {
+    component.categorySelectForm.setValue({ categoryId: '2' });
+    component.onSelectCategory();
+    fixture.detectChanges();
+
+    const badge = fixture.nativeElement.querySelector('.badge');
+    expect(badge.textContent).toContain('Travel');
+
+    expect(fixture.nativeElement.querySelector('.result-table')).not.toBeNull();
+    const meta = fixture.nativeElement.querySelector('.results-meta');
+    expect(meta.textContent).toContain('2');
   });
 });
-

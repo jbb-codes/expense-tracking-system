@@ -97,4 +97,30 @@ describe('SearchExpensesComponent', () => {
     const tableText = fixture.nativeElement.textContent;
     expect(tableText).toContain('Meals');
   });
+
+  // Confirm the results count reflects both the match count and the search term
+  it('should show a results-meta line with the match count and search term', () => {
+    expenseServiceSpy.searchExpenses.and.returnValue(of(mockExpenses));
+
+    component.searchForm.setValue({ description: 'lunch' });
+    component.onSearch();
+    fixture.detectChanges();
+
+    const meta = fixture.nativeElement.querySelector('.results-meta');
+    expect(meta.textContent).toContain('1 result');
+    expect(meta.textContent).toContain('lunch');
+  });
+
+  // Guard against a confusing blank table when a search legitimately matches nothing
+  it('should show an empty-state message when the search returns no results', () => {
+    expenseServiceSpy.searchExpenses.and.returnValue(of([]));
+
+    component.searchForm.setValue({ description: 'nonexistent' });
+    component.onSearch();
+    fixture.detectChanges();
+
+    const emptyState = fixture.nativeElement.querySelector('.empty-state');
+    expect(emptyState).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.results-meta')).toBeNull();
+  });
 });

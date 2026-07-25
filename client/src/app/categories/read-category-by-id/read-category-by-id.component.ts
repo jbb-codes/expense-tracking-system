@@ -8,8 +8,13 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Category, CategoryService } from '../category.service';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
@@ -27,52 +32,81 @@ import { AuthService } from '../../auth/auth.service';
       <p class="error-msg">{{ errorMessage }}</p>
     }
 
-    <!-- Step 1: Select category -->
-    <form [formGroup]="categorySelectForm" (ngSubmit)="onSelectCategory()">
-      <label for="categoryId">Select Category</label>
-      <select id="categoryId" formControlName="categoryId">
-        @for (cat of userCategories; track cat.categoryId) {
-          <option [value]="cat.categoryId">
-            {{ cat.categoryId }} - {{ cat.name }}
-          </option>
-        }
-      </select>
+    <!-- Step 1: Search for a category by ID -->
+    <form
+      [formGroup]="categorySelectForm"
+      (ngSubmit)="onSelectCategory()"
+      class="field-row"
+    >
+      <div class="search-input-wrap">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input
+          id="categoryId"
+          type="text"
+          formControlName="categoryId"
+          list="category-id-options"
+          placeholder="Category ID…"
+        />
+        <datalist id="category-id-options">
+          @for (cat of userCategories; track cat.categoryId) {
+            <option [value]="cat.categoryId">{{ cat.name }}</option>
+          }
+        </datalist>
+      </div>
 
-      <button type="submit">Load Category Expenses</button>
+      <button type="submit" class="btn">Load</button>
     </form>
 
     <!-- Step 2: Expense list -->
     @if (selectedExpenses.length > 0) {
-      <table>
-        <thead>
-          <tr>
-            <th>Category ID</th>
-            <th>Category</th>
-            <th>Amount</th>
-            <th>Description</th>
-            <th>Date</th>
-          </tr>
-        </thead>
+      <div class="badge-row">
+        <span class="badge">{{ selectedExpenses[0].categoryName }}</span>
+      </div>
+      <div class="panel">
+        <div class="table-scroll">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>Category ID</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Date</th>
+              </tr>
+            </thead>
 
-        <tbody>
-          @for (exp of selectedExpenses; track exp._id) {
-            <tr>
-              <td>{{ exp.categoryId }}</td>
-              <td>{{ exp.categoryName }}</td>
-              <td>{{ exp.amount | currency:'USD' }}</td>
-              <td>{{ exp.description }}</td>
-              <td>{{ exp.date | date }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+            <tbody>
+              @for (exp of selectedExpenses; track exp._id) {
+                <tr>
+                  <td>{{ exp.categoryId }}</td>
+                  <td>{{ exp.categoryName }}</td>
+                  <td>{{ exp.amount | currency: 'USD' }}</td>
+                  <td>{{ exp.description }}</td>
+                  <td>{{ exp.date | date }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="results-meta">
+          {{ selectedExpenses.length }} result{{
+            selectedExpenses.length === 1 ? '' : 's'
+          }}
+          for category ID "{{ categorySelectForm.value.categoryId }}"
+        </p>
+      </div>
     }
   `,
-  styles: `
-    button {
-      margin-bottom: 2rem;
-    }
-  `
+  styles: ``,
 })
 export class ReadCategoryByIdComponent implements OnInit {
   successMessage = '';
@@ -86,10 +120,10 @@ export class ReadCategoryByIdComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private categoryService: CategoryService,
-    private authService: AuthService
+    private authService: AuthService,
   ) {
     this.categorySelectForm = this.fb.group({
-      categoryId: ['', Validators.required]
+      categoryId: ['', Validators.required],
     });
   }
 
@@ -105,7 +139,7 @@ export class ReadCategoryByIdComponent implements OnInit {
       },
       error: () => {
         this.errorMessage = 'Unable to load categories';
-      }
+      },
     });
   }
 
@@ -123,6 +157,7 @@ export class ReadCategoryByIdComponent implements OnInit {
           this.selectedExpenses = [];
           this.errorMessage = 'No expenses found for this category';
           this.successMessage = '';
+          this.loadUserCategories(this.authService.getUserId());
           return;
         }
 
@@ -133,9 +168,11 @@ export class ReadCategoryByIdComponent implements OnInit {
       error: (err) => {
         console.error('Backend error:', err);
         this.selectedExpenses = [];
-        this.errorMessage = err.error?.message || 'No expenses found for this category';
+        this.errorMessage =
+          err.error?.message || 'No expenses found for this category';
         this.successMessage = '';
-      }
+        this.loadUserCategories(this.authService.getUserId());
+      },
     });
   }
 }
