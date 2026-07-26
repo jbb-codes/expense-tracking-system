@@ -467,7 +467,9 @@ h2 {
 }
 
 h3,
-label {
+label,
+.topbar,
+.topbar__brand {
   font-family: "Baloo Da 2", "Arial", "sans-serif";
   font-size: 1.3rem;
   font-weight: 400;
