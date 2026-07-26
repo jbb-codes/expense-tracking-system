@@ -6,17 +6,24 @@
  * Description: Unit tests for the Update Expense Angular component.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { of } from 'rxjs';
 
 import { UpdateExpenseComponent } from './update-expense.component';
 import { ExpenseService } from '../expense.service';
+import { CategoryService } from '../../categories/category.service';
 import { AuthService } from '../../auth/auth.service';
 
 describe('UpdateExpenseComponent', () => {
   let component: UpdateExpenseComponent;
   let fixture: ComponentFixture<UpdateExpenseComponent>;
   let expenseServiceSpy: jasmine.SpyObj<ExpenseService>;
+  let categoryServiceSpy: jasmine.SpyObj<CategoryService>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
 
   beforeEach(async () => {
@@ -31,10 +38,20 @@ describe('UpdateExpenseComponent', () => {
       'updateExpense',
     ]);
 
+    categoryServiceSpy = jasmine.createSpyObj('CategoryService', [
+      'getCategories',
+    ]);
+
     authServiceSpy = jasmine.createSpyObj('AuthService', ['getUserId']);
 
     authServiceSpy.getUserId.and.returnValue(1000);
     expenseServiceSpy.getExpenses.and.returnValue(of([]));
+    categoryServiceSpy.getCategories.and.returnValue(
+      of([
+        { _id: 'cat1', categoryId: 1, userId: 1000, name: 'Dining' },
+        { _id: 'cat2', categoryId: 2, userId: 1000, name: 'Groceries' },
+      ]),
+    );
 
     await TestBed.configureTestingModule({
       imports: [UpdateExpenseComponent],
@@ -42,6 +59,10 @@ describe('UpdateExpenseComponent', () => {
         {
           provide: ExpenseService,
           useValue: expenseServiceSpy,
+        },
+        {
+          provide: CategoryService,
+          useValue: categoryServiceSpy,
         },
         {
           provide: AuthService,
@@ -62,6 +83,17 @@ describe('UpdateExpenseComponent', () => {
    */
   it('should create the component', () => {
     expect(component).toBeTruthy();
+  });
+
+  /**
+   * Test: Confirms categories are loaded for the dropdown on init.
+   */
+  it('should load categories for the current user on init', () => {
+    expect(categoryServiceSpy.getCategories).toHaveBeenCalledWith(1000);
+    expect(component.categories).toEqual([
+      { _id: 'cat1', categoryId: 1, userId: 1000, name: 'Dining' },
+      { _id: 'cat2', categoryId: 2, userId: 1000, name: 'Groceries' },
+    ]);
   });
 
   /**
@@ -91,13 +123,42 @@ describe('UpdateExpenseComponent', () => {
 
     expect(component.selectedExpenseId).toBe('exp123');
     expect(component.expenseForm.value).toEqual({
-      userId: 1000,
       categoryId: 2,
       amount: 75.5,
       description: 'Groceries',
       date: '2026-07-12',
     });
   });
+
+  /**
+   * Confirms that the "expense loaded" message clears itself after
+   * a few seconds so it doesn't linger once the user moves on to
+   * selecting another expense or submitting the update form.
+   */
+  it('should clear the select message a few seconds after an expense is loaded', fakeAsync(() => {
+    expenseServiceSpy.getExpenseById.and.returnValue(
+      of({
+        _id: 'exp123',
+        userId: 1000,
+        categoryId: 2,
+        amount: 75.5,
+        description: 'Groceries',
+        date: '2026-07-12T00:00:00.000Z',
+      }),
+    );
+
+    component.expenseSelectForm.setValue({
+      expenseId: 'exp123',
+    });
+
+    component.onSelectExpense();
+
+    expect(component.selectMessage).toBe('Expense loaded successfully.');
+
+    tick(3000);
+
+    expect(component.selectMessage).toBe('');
+  }));
 
   /**
    * Amanda Ruff
@@ -120,7 +181,6 @@ describe('UpdateExpenseComponent', () => {
     component.selectedExpenseId = 'exp123';
 
     component.expenseForm.setValue({
-      userId: 1000,
       categoryId: 2,
       amount: 85,
       description: 'Updated groceries',

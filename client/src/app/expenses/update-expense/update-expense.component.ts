@@ -8,7 +8,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -16,7 +16,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { ExpenseService } from '../expense.service';
+import { Category, CategoryService } from '../../categories/category.service';
 import { AuthService } from '../../auth/auth.service';
+
+const SELECT_MESSAGE_DURATION_MS = 3000;
 
 @Component({
   selector: 'app-update-expense',
@@ -25,12 +28,8 @@ import { AuthService } from '../../auth/auth.service';
   template: `
     <h1>Update Expense</h1>
 
-    @if (successMessage) {
-      <p class="success-msg">{{ successMessage }}</p>
-    }
-
-    @if (errorMessage) {
-      <p class="error-msg">{{ errorMessage }}</p>
+    @if (categoryErrorMessage) {
+      <p class="error-msg">{{ categoryErrorMessage }}</p>
     }
 
     <!--
@@ -51,6 +50,14 @@ import { AuthService } from '../../auth/auth.service';
       </select>
 
       <button type="submit">Load Expense</button>
+
+      @if (selectMessage) {
+        <p class="success-msg">{{ selectMessage }}</p>
+      }
+
+      @if (selectErrorMessage) {
+        <p class="error-msg">{{ selectErrorMessage }}</p>
+      }
     </form>
 
     <!--
@@ -59,11 +66,14 @@ import { AuthService } from '../../auth/auth.service';
     -->
     @if (selectedExpenseId) {
       <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
-        <label for="userId">User ID</label>
-        <input id="userId" type="number" formControlName="userId" />
+        <label for="categoryId">Category</label>
+        <select id="categoryId" formControlName="categoryId">
+          <option value="">Choose a category</option>
 
-        <label for="categoryId">Category ID</label>
-        <input id="categoryId" type="number" formControlName="categoryId" />
+          @for (category of categories; track category.categoryId) {
+            <option [ngValue]="category.categoryId">{{ category.name }}</option>
+          }
+        </select>
 
         <label for="amount">Amount</label>
         <input id="amount" type="number" step="0.01" formControlName="amount" />
@@ -75,6 +85,14 @@ import { AuthService } from '../../auth/auth.service';
         <input id="date" type="date" formControlName="date" />
 
         <button type="submit">Update Expense</button>
+
+        @if (successMessage) {
+          <p class="success-msg">{{ successMessage }}</p>
+        }
+
+        @if (errorMessage) {
+          <p class="error-msg">{{ errorMessage }}</p>
+        }
       </form>
     }
   `,
@@ -99,19 +117,26 @@ import { AuthService } from '../../auth/auth.service';
     }
   `,
 })
-export class UpdateExpenseComponent implements OnInit {
+export class UpdateExpenseComponent implements OnInit, OnDestroy {
   successMessage = '';
   errorMessage = '';
+  selectMessage = '';
+  selectErrorMessage = '';
+  categoryErrorMessage = '';
 
   userExpenses: any[] = [];
+  categories: Category[] = [];
   selectedExpenseId = '';
 
   expenseSelectForm: FormGroup;
   expenseForm: FormGroup;
 
+  private selectMessageTimeoutId?: ReturnType<typeof setTimeout>;
+
   constructor(
     private fb: FormBuilder,
     private expenseService: ExpenseService,
+    private categoryService: CategoryService,
     private authService: AuthService,
   ) {
     /**
@@ -127,7 +152,6 @@ export class UpdateExpenseComponent implements OnInit {
      * Form containing the editable expense fields.
      */
     this.expenseForm = this.fb.group({
-      userId: [null, Validators.required],
       categoryId: [null, Validators.required],
       amount: [null, [Validators.required, Validators.min(0.01)]],
       description: [''],
@@ -142,6 +166,11 @@ export class UpdateExpenseComponent implements OnInit {
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     this.loadUserExpenses(userId);
+    this.loadCategories(userId);
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.selectMessageTimeoutId);
   }
 
   /**
@@ -162,14 +191,31 @@ export class UpdateExpenseComponent implements OnInit {
   }
 
   /**
+   * Retrieves the current user's categories so the category
+   * field can render as a name dropdown instead of a numeric input.
+   */
+  loadCategories(userId: number): void {
+    this.categoryService.getCategories(userId).subscribe({
+      next: (categories) => {
+        this.categories = categories;
+        this.categoryErrorMessage = '';
+      },
+      error: () => {
+        this.categoryErrorMessage = 'Unable to load categories.';
+      },
+    });
+  }
+
+  /**
    * Amanda Ruff
    * Loads the selected expense and fills the update form
    * with its current values.
    */
   onSelectExpense(): void {
     if (this.expenseSelectForm.invalid) {
-      this.errorMessage = 'Please select an expense.';
-      this.successMessage = '';
+      clearTimeout(this.selectMessageTimeoutId);
+      this.selectErrorMessage = 'Please select an expense.';
+      this.selectMessage = '';
       return;
     }
 
@@ -189,21 +235,36 @@ export class UpdateExpenseComponent implements OnInit {
           : '';
 
         this.expenseForm.patchValue({
-          userId: expense.userId,
           categoryId: expense.categoryId,
           amount: expense.amount,
           description: expense.description || '',
           date: formattedDate,
         });
 
-        this.successMessage = 'Expense loaded successfully.';
-        this.errorMessage = '';
+        this.showSelectMessage('Expense loaded successfully.');
       },
       error: () => {
-        this.errorMessage = 'Unable to load the selected expense.';
-        this.successMessage = '';
+        clearTimeout(this.selectMessageTimeoutId);
+        this.selectErrorMessage = 'Unable to load the selected expense.';
+        this.selectMessage = '';
       },
     });
+  }
+
+  /**
+   * Shows the "expense loaded" success message and clears it after a
+   * few seconds so it doesn't linger once the user selects another
+   * expense or submits the update form.
+   */
+  private showSelectMessage(message: string): void {
+    clearTimeout(this.selectMessageTimeoutId);
+
+    this.selectMessage = message;
+    this.selectErrorMessage = '';
+
+    this.selectMessageTimeoutId = setTimeout(() => {
+      this.selectMessage = '';
+    }, SELECT_MESSAGE_DURATION_MS);
   }
 
   /**
@@ -232,6 +293,7 @@ export class UpdateExpenseComponent implements OnInit {
     const updatedExpense = {
       _id: this.selectedExpenseId,
       username: '',
+      userId: this.authService.getUserId(),
       ...this.expenseForm.value,
     };
 

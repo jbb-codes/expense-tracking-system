@@ -110,4 +110,28 @@ describe('ReadExpenseByIdComponent', () => {
     expect(component.errorMessage).toBe('Unable to load expense details');
     expect(component.selectedExpense).toBeNull();
   });
+
+  // Free-text search replaces the raw-ID <select> so users don't have to
+  // already know an expense's internal ID before they can look it up
+  it('should render a text search input for the expense ID instead of a select', () => {
+    expect(fixture.nativeElement.querySelector('select')).toBeNull();
+
+    const input = fixture.nativeElement.querySelector(
+      'input[formControlName="expenseId"]',
+    );
+    expect(input).not.toBeNull();
+    expect(input.getAttribute('type')).toBe('text');
+  });
+
+  // A single matched record still uses the shared result-table + results-meta
+  // layout so this page reads consistently with the other lookup pages
+  it('should show the loaded expense in a result-table with a results-meta line', () => {
+    component.expenseSelectForm.setValue({ expenseId: 'exp2' });
+    component.onSelectExpense();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.result-table')).not.toBeNull();
+    const meta = fixture.nativeElement.querySelector('.results-meta');
+    expect(meta.textContent).toContain('exp2');
+  });
 });

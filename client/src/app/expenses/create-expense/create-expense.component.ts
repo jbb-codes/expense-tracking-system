@@ -6,9 +6,16 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ExpenseService } from '../expense.service';
+import { Category, CategoryService } from '../../categories/category.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-create-expense',
@@ -17,6 +24,25 @@ import { ExpenseService } from '../expense.service';
   template: `
     <h1>Create Expense</h1>
 
+    <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
+      <label for="categoryId">Category</label>
+      <select id="categoryId" formControlName="categoryId">
+        @for (category of categories; track category.categoryId) {
+          <option [ngValue]="category.categoryId">{{ category.name }}</option>
+        }
+      </select>
+
+      <label for="amount">Amount</label>
+      <input id="amount" type="number" formControlName="amount" />
+
+      <label for="description">Description</label>
+      <input id="description" type="text" formControlName="description" />
+
+      <label for="date">Date</label>
+      <input id="date" type="date" formControlName="date" />
+
+      <button type="submit">Create Expense</button>
+
       @if (successMessage) {
         <p class="success-msg">{{ successMessage }}</p>
       }
@@ -24,44 +50,39 @@ import { ExpenseService } from '../expense.service';
       @if (errorMessage) {
         <p class="error-msg">{{ errorMessage }}</p>
       }
-
-      <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
-        <label for="userId">User ID</label>
-        <input id="userId" type="number" formControlName="userId">
-
-        <label for="categoryId">Category ID</label>
-        <input id="categoryId" type="number" formControlName="categoryId">
-
-        <label for="amount">Amount</label>
-        <input id="amount" type="number" formControlName="amount">
-
-        <label for="description">Description</label>
-        <input id="description" type="text" formControlName="description">
-
-        <label for="date">Date</label>
-        <input id="date" type="date" formControlName="date">
-
-        <button type="submit">Create Expense</button>
-      </form>
-    `,
+    </form>
+  `,
   styles: ``,
 })
-
-export class CreateExpenseComponent {
+export class CreateExpenseComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
   expenseForm: FormGroup;
+  categories: Category[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private expenseService: ExpenseService
+    private expenseService: ExpenseService,
+    private categoryService: CategoryService,
+    private authService: AuthService,
   ) {
     this.expenseForm = this.fb.group({
-      userId: [1000, [Validators.required]],
-      categoryId: [1, [Validators.required]],
+      categoryId: [null, [Validators.required]],
       amount: [null, [Validators.required, Validators.min(0.01)]],
       description: [''],
-      date: ['', [Validators.required]]
+      date: ['', [Validators.required]],
+    });
+  }
+
+  ngOnInit(): void {
+    const userId = this.authService.getUserId();
+    this.categoryService.getCategories(userId).subscribe({
+      next: (categories: Category[]) => {
+        this.categories = categories;
+      },
+      error: () => {
+        this.errorMessage = 'Error loading categories.';
+      },
     });
   }
 
@@ -75,22 +96,26 @@ export class CreateExpenseComponent {
       return;
     }
 
-    this.expenseService.createExpense(this.expenseForm.value).subscribe({
+    const newExpense = {
+      userId: this.authService.getUserId(),
+      ...this.expenseForm.value,
+    };
+
+    this.expenseService.createExpense(newExpense).subscribe({
       next: () => {
         this.successMessage = 'Expense created successfully.';
         this.errorMessage = '';
         this.expenseForm.reset({
-          userId: 1000,
-          categoryId: 1,
+          categoryId: null,
           amount: null,
           description: '',
-          date: ''
+          date: '',
         });
       },
       error: () => {
         this.errorMessage = 'Error creating expense.';
         this.successMessage = '';
-      }
+      },
     });
   }
 }

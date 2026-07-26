@@ -18,11 +18,27 @@ import { AuthService } from '../../auth/auth.service';
   template: `
     <h1>Search Expenses</h1>
 
-    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
-      <label for="description">Description</label>
-      <input id="description" type="text" formControlName="description" />
+    <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="field-row">
+      <div class="search-input-wrap">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input
+          id="description"
+          type="text"
+          formControlName="description"
+          placeholder="Search by description…"
+        />
+      </div>
 
-      <button type="submit">Search</button>
+      <button type="submit" class="btn">Search</button>
     </form>
 
     @if (errorMessage) {
@@ -30,39 +46,51 @@ import { AuthService } from '../../auth/auth.service';
     }
 
     @if (expenses.length) {
-      <table class="search-expenses__results">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>User ID</th>
-            <th>Category ID</th>
-            <th>Amount</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (expense of expenses; track expense) {
-            <tr>
-              <td>{{ expense.date | date }}</td>
-              <td>{{ expense.userId }}</td>
-              <td>{{ expense.categoryId }}</td>
-              <td>{{ expense.amount | currency:'USD':'symbol':'1.2-2' }}</td>
-              <td>{{ expense.description }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+      <div class="results">
+        <div class="table-scroll">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>User ID</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (expense of expenses; track expense) {
+                <tr>
+                  <td>{{ expense.date | date }}</td>
+                  <td>{{ expense.userId }}</td>
+                  <td>{{ expense.categoryName }}</td>
+                  <td>
+                    {{ expense.amount | currency: 'USD' : 'symbol' : '1.2-2' }}
+                  </td>
+                  <td>{{ expense.description }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="results-meta">
+          {{ expenses.length }} result{{ expenses.length === 1 ? '' : 's' }} for
+          "{{ lastSearchTerm }}"
+        </p>
+      </div>
+    } @else if (hasSearched) {
+      <div class="empty-state">
+        No expenses found for "{{ lastSearchTerm }}".
+      </div>
     }
   `,
-  styles: `
-    .search-expenses__results {
-      margin-top: 2rem;
-    }
-  `,
+  styles: ``,
 })
 export class SearchExpensesComponent {
   expenses: Expense[] = [];
   errorMessage = '';
+  hasSearched = false;
+  lastSearchTerm = '';
   searchForm: FormGroup;
 
   constructor(
@@ -87,10 +115,14 @@ export class SearchExpensesComponent {
       next: (expenses) => {
         this.expenses = expenses;
         this.errorMessage = '';
+        this.hasSearched = true;
+        this.lastSearchTerm = description;
       },
       error: () => {
         this.expenses = [];
         this.errorMessage = 'Error searching expenses.';
+        this.hasSearched = true;
+        this.lastSearchTerm = description;
       },
     });
   }

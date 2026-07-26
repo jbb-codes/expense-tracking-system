@@ -15,6 +15,7 @@
  *
  * Changes (Kaitlyn Kelly, 7/14/2026):
  * - Added DELETE /:id to support deleting an expense by its MongoDB _id
+
  */
 
 "use strict";
@@ -23,6 +24,30 @@ const express = require("express");
 const Expense = require("../models/Expense");
 const Category = require("../models/Category");
 const router = express.Router();
+
+/**
+ * Enriches a list of expenses with categoryName, looked up in a single
+ * batched Category query keyed by userId + categoryId (avoids N+1 lookups).
+ */
+async function enrichExpensesWithCategoryName(expenses) {
+  const categories = await Category.find({
+    userId: { $in: expenses.map((expense) => expense.userId) },
+    categoryId: { $in: expenses.map((expense) => expense.categoryId) },
+  });
+
+  return expenses.map((expense) => {
+    const category = categories.find(
+      (candidate) =>
+        candidate.userId === expense.userId &&
+        candidate.categoryId === expense.categoryId,
+    );
+
+    return {
+      ...(expense.toObject ? expense.toObject() : expense),
+      categoryName: category ? category.name : "Unknown",
+    };
+  });
+}
 
 /**
  * Amanda Ruff
@@ -42,6 +67,17 @@ router.post("/", async (req, res) => {
     if (isNaN(userId) || isNaN(categoryId)) {
       return res.status(400).json({
         message: "userId and categoryId must be numeric values.",
+      });
+    }
+
+    const category = await Category.findOne({
+      categoryId: Number(categoryId),
+      userId: Number(userId),
+    });
+
+    if (!category) {
+      return res.status(400).json({
+        message: "categoryId must belong to the same userId.",
       });
     }
 
@@ -88,6 +124,18 @@ router.put("/:id", async (req, res) => {
     if (isNaN(userId) || isNaN(categoryId)) {
       return res.status(400).json({
         message: "userId and categoryId must be numeric values.",
+      });
+    }
+
+    // Confirm the submitted categoryId belongs to the submitted userId.
+    const category = await Category.findOne({
+      categoryId: Number(categoryId),
+      userId: Number(userId),
+    });
+
+    if (!category) {
+      return res.status(400).json({
+        message: "categoryId must belong to the same userId.",
       });
     }
 
@@ -152,12 +200,14 @@ router.get("/", async (req, res) => {
     }
 
     const expenses = await Expense.find({ userId });
-    return res.status(200).json(expenses);
+    const enrichedExpenses = await enrichExpensesWithCategoryName(expenses);
+    return res.status(200).json(enrichedExpenses);
   } catch (err) {
     console.error("Error fetching expenses:", err);
     return res.status(500).json({ message: "Error fetching expenses." });
   }
 });
+
 
 /**
  * GET /:id
@@ -217,7 +267,8 @@ router.get("/user/:userId/search", async (req, res) => {
       description: { $regex: description || "", $options: "i" },
     });
 
-    return res.status(200).json(expenses);
+    const enrichedExpenses = await enrichExpensesWithCategoryName(expenses);
+    return res.status(200).json(enrichedExpenses);
   } catch (err) {
     console.error("Error searching expenses:", err);
     return res.status(500).json({ message: "Error searching expenses." });

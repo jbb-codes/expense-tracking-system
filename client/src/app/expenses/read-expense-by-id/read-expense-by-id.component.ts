@@ -31,51 +31,73 @@ import { AuthService } from '../../auth/auth.service';
       <p class="error-msg">{{ errorMessage }}</p>
     }
 
-    <!-- Step1: Select expense -->
-    <form [formGroup]="expenseSelectForm" (ngSubmit)="onSelectExpense()">
-      <label for="expenseId">Select Expense</label>
-      <select id="expenseId" formControlName="expenseId">
-        @for (exp of userExpenses; track exp._id) {
-          <option [value]="exp._id">
-            {{ exp._id }}
-          </option>
-        }
-      </select>
+    <!-- Step1: Search for an expense by ID -->
+    <form
+      [formGroup]="expenseSelectForm"
+      (ngSubmit)="onSelectExpense()"
+      class="field-row"
+    >
+      <div class="search-input-wrap">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input
+          id="expenseId"
+          type="text"
+          formControlName="expenseId"
+          list="expense-id-options"
+          placeholder="Paste or type expense ID…"
+        />
+        <datalist id="expense-id-options">
+          @for (exp of userExpenses; track exp._id) {
+            <option [value]="exp._id">{{ exp.description }}</option>
+          }
+        </datalist>
+      </div>
 
-      <button type="submit">Load Expense</button>
+      <button type="submit" class="btn">Load</button>
     </form>
 
     <!-- Step 2: Expense details -->
     @if (selectedExpense) {
-      <table>
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>Amount</th>
-            <th>Description</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ selectedExpense.categoryName }}</td>
-            <td>
-              {{
-                selectedExpense.amount | currency: 'USD' : 'symbol' : '1.2-2'
-              }}
-            </td>
-            <td>{{ selectedExpense.description }}</td>
-            <td>{{ selectedExpense.date | date }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="results">
+        <div class="table-scroll">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ selectedExpense.categoryName }}</td>
+                <td>
+                  {{
+                    selectedExpense.amount
+                      | currency: 'USD' : 'symbol' : '1.2-2'
+                  }}
+                </td>
+                <td>{{ selectedExpense.description }}</td>
+                <td>{{ selectedExpense.date | date }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="results-meta">1 result for ID "{{ selectedExpense._id }}"</p>
+      </div>
     }
   `,
-  styles: `
-    button {
-      margin-bottom: 2rem;
-    }
-  `,
+  styles: ``,
 })
 export class ReadExpenseByIdComponent {
   successMessage = '';

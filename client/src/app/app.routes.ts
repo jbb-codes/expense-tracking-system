@@ -1,28 +1,15 @@
 /**
  * Author: Amanda Ruff
  * Week 6 - Sprint 1
- * Modified: Jarren Bess, 7/7/2026
- * Modified: Kaitlyn Kelly, 7/10/2026
- * Modified: Amanda Ruff, 7/12/2026
- * File: app.routes.ts
- * Description: Application routes.
  *
- * Changes (Jarren Bess, 7/7/2026):
- * - Added the List Expenses route.
+ * Changes (Jarren Bess, 7/20/2026):
+ * - Added the List Categories route.
  *
- * Changes (Kaitlyn Kelly, 7/10/2026):
- * - Added the Login route.
- * - Added AuthGuard to all protected routes.
+ * Changes (Kaitlyn Kelly, 7/20/2026):
+ * - Added ReadCategoryByIdComponent route with AuthGuard
  *
- * Changes (Amanda Ruff, 7/12/2026):
- * - Added the Update Expense component route.
- * - Protected the Update Expense page using AuthGuard.
- *
- * Changes (Kaitlyn Kelly, 7/14/2026):
- * - Added Delete Expense component route with AuthGuard.
- *
- * Changes (Kaitlyn Kelly, 7/16/2026):
- * - Added HomeComponent route with AuthGuard
+ * Changes (Amanda Ruff, 7/20/2026):
+ * - Added the protected Create Category route.
  */
 
 import { Routes } from '@angular/router';
@@ -30,11 +17,15 @@ import { CreateExpenseComponent } from './expenses/create-expense/create-expense
 import { ListExpensesComponent } from './expenses/list-expenses/list-expenses.component';
 import { ReadExpenseByIdComponent } from './expenses/read-expense-by-id/read-expense-by-id.component';
 import { LoginComponent } from './login/login.component';
+import { LandingComponent } from './landing/landing.component';
 import { AuthGuard } from './auth/auth.guard';
 import { UpdateExpenseComponent } from './expenses/update-expense/update-expense.component';
 import { SearchExpensesComponent } from './expenses/search-expenses/search-expenses.component';
 import { DeleteExpenseComponent } from './expenses/delete-expense/delete-expense.component';
 import { HomeComponent } from './home/home.component';
+import { ListCategoriesComponent } from './categories/list-categories/list-categories.component';
+import { ReadCategoryByIdComponent } from './categories/read-category-by-id/read-category-by-id.component';
+import { CreateCategoryComponent } from './categories/create-category/create-category.component';
 
 /**
  * Amanda Ruff
@@ -43,8 +34,8 @@ import { HomeComponent } from './home/home.component';
  * Protected routes require users to be authenticated before access is granted.
  */
 export const routes: Routes = [
-  // Redirect the application to the login page when no route is provided.
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  // Public landing page shown at the app root.
+  { path: '', component: LandingComponent },
 
   // Public login page.
   { path: 'login', component: LoginComponent },
@@ -103,4 +94,29 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
 
+  // Protected page that displays all categories.
+  {
+    path: 'list-categories',
+    component: ListCategoriesComponent,
+    canActivate: [AuthGuard],
+  },
+
+  // Protected page used to read category by ID
+  {
+    path: 'read-category-by-id',
+    component: ReadCategoryByIdComponent,
+    canActivate: [AuthGuard],
+  },
+
+  /**
+   * Amanda Ruff
+   * Week 8 - Sprint 3
+   * Route used to display the Create Category page.
+   * Authentication is required before access is granted.
+   */
+  {
+    path: 'create-category',
+    component: CreateCategoryComponent,
+    canActivate: [AuthGuard],
+  },
 ];

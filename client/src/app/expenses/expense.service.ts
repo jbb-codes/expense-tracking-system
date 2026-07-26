@@ -31,6 +31,7 @@ export interface Expense {
   userId: number;
   username: string;
   categoryId: number;
+  categoryName?: string;
   amount: number;
   description?: string;
   date: string;
@@ -86,6 +87,16 @@ export class ExpenseService {
 
   getExpenseById(expenseId: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${expenseId}`);
+  }
+
+  /**
+   * Kaitlyn Kelly, 7/20/26
+   * Added service methods to allow the ReadCategoryByIdComponent to:
+   * Retrieve all expenses associated with a categoryId
+   */
+
+  getExpensesByCategory(categoryId: number): Observable<Expense[]> {
+    return this.http.get<Expense[]>(`${this.apiUrl}/category/${categoryId}`);
   }
 
   /**

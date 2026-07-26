@@ -15,40 +15,45 @@ describe('DeleteExpenseComponent', () => {
   let fixture: ComponentFixture<DeleteExpenseComponent>;
   let mockService: jasmine.SpyObj<ExpenseService>;
 
-const mockExpenses = [
-  {
-    _id: '1',
-    userId: 1000,
-    username: 'testuser',
-    categoryId: 1,
-    amount: 10,
-    description: 'Test',
-    date: new Date().toISOString()
-  },
-  {
-    _id: '2',
-    userId: 1000,
-    username: 'testuser',
-    categoryId: 2,
-    amount: 20,
-    description: 'Another',
-    date: new Date().toISOString()
-  }
-]
+  const mockExpenses = [
+    {
+      _id: '1',
+      userId: 1000,
+      username: 'testuser',
+      categoryId: 1,
+      categoryName: 'Meals',
+      amount: 10,
+      description: 'Test',
+      date: new Date().toISOString(),
+    },
+    {
+      _id: '2',
+      userId: 1000,
+      username: 'testuser',
+      categoryId: 2,
+      categoryName: 'Travel',
+      amount: 20,
+      description: 'Another',
+      date: new Date().toISOString(),
+    },
+  ];
 
   beforeEach(async () => {
-    mockService = jasmine.createSpyObj('ExpenseService', ['getExpenses', 'deleteExpense']);
+    mockService = jasmine.createSpyObj('ExpenseService', [
+      'getExpenses',
+      'deleteExpense',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [DeleteExpenseComponent],
-      providers: [{ provide: ExpenseService, useValue: mockService }]
+      providers: [{ provide: ExpenseService, useValue: mockService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeleteExpenseComponent);
     component = fixture.componentInstance;
   });
 
-    it('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
@@ -62,7 +67,7 @@ const mockExpenses = [
     expect(component.errorMessage).toBe('');
   });
 
-    // deleteItem() should call the service
+  // deleteItem() should call the service
   it('should call deleteExpense with the correct ID', () => {
     mockService.deleteExpense.and.returnValue(of({ message: 'deleted' }));
     component.expenses = [...mockExpenses];
@@ -72,7 +77,7 @@ const mockExpenses = [
     expect(mockService.deleteExpense).toHaveBeenCalledWith('1');
   });
 
-    // deleteItem() should remove the item from the UI
+  // deleteItem() should remove the item from the UI
   it('should remove the deleted expense from the list', () => {
     mockService.deleteExpense.and.returnValue(of({ message: 'deleted' }));
     component.expenses = [...mockExpenses];
@@ -81,5 +86,17 @@ const mockExpenses = [
 
     expect(component.expenses.length).toBe(1);
     expect(component.expenses[0]._id).toBe('2');
+  });
+
+  // Confirm the table renders the category name, not the raw categoryId
+  it('should display the category name in the expenses table', () => {
+    mockService.getExpenses.and.returnValue(of(mockExpenses));
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    const tableText = fixture.nativeElement.textContent;
+    expect(tableText).toContain('Meals');
+    expect(tableText).toContain('Travel');
   });
 });
