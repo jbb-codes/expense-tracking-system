@@ -26,6 +26,7 @@ import { HomeComponent } from './home/home.component';
 import { ListCategoriesComponent } from './categories/list-categories/list-categories.component';
 import { ReadCategoryByIdComponent } from './categories/read-category-by-id/read-category-by-id.component';
 import { CreateCategoryComponent } from './categories/create-category/create-category.component';
+import { DeleteCategoryComponent } from './categories/delete-category/delete-category.component';
 
 /**
  * Amanda Ruff
@@ -117,6 +118,12 @@ export const routes: Routes = [
   {
     path: 'create-category',
     component: CreateCategoryComponent,
+    canActivate: [AuthGuard],
+  },
+  // Protected page used to delete category
+  {
+    path: 'delete-category',
+    component: DeleteCategoryComponent,
     canActivate: [AuthGuard],
   },
 ];

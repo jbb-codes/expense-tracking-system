@@ -281,3 +281,42 @@ describe("GET /api/categories/category/:categoryId", () => {
     expect(res.body[1]._id).toBe("exp2");
   });
 });
+
+/**
+ * Kaitlyn Kelly
+ * Week 9 - Sprint 3
+ * Unit tests for the DELETE category id API.
+ */
+
+describe('DELETE /api/categories/:categoryId', () => {
+
+  // should return a 200 and delete the category
+  it("should return 200 when a category is successfully deleted", async () => {
+    Category.deleteOne.mockResolvedValue({ deletedCount: 1 });
+
+    const response = await request(app).delete("/api/categories/3");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: "Category deleted successfully" });
+  });
+
+  // should return a 404 and display not found error message
+  it("should return 404 when the category does not exist", async () => {
+      Category.deleteOne.mockResolvedValue({ deletedCount: 0 });
+
+      const response = await request(app).delete("/api/categories/999");
+
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: "Category not found" });
+    });
+
+  // should return a 400 and display invalid error message
+  it("should return 400 for an invalid categoryId", async () => {
+  const response = await request(app).delete("/api/categories/-1");
+
+    expect(response.status).toBe(400);
+   expect(response.body).toEqual({ error: "Invalid categoryId" });
+  });
+
+});
+

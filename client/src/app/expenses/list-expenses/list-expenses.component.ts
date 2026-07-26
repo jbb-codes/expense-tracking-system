@@ -19,6 +19,7 @@ import { AuthService } from '../../auth/auth.service';
     <h1>Expenses</h1>
 
     <nav class="page-actions">
+      <a routerLink="/create-expense" class="btn">Create Expense</a>
       <a routerLink="/search-expenses" class="btn">Search Expenses</a>
       <a routerLink="/read-expense-by-id" class="btn">Search Expense by ID</a>
     </nav>

@@ -14,9 +14,17 @@
  *
  * Changes (Kaitlyn Kelly, 7/20/2026):
  * - Added GET /category/:categoryId to support reading a category by ID
+ *
+ *
+ * Changes (Kaitlyn Kelly, 7/24/2026):
+ * - Added GET to support fetching a count of all expenses within a category
+ * - Used to confirm or deny deletion of a category
  */
 
 "use strict";
+
+console.log(">>> LOADED CATEGORIES ROUTER FROM:", __filename);
+
 
 const express = require("express");
 const Category = require("../models/Category");
@@ -124,6 +132,34 @@ router.post("/", async (req, res) => {
   }
 });
 
+
+/*
+ * GET /category/:categoryId
+ * Retrieves number of expenses for a specific categoryId
+ */
+
+router.get('/:id/expenseCount', async (req, res) => {
+  try {
+    const categoryId = Number(req.params.id);
+
+    // Find the category to get the correct userId
+    const category = await Category.findOne({ categoryId });
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const userId = category.userId;
+
+    // Count only THIS user's expenses
+    const count = await Expense.countDocuments({ userId, categoryId });
+
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ error: 'Error counting expenses' });
+  }
+});
+
+
 /**
  * GET /category/:categoryId
  * Retrieves all expenses for a specific categoryId
@@ -166,6 +202,32 @@ router.get("/category/:categoryId", async (req, res) => {
       message: "Error fetching expenses by category.",
       error: err.message,
     });
+  }
+});
+
+
+/*
+ * DELETE /:categoryId
+ * Deletes a category based on categoryId
+ */
+
+router.delete('/:categoryId', async (req, res) => {
+  try {
+    const categoryId = Number(req.params.categoryId);
+
+    if (!Number.isInteger(categoryId) || categoryId <= 0) {
+      return res.status(400).json({ error: "Invalid categoryId" });
+    }
+
+    const deleted = await Category.deleteOne({ categoryId });
+
+    if (deleted.deletedCount === 0) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    res.json({ message: "Category deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Error deleting category" });
   }
 });
 

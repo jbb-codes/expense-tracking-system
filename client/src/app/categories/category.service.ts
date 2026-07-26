@@ -89,6 +89,20 @@ export class CategoryService {
       `${this.apiUrl}/category/${categoryId}`
     );
   }
+
+/**
+ * Kaitlyn Kelly
+ * Week 9 - Sprint 4
+ * GET the number of expenses within a category
+ * DELETE a category by its ID
+ * Both for DeleteCategoryComponent
+ */
+
+  getExpenseCount(categoryId: number): Observable<{ count: number }> {
+    return this.http.get<{ count: number }>(`${this.apiUrl}/${categoryId}/expenseCount`);
+  }
+
+  deleteCategory(categoryId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${categoryId}`);
+  }
 }
-
-

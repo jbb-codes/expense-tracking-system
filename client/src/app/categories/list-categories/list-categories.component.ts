@@ -3,6 +3,10 @@
  * Week 8 - Sprint 3
  * File: list-categories.component.ts
  * Description: Angular component that lists all categories for the authenticated user.
+ *
+ * Kaitlyn Kelly, 7/26/2026:
+ * - Added DeleteCategory to nav
+ * - Added CreateCategory to nav
  */
 
 import { CommonModule } from '@angular/common';
@@ -19,7 +23,9 @@ import { AuthService } from '../../auth/auth.service';
     <h1>Categories</h1>
 
     <nav class="page-actions">
+      <a routerLink="/create-category" class="btn">Create Category</a>
       <a routerLink="/read-category-by-id" class="btn">Search Category by ID</a>
+      <a routerLink="/delete-category" class="btn">Delete Category</a>
     </nav>
 
     @if (errorMessage) {
