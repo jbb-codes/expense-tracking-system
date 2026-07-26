@@ -56,7 +56,7 @@ afterEach(() => {
 describe("GET /api/categories", () => {
   // Confirm that categories are returned for a valid user ID.
   test("should return all categories for a valid userId", async () => {
-    Category.find.mockResolvedValue([
+    const sortMock = jest.fn().mockResolvedValue([
       {
         _id: "1",
         userId: 1000,
@@ -72,6 +72,7 @@ describe("GET /api/categories", () => {
         description: "Gas and transit",
       },
     ]);
+    Category.find.mockReturnValue({ sort: sortMock });
 
     const response = await request(app).get("/api/categories?userId=1000");
 
@@ -83,6 +84,10 @@ describe("GET /api/categories", () => {
     expect(Category.find).toHaveBeenCalledWith({
       userId: 1000,
     });
+
+    // Verify results are sorted numerically by categoryId, not by
+    // whatever order Mongo's { userId, name } index happens to return.
+    expect(sortMock).toHaveBeenCalledWith({ categoryId: 1 });
   });
 
   // Ensure that an invalid or missing user ID is rejected.
@@ -95,7 +100,9 @@ describe("GET /api/categories", () => {
 
   // Ensure that database failures return a server error response.
   test("should return 500 when an error occurs while fetching categories", async () => {
-    Category.find.mockRejectedValue(new Error("Database error"));
+    Category.find.mockReturnValue({
+      sort: jest.fn().mockRejectedValue(new Error("Database error")),
+    });
 
     const response = await request(app).get("/api/categories?userId=1000");
 
@@ -288,8 +295,7 @@ describe("GET /api/categories/category/:categoryId", () => {
  * Unit tests for the DELETE category id API.
  */
 
-describe('DELETE /api/categories/:categoryId', () => {
-
+describe("DELETE /api/categories/:categoryId", () => {
   // should return a 200 and delete the category
   it("should return 200 when a category is successfully deleted", async () => {
     Category.deleteOne.mockResolvedValue({ deletedCount: 1 });
@@ -302,21 +308,19 @@ describe('DELETE /api/categories/:categoryId', () => {
 
   // should return a 404 and display not found error message
   it("should return 404 when the category does not exist", async () => {
-      Category.deleteOne.mockResolvedValue({ deletedCount: 0 });
+    Category.deleteOne.mockResolvedValue({ deletedCount: 0 });
 
-      const response = await request(app).delete("/api/categories/999");
+    const response = await request(app).delete("/api/categories/999");
 
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({ error: "Category not found" });
-    });
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: "Category not found" });
+  });
 
   // should return a 400 and display invalid error message
   it("should return 400 for an invalid categoryId", async () => {
-  const response = await request(app).delete("/api/categories/-1");
+    const response = await request(app).delete("/api/categories/-1");
 
     expect(response.status).toBe(400);
-   expect(response.body).toEqual({ error: "Invalid categoryId" });
+    expect(response.body).toEqual({ error: "Invalid categoryId" });
   });
-
 });
-

@@ -25,7 +25,6 @@
 
 console.log(">>> LOADED CATEGORIES ROUTER FROM:", __filename);
 
-
 const express = require("express");
 const Category = require("../models/Category");
 const Expense = require("../models/Expense");
@@ -55,7 +54,7 @@ router.get("/", async (req, res) => {
       });
     }
 
-    const categories = await Category.find({ userId });
+    const categories = await Category.find({ userId }).sort({ categoryId: 1 });
 
     return res.status(200).json(categories);
   } catch (err) {
@@ -132,13 +131,12 @@ router.post("/", async (req, res) => {
   }
 });
 
-
 /*
  * GET /category/:categoryId
  * Retrieves number of expenses for a specific categoryId
  */
 
-router.get('/:id/expenseCount', async (req, res) => {
+router.get("/:id/expenseCount", async (req, res) => {
   try {
     const categoryId = Number(req.params.id);
 
@@ -155,10 +153,9 @@ router.get('/:id/expenseCount', async (req, res) => {
 
     res.json({ count });
   } catch (err) {
-    res.status(500).json({ error: 'Error counting expenses' });
+    res.status(500).json({ error: "Error counting expenses" });
   }
 });
-
 
 /**
  * GET /category/:categoryId
@@ -205,13 +202,12 @@ router.get("/category/:categoryId", async (req, res) => {
   }
 });
 
-
 /*
  * DELETE /:categoryId
  * Deletes a category based on categoryId
  */
 
-router.delete('/:categoryId', async (req, res) => {
+router.delete("/:categoryId", async (req, res) => {
   try {
     const categoryId = Number(req.params.categoryId);
 
