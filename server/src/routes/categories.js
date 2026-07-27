@@ -11,14 +11,18 @@
  * - Added duplicate category validation.
  * - Added appropriate HTTP status codes and error handling.
  *
- *
  * Changes (Kaitlyn Kelly, 7/20/2026):
- * - Added GET /category/:categoryId to support reading a category by ID
- *
+ * - Added GET /category/:categoryId to support reading a category by ID.
  *
  * Changes (Kaitlyn Kelly, 7/24/2026):
- * - Added GET to support fetching a count of all expenses within a category
- * - Used to confirm or deny deletion of a category
+ * - Added GET to support fetching a count of all expenses within a category.
+ * - Used to confirm or deny deletion of a category.
+ *
+ * Changes (Amanda Ruff, 7/27/2026):
+ * - Added the Update Category API endpoint for Sprint 4.
+ * - Added validation for categoryId and category name.
+ * - Added duplicate category name protection.
+ * - Added 400, 404, 409, and 500 error responses.
  */
 
 "use strict";
@@ -46,20 +50,28 @@ const router = express.Router();
  */
 router.get("/", async (req, res) => {
   try {
+    // Convert the userId query parameter to a number.
     const userId = Number(req.query.userId);
 
+    // Validate that userId contains a numeric value.
     if (isNaN(userId)) {
       return res.status(400).json({
         message: "userId must be numeric.",
       });
     }
 
-    const categories = await Category.find({ userId }).sort({ categoryId: 1 });
+    // Retrieve all categories belonging to the selected user.
+    const categories = await Category.find({ userId }).sort({
+      categoryId: 1,
+    });
 
+    // Return the matching category records.
     return res.status(200).json(categories);
   } catch (err) {
+    // Log the complete error for server-side troubleshooting.
     console.error("Error fetching categories:", err);
 
+    // Return a general server error response.
     return res.status(500).json({
       message: "Error fetching categories.",
     });
@@ -77,9 +89,10 @@ router.get("/", async (req, res) => {
  */
 router.post("/", async (req, res) => {
   try {
+    // Retrieve the category values from the request body.
     const { userId, categoryId, name, description } = req.body;
 
-    // Validate required fields.
+    // Validate all required category fields.
     if (
       userId === undefined ||
       categoryId === undefined ||
@@ -91,26 +104,27 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Validate numeric IDs.
+    // Validate that userId and categoryId contain numeric values.
     if (isNaN(Number(userId)) || isNaN(Number(categoryId))) {
       return res.status(400).json({
         message: "userId and categoryId must be numeric.",
       });
     }
 
-    // Prevent duplicate category names.
+    // Check whether this user already has a category with the same name.
     const existingCategory = await Category.findOne({
-      userId,
+      userId: Number(userId),
       name: name.trim(),
     });
 
+    // Prevent duplicate category names for the same user.
     if (existingCategory) {
       return res.status(409).json({
         message: "Category name already exists.",
       });
     }
 
-    // Create the category document.
+    // Create a new category document.
     const category = new Category({
       userId: Number(userId),
       categoryId: Number(categoryId),
@@ -121,80 +135,205 @@ router.post("/", async (req, res) => {
     // Save the category to MongoDB.
     const savedCategory = await category.save();
 
+    // Return the newly created category.
     return res.status(201).json(savedCategory);
   } catch (err) {
+    // Log the complete error for server-side troubleshooting.
     console.error("Error creating category:", err);
 
+    // Return a general server error response.
     return res.status(500).json({
       message: "Error creating category.",
     });
   }
 });
 
-/*
- * GET /category/:categoryId
- * Retrieves number of expenses for a specific categoryId
+/**
+ * Amanda Ruff
+ * Week 9 - Sprint 4
+ *
+ * PUT /:categoryId
+ *
+ * Updates an existing category using its numeric categoryId.
+ * The category name is required, and the route prevents a user
+ * from having two categories with the same name.
+ *
+ * Mongoose automatically updates dateModified because the
+ * Category schema has timestamps enabled.
  */
-
-router.get("/:id/expenseCount", async (req, res) => {
+router.put("/:categoryId", async (req, res) => {
   try {
-    const categoryId = Number(req.params.id);
+    // Convert the categoryId route parameter to a number.
+    const categoryId = Number(req.params.categoryId);
 
-    // Find the category to get the correct userId
-    const category = await Category.findOne({ categoryId });
-    if (!category) {
-      return res.status(404).json({ error: "Category not found" });
+    // Retrieve the editable category fields from the request body.
+    const { name, description } = req.body;
+
+    // Validate that categoryId is a positive whole number.
+    if (!Number.isInteger(categoryId) || categoryId <= 0) {
+      return res.status(400).json({
+        message: "categoryId must be a positive integer.",
+      });
     }
 
-    const userId = category.userId;
+    // Validate that a category name was provided.
+    if (!name || name.trim() === "") {
+      return res.status(400).json({
+        message: "Category name is required.",
+      });
+    }
 
-    // Count only THIS user's expenses
-    const count = await Expense.countDocuments({ userId, categoryId });
+    // Find the category before attempting to update it.
+    const category = await Category.findOne({ categoryId });
 
-    res.json({ count });
+    // Return 404 when no category matches the supplied categoryId.
+    if (!category) {
+      return res.status(404).json({
+        message: "Category not found.",
+      });
+    }
+
+    // Check whether another category belonging to the same user
+    // already has the requested category name.
+    const duplicateCategory = await Category.findOne({
+      userId: category.userId,
+      name: name.trim(),
+      categoryId: { $ne: categoryId },
+    });
+
+    // Prevent duplicate category names for the same user.
+    if (duplicateCategory) {
+      return res.status(409).json({
+        message: "Category name already exists.",
+      });
+    }
+
+    // Update the editable category fields.
+    category.name = name.trim();
+    category.description = description ? description.trim() : "";
+
+    // Save the updated category.
+    // Mongoose timestamps automatically update dateModified.
+    const updatedCategory = await category.save();
+
+    // Return the updated category document.
+    return res.status(200).json(updatedCategory);
   } catch (err) {
-    res.status(500).json({ error: "Error counting expenses" });
+    // Log the complete error for server-side troubleshooting.
+    console.error("Error updating category:", err);
+
+    // Return a general server error response.
+    return res.status(500).json({
+      message: "Error updating category.",
+    });
   }
 });
 
 /**
+ * Kaitlyn Kelly
+ * Week 9 - Sprint 4
+ *
+ * GET /:id/expenseCount
+ *
+ * Retrieves the number of expenses assigned to a specific category.
+ * This count is used to determine whether the category may be deleted.
+ */
+router.get("/:id/expenseCount", async (req, res) => {
+  try {
+    // Convert the category ID route parameter to a number.
+    const categoryId = Number(req.params.id);
+
+    // Find the category to retrieve its associated userId.
+    const category = await Category.findOne({ categoryId });
+
+    // Return 404 when the category does not exist.
+    if (!category) {
+      return res.status(404).json({
+        error: "Category not found",
+      });
+    }
+
+    // Retrieve the userId associated with the category.
+    const userId = category.userId;
+
+    // Count expenses assigned to this category for this user.
+    const count = await Expense.countDocuments({
+      userId,
+      categoryId,
+    });
+
+    // Return the total number of assigned expenses.
+    return res.status(200).json({ count });
+  } catch (err) {
+    // Log the complete error for server-side troubleshooting.
+    console.error("Error counting expenses:", err);
+
+    // Return a general server error response.
+    return res.status(500).json({
+      error: "Error counting expenses",
+    });
+  }
+});
+
+/**
+ * Kaitlyn Kelly
+ * Week 8 - Sprint 3
+ *
  * GET /category/:categoryId
- * Retrieves all expenses for a specific categoryId
+ *
+ * Retrieves all expenses assigned to a specific categoryId.
  */
 router.get("/category/:categoryId", async (req, res) => {
   try {
+    // Convert the categoryId route parameter to a number.
     const categoryId = Number(req.params.categoryId);
 
+    // Validate that categoryId contains a numeric value.
     if (isNaN(categoryId)) {
-      return res.status(400).json({ message: "categoryId must be numeric." });
+      return res.status(400).json({
+        message: "categoryId must be numeric.",
+      });
     }
 
-    // Find the category to get the correct userId
+    // Find the category to retrieve the associated userId.
     const category = await Category.findOne({ categoryId });
 
+    // Return 404 when the category does not exist.
     if (!category) {
-      return res.status(404).json({ message: "Category not found." });
+      return res.status(404).json({
+        message: "Category not found.",
+      });
     }
 
+    // Retrieve the userId associated with the category.
     const userId = category.userId;
 
-    // Fetch only this user's expenses
-    const expenses = await Expense.find({ userId, categoryId });
+    // Fetch expenses assigned to this category for this user.
+    const expenses = await Expense.find({
+      userId,
+      categoryId,
+    });
 
+    // Return 404 when the category has no assigned expenses.
     if (!expenses || expenses.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No expenses found for this category." });
+      return res.status(404).json({
+        message: "No expenses found for this category.",
+      });
     }
 
-    const enrichedExpenses = expenses.map((exp) => ({
-      ...exp.toObject(),
+    // Add the category name to each returned expense record.
+    const enrichedExpenses = expenses.map((expense) => ({
+      ...expense.toObject(),
       categoryName: category.name,
     }));
 
+    // Return the matching expense records.
     return res.status(200).json(enrichedExpenses);
   } catch (err) {
+    // Log the complete error for server-side troubleshooting.
     console.error("Error fetching expenses by category:", err);
+
+    // Return a general server error response.
     return res.status(500).json({
       message: "Error fetching expenses by category.",
       error: err.message,
@@ -202,28 +341,48 @@ router.get("/category/:categoryId", async (req, res) => {
   }
 });
 
-/*
+/**
+ * Kaitlyn Kelly
+ * Week 9 - Sprint 4
+ *
  * DELETE /:categoryId
- * Deletes a category based on categoryId
+ *
+ * Deletes a category using its numeric categoryId.
  */
-
 router.delete("/:categoryId", async (req, res) => {
   try {
+    // Convert the categoryId route parameter to a number.
     const categoryId = Number(req.params.categoryId);
 
+    // Validate that categoryId is a positive whole number.
     if (!Number.isInteger(categoryId) || categoryId <= 0) {
-      return res.status(400).json({ error: "Invalid categoryId" });
+      return res.status(400).json({
+        error: "Invalid categoryId",
+      });
     }
 
+    // Delete the category matching the supplied categoryId.
     const deleted = await Category.deleteOne({ categoryId });
 
+    // Return 404 when no category was deleted.
     if (deleted.deletedCount === 0) {
-      return res.status(404).json({ error: "Category not found" });
+      return res.status(404).json({
+        error: "Category not found",
+      });
     }
 
-    res.json({ message: "Category deleted successfully" });
+    // Confirm that the category was deleted.
+    return res.status(200).json({
+      message: "Category deleted successfully",
+    });
   } catch (err) {
-    res.status(500).json({ error: "Error deleting category" });
+    // Log the complete error for server-side troubleshooting.
+    console.error("Error deleting category:", err);
+
+    // Return a general server error response.
+    return res.status(500).json({
+      error: "Error deleting category",
+    });
   }
 });
 
