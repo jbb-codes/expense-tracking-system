@@ -25,8 +25,9 @@ import { AuthService } from '../../auth/auth.service';
     <h2>Category Actions</h2>
     <nav class="page-actions">
       <a routerLink="/create-category" class="btn">Create Category</a>
-      <a routerLink="/read-category-by-id" class="btn">Search Category by ID</a>
       <a routerLink="/search-categories" class="btn">Search Categories</a>
+      <a routerLink="/read-category-by-id" class="btn">Search Category by ID</a>
+      <a routerLink="/update-caetgory" class="btn">Update Category</a>
       <a routerLink="/delete-category" class="btn">Delete Category</a>
     </nav>
 

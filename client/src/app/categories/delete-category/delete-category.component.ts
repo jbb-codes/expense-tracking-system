@@ -9,11 +9,12 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Category, CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-delete-category',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <h1>Delete a Category</h1>
 
@@ -61,6 +62,8 @@ import { AuthService } from '../../auth/auth.service';
         }
       </tbody>
     </table>
+
+    <a routerLink="/list-categories" class="btn">&#8592; Back</a>
   `,
   styles: `
     .delete-btn {

@@ -20,6 +20,7 @@ import { Component, OnDestroy, OnInit, } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, } from '@angular/forms';
 import { Category, CategoryService, UpdateCategory, } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
+import { RouterLink } from '@angular/router';
 
 /**
  * Length of time the temporary category-loaded message remains visible.
@@ -32,6 +33,7 @@ const SELECT_MESSAGE_DURATION_MS = 3000;
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterLink
   ],
   template: `
     <h1>Update Category</h1>
@@ -136,6 +138,8 @@ const SELECT_MESSAGE_DURATION_MS = 3000;
           <p class="error-msg">{{ errorMessage }}</p>
         }
       </form>
+
+      <a routerLink="/list-categories" class="btn">&#8592; Back</a>
     }
   `,
   styles: `

@@ -23,6 +23,8 @@ import { AuthService } from '../../auth/auth.service';
       <a routerLink="/create-expense" class="btn">Create Expense</a>
       <a routerLink="/search-expenses" class="btn">Search Expenses</a>
       <a routerLink="/read-expense-by-id" class="btn">Search Expense by ID</a>
+      <a routerLink="/update-expense" class="btn">Update Expense</a>
+      <a routerLink="/delete-expense" class="btn">Delete Expense</a>
     </nav>
 
     @if (errorMessage) {

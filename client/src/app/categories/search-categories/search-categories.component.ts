@@ -3,11 +3,12 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Category, CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-search-categories',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <h1>Search Categories</h1>
 
@@ -70,6 +71,8 @@ import { AuthService } from '../../auth/auth.service';
         No categories found for "{{ lastSearchTerm }}".
       </div>
     }
+
+    <a routerLink="/list-categories" class="btn">&#8592; Back</a>
   `,
   styles: ``,
 })

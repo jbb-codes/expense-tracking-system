@@ -10,11 +10,13 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Expense, ExpenseService } from '../expense.service';
 import { AuthService } from '../../auth/auth.service';
+import { RouterLink } from '@angular/router';
+
 
 @Component({
   selector: 'app-search-expenses',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <h1>Search Expenses</h1>
 
@@ -83,6 +85,8 @@ import { AuthService } from '../../auth/auth.service';
         No expenses found for "{{ lastSearchTerm }}".
       </div>
     }
+
+    <a routerLink="/list-expenses" class="btn">&#8592; Back</a>
   `,
   styles: ``,
 })

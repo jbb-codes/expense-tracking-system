@@ -16,11 +16,12 @@ import {
 } from '@angular/forms';
 import { CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-read-category-by-id',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <h1>Read Category Expenses</h1>
 
@@ -98,6 +99,8 @@ import { AuthService } from '../../auth/auth.service';
         </p>
       </div>
     }
+
+    <a routerLink="/list-categories" class="btn">&#8592; Back</a>
   `,
   styles: ``,
 })

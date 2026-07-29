@@ -15,11 +15,13 @@ import {
 } from '@angular/forms';
 import { ExpenseService } from '../expense.service';
 import { AuthService } from '../../auth/auth.service';
+import { RouterLink } from '@angular/router';
+
 
 @Component({
   selector: 'app-read-expense-by-id',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <h1>Read Expense</h1>
 
@@ -96,6 +98,8 @@ import { AuthService } from '../../auth/auth.service';
         <p class="results-meta">1 result for ID "{{ selectedExpense._id }}"</p>
       </div>
     }
+
+    <a routerLink="/list-expenses" class="btn">&#8592; Back</a>
   `,
   styles: ``,
 })

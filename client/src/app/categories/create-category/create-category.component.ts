@@ -20,11 +20,12 @@ import {
 } from '@angular/forms';
 import { Category, CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-create-category',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <h1>Create Category</h1>
 
@@ -48,6 +49,8 @@ import { AuthService } from '../../auth/auth.service';
         <p class="error-msg">{{ errorMessage }}</p>
       }
     </form>
+
+    <a routerLink="/list-categories" class="btn">&#8592; Back</a>
   `,
   styles: ``,
 })
