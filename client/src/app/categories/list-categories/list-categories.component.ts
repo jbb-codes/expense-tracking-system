@@ -22,6 +22,7 @@ import { AuthService } from '../../auth/auth.service';
   template: `
     <h1>Categories</h1>
 
+    <h2>Category Actions</h2>
     <nav class="page-actions">
       <a routerLink="/create-category" class="btn">Create Category</a>
       <a routerLink="/read-category-by-id" class="btn">Search Category by ID</a>

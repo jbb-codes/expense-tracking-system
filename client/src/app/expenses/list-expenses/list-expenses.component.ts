@@ -18,6 +18,7 @@ import { AuthService } from '../../auth/auth.service';
   template: `
     <h1>Expenses</h1>
 
+    <h2>Expense Actions</h2>
     <nav class="page-actions">
       <a routerLink="/create-expense" class="btn">Create Expense</a>
       <a routerLink="/search-expenses" class="btn">Search Expenses</a>
