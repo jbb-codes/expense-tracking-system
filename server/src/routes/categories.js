@@ -230,6 +230,50 @@ router.put("/:categoryId", async (req, res) => {
 });
 
 /**
+ * Jarren Bess
+ *
+ * GET /user/:userId/search
+ *
+ * Searches categories belonging to a user by matching the search term
+ * against the category name or description (case-insensitive).
+ * userId is required; missing or non-numeric values return 400.
+ */
+router.get("/user/:userId/search", async (req, res) => {
+  try {
+    // Convert the userId route parameter to a number.
+    const userId = Number(req.params.userId);
+
+    // Validate that userId contains a numeric value.
+    if (isNaN(userId)) {
+      return res.status(400).json({
+        message: "userId must be numeric.",
+      });
+    }
+
+    // Retrieve the search term from the query string.
+    const { name } = req.query;
+
+    // Find categories belonging to this user whose name
+    // matches the search term.
+    const categories = await Category.find({
+      userId,
+      name: { $regex: name || "", $options: "i" },
+    });
+
+    // Return the matching category records.
+    return res.status(200).json(categories);
+  } catch (err) {
+    // Log the complete error for server-side troubleshooting.
+    console.error("Error searching categories:", err);
+
+    // Return a general server error response.
+    return res.status(500).json({
+      message: "Error searching categories.",
+    });
+  }
+});
+
+/**
  * Kaitlyn Kelly
  * Week 9 - Sprint 4
  *

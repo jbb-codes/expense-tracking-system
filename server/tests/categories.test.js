@@ -88,9 +88,7 @@ describe("GET /api/categories", () => {
     });
 
     // Send a request using a valid userId.
-    const response = await request(app).get(
-      "/api/categories?userId=1000",
-    );
+    const response = await request(app).get("/api/categories?userId=1000");
 
     // Confirm that the API returned the expected category records.
     expect(response.statusCode).toBe(200);
@@ -117,9 +115,7 @@ describe("GET /api/categories", () => {
 
     // Confirm that the correct validation response was returned.
     expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe(
-      "userId must be numeric.",
-    );
+    expect(response.body.message).toBe("userId must be numeric.");
   });
 
   /**
@@ -128,21 +124,15 @@ describe("GET /api/categories", () => {
   test("should return 500 when an error occurs while fetching categories", async () => {
     // Simulate a database error during the sorted category query.
     Category.find.mockReturnValue({
-      sort: jest.fn().mockRejectedValue(
-        new Error("Database error"),
-      ),
+      sort: jest.fn().mockRejectedValue(new Error("Database error")),
     });
 
     // Send a valid category-list request.
-    const response = await request(app).get(
-      "/api/categories?userId=1000",
-    );
+    const response = await request(app).get("/api/categories?userId=1000");
 
     // Confirm that the API returned a server error response.
     expect(response.statusCode).toBe(500);
-    expect(response.body.message).toBe(
-      "Error fetching categories.",
-    );
+    expect(response.body.message).toBe("Error fetching categories.");
   });
 });
 
@@ -209,12 +199,10 @@ describe("POST /api/categories", () => {
    */
   test("should return 400 when required fields are missing", async () => {
     // Send a request that is missing categoryId and name.
-    const response = await request(app)
-      .post("/api/categories")
-      .send({
-        userId: 1000,
-        description: "Category is missing an ID and name",
-      });
+    const response = await request(app).post("/api/categories").send({
+      userId: 1000,
+      description: "Category is missing an ID and name",
+    });
 
     // Confirm that the correct validation response was returned.
     expect(response.statusCode).toBe(400);
@@ -241,20 +229,16 @@ describe("POST /api/categories", () => {
     });
 
     // Attempt to create another category with the duplicate name.
-    const response = await request(app)
-      .post("/api/categories")
-      .send({
-        userId: 1000,
-        categoryId: 6,
-        name: "Transportation",
-        description: "Another transportation category",
-      });
+    const response = await request(app).post("/api/categories").send({
+      userId: 1000,
+      categoryId: 6,
+      name: "Transportation",
+      description: "Another transportation category",
+    });
 
     // Confirm that the duplicate category was rejected.
     expect(response.statusCode).toBe(409);
-    expect(response.body.message).toBe(
-      "Category name already exists.",
-    );
+    expect(response.body.message).toBe("Category name already exists.");
 
     // Verify that a new Category document was not created.
     expect(Category).not.toHaveBeenCalled();
@@ -304,12 +288,10 @@ describe("PUT /api/categories/:categoryId", () => {
     existingCategory.save.mockResolvedValue(updatedCategory);
 
     // Send the update request to the API.
-    const response = await request(app)
-      .put("/api/categories/5")
-      .send({
-        name: "Vehicle Expenses",
-        description: "Gas, repairs, and vehicle maintenance",
-      });
+    const response = await request(app).put("/api/categories/5").send({
+      name: "Vehicle Expenses",
+      description: "Gas, repairs, and vehicle maintenance",
+    });
 
     // Confirm that the API returned a successful response.
     expect(response.statusCode).toBe(200);
@@ -344,18 +326,14 @@ describe("PUT /api/categories/:categoryId", () => {
     Category.findOne.mockResolvedValue(null);
 
     // Send an update request using a categoryId that does not exist.
-    const response = await request(app)
-      .put("/api/categories/999")
-      .send({
-        name: "Unknown Category",
-        description: "This category does not exist",
-      });
+    const response = await request(app).put("/api/categories/999").send({
+      name: "Unknown Category",
+      description: "This category does not exist",
+    });
 
     // Confirm that the correct not-found response was returned.
     expect(response.statusCode).toBe(404);
-    expect(response.body.message).toBe(
-      "Category not found.",
-    );
+    expect(response.body.message).toBe("Category not found.");
 
     // Verify that the API searched for the supplied categoryId.
     expect(Category.findOne).toHaveBeenCalledWith({
@@ -394,21 +372,81 @@ describe("PUT /api/categories/:categoryId", () => {
     Category.findOne.mockResolvedValueOnce(duplicateCategory);
 
     // Send an update request containing the duplicate name.
-    const response = await request(app)
-      .put("/api/categories/5")
-      .send({
-        name: "Food",
-        description: "Updated category description",
-      });
+    const response = await request(app).put("/api/categories/5").send({
+      name: "Food",
+      description: "Updated category description",
+    });
 
     // Confirm that the duplicate category name was rejected.
     expect(response.statusCode).toBe(409);
-    expect(response.body.message).toBe(
-      "Category name already exists.",
-    );
+    expect(response.body.message).toBe("Category name already exists.");
 
     // Verify that the category was not saved after validation failed.
     expect(existingCategory.save).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * Jarren Bess
+ *
+ * Unit tests for the Search Categories API.
+ */
+describe("GET /api/categories/user/:userId/search", () => {
+  // Confirms that a non-numeric userId is rejected.
+  test("should return 400 when userId is not numeric", async () => {
+    // Send a request using a non-numeric userId route parameter.
+    const response = await request(app).get("/api/categories/user/abc/search");
+
+    // Confirm that the correct validation response was returned.
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe("userId must be numeric.");
+  });
+
+  // Confirms that matching categories are returned, scoped to the
+  // requesting user and matched against name only.
+  test("should return 200 and matching categories for a valid search", async () => {
+    // Simulate finding categories that match the search term.
+    Category.find.mockResolvedValue([
+      {
+        _id: "1",
+        userId: 1000,
+        categoryId: 1,
+        name: "Food",
+        description: "Groceries and dining",
+      },
+    ]);
+
+    // Send a search request scoped to the user with a name query.
+    const response = await request(app).get(
+      "/api/categories/user/1000/search?name=foo",
+    );
+
+    // Confirm that the API returned the matching category records.
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0].name).toBe("Food");
+
+    // Verify that the search was scoped to the user and matched
+    // against the name field only.
+    expect(Category.find).toHaveBeenCalledWith({
+      userId: 1000,
+      name: { $regex: "foo", $options: "i" },
+    });
+  });
+
+  // Confirms that database failures return a server error response.
+  test("should return 500 when an error occurs while searching categories", async () => {
+    // Simulate a database error during the search query.
+    Category.find.mockRejectedValue(new Error("Database error"));
+
+    // Send a valid category search request.
+    const response = await request(app).get(
+      "/api/categories/user/1000/search?name=foo",
+    );
+
+    // Confirm that the API returned a server error response.
+    expect(response.statusCode).toBe(500);
+    expect(response.body.message).toBe("Error searching categories.");
   });
 });
 
@@ -424,15 +462,11 @@ describe("GET /api/categories/category/:categoryId", () => {
    */
   test("should return 400 when categoryId is not numeric", async () => {
     // Send a request containing an invalid categoryId.
-    const response = await request(app).get(
-      "/api/categories/category/abc",
-    );
+    const response = await request(app).get("/api/categories/category/abc");
 
     // Confirm that the correct validation response was returned.
     expect(response.status).toBe(400);
-    expect(response.body.message).toBe(
-      "categoryId must be numeric.",
-    );
+    expect(response.body.message).toBe("categoryId must be numeric.");
   });
 
   /**
@@ -451,15 +485,11 @@ describe("GET /api/categories/category/:categoryId", () => {
     Expense.find.mockResolvedValue([]);
 
     // Send a request for a valid category that has no expenses.
-    const response = await request(app).get(
-      "/api/categories/category/5",
-    );
+    const response = await request(app).get("/api/categories/category/5");
 
     // Confirm that the API returned the expected not-found response.
     expect(response.status).toBe(404);
-    expect(response.body.message).toBe(
-      "No expenses found for this category.",
-    );
+    expect(response.body.message).toBe("No expenses found for this category.");
   });
 
   /**
@@ -515,9 +545,7 @@ describe("GET /api/categories/category/:categoryId", () => {
     ]);
 
     // Send a request for the valid category.
-    const response = await request(app).get(
-      "/api/categories/category/2",
-    );
+    const response = await request(app).get("/api/categories/category/2");
 
     // Confirm that both expenses were returned.
     expect(response.status).toBe(200);
@@ -554,9 +582,7 @@ describe("DELETE /api/categories/:categoryId", () => {
     });
 
     // Send a delete request using a valid categoryId.
-    const response = await request(app).delete(
-      "/api/categories/3",
-    );
+    const response = await request(app).delete("/api/categories/3");
 
     // Confirm that the category was deleted successfully.
     expect(response.status).toBe(200);
@@ -581,9 +607,7 @@ describe("DELETE /api/categories/:categoryId", () => {
     });
 
     // Send a delete request using a categoryId that does not exist.
-    const response = await request(app).delete(
-      "/api/categories/999",
-    );
+    const response = await request(app).delete("/api/categories/999");
 
     // Confirm that the correct not-found response was returned.
     expect(response.status).toBe(404);
@@ -597,9 +621,7 @@ describe("DELETE /api/categories/:categoryId", () => {
    */
   test("should return 400 for an invalid categoryId", async () => {
     // Send a delete request containing an invalid categoryId.
-    const response = await request(app).delete(
-      "/api/categories/-1",
-    );
+    const response = await request(app).delete("/api/categories/-1");
 
     // Confirm that the correct validation response was returned.
     expect(response.status).toBe(400);

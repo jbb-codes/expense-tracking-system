@@ -28,6 +28,7 @@ import { DeleteCategoryComponent } from './categories/delete-category/delete-cat
 import { ListCategoriesComponent } from './categories/list-categories/list-categories.component';
 import { ReadCategoryByIdComponent } from './categories/read-category-by-id/read-category-by-id.component';
 import { UpdateCategoryComponent } from './categories/update-category/update-category.component';
+import { SearchCategoriesComponent } from './categories/search-categories/search-categories.component';
 import { CreateExpenseComponent } from './expenses/create-expense/create-expense.component';
 import { DeleteExpenseComponent } from './expenses/delete-expense/delete-expense.component';
 import { ListExpensesComponent } from './expenses/list-expenses/list-expenses.component';
@@ -191,6 +192,17 @@ export const routes: Routes = [
   {
     path: 'delete-category',
     component: DeleteCategoryComponent,
+    canActivate: [AuthGuard],
+  },
+
+  /**
+   * Jarren Bess
+   *
+   * Protected page used to search categories by name or description.
+   */
+  {
+    path: 'search-categories',
+    component: SearchCategoriesComponent,
     canActivate: [AuthGuard],
   },
 ];

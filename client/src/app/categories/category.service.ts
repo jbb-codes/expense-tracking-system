@@ -99,13 +99,8 @@ export class CategoryService {
    * @param category New category information entered by the user.
    * @returns Observable containing the created category.
    */
-  createCategory(
-    category: CreateCategory,
-  ): Observable<Category> {
-    return this.http.post<Category>(
-      this.apiUrl,
-      category,
-    );
+  createCategory(category: CreateCategory): Observable<Category> {
+    return this.http.post<Category>(this.apiUrl, category);
   }
 
   /**
@@ -122,10 +117,7 @@ export class CategoryService {
     categoryId: number,
     category: UpdateCategory,
   ): Observable<Category> {
-    return this.http.put<Category>(
-      `${this.apiUrl}/${categoryId}`,
-      category,
-    );
+    return this.http.put<Category>(`${this.apiUrl}/${categoryId}`, category);
   }
 
   /**
@@ -137,12 +129,8 @@ export class CategoryService {
    * @param categoryId Numeric ID of the selected category.
    * @returns Observable containing expenses assigned to the category.
    */
-  getExpensesByCategory(
-    categoryId: number,
-  ): Observable<any[]> {
-    return this.http.get<any[]>(
-      `${this.apiUrl}/category/${categoryId}`,
-    );
+  getExpensesByCategory(categoryId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/category/${categoryId}`);
   }
 
   /**
@@ -154,9 +142,7 @@ export class CategoryService {
    * @param categoryId Numeric ID of the selected category.
    * @returns Observable containing the expense count.
    */
-  getExpenseCount(
-    categoryId: number,
-  ): Observable<{ count: number }> {
+  getExpenseCount(categoryId: number): Observable<{ count: number }> {
     return this.http.get<{ count: number }>(
       `${this.apiUrl}/${categoryId}/expenseCount`,
     );
@@ -172,8 +158,22 @@ export class CategoryService {
    * @returns Observable containing the API response.
    */
   deleteCategory(categoryId: number): Observable<any> {
-    return this.http.delete(
-      `${this.apiUrl}/${categoryId}`,
-    );
+    return this.http.delete(`${this.apiUrl}/${categoryId}`);
+  }
+
+  /**
+   * Jarren Bess
+   *
+   * Sends a GET request to search a user's categories by name
+   * or description.
+   *
+   * @param userId Numeric ID of the authenticated user.
+   * @param name Search term matched against the category name.
+   * @returns Observable containing the matching categories.
+   */
+  searchCategories(userId: number, name: string): Observable<Category[]> {
+    return this.http.get<Category[]>(`${this.apiUrl}/user/${userId}/search`, {
+      params: { name },
+    });
   }
 }
