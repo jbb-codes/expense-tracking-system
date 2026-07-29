@@ -12,16 +12,10 @@
  * - Added test coverage for required-field validation.
  */
 
-import {
-  ComponentFixture,
-  TestBed,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
-import {
-  Category,
-  CategoryService,
-  UpdateCategory,
-} from '../category.service';
+import { Category, CategoryService, UpdateCategory } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
 import { UpdateCategoryComponent } from './update-category.component';
 
@@ -62,18 +56,12 @@ describe('UpdateCategoryComponent', () => {
      */
     categoryServiceSpy = jasmine.createSpyObj<CategoryService>(
       'CategoryService',
-      [
-        'getCategories',
-        'updateCategory',
-      ],
+      ['getCategories', 'updateCategory'],
     );
 
-    authServiceSpy = jasmine.createSpyObj<AuthService>(
-      'AuthService',
-      [
-        'getUserId',
-      ],
-    );
+    authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', [
+      'getUserId',
+    ]);
 
     /**
      * Simulate an authenticated user with userId 1000.
@@ -83,14 +71,10 @@ describe('UpdateCategoryComponent', () => {
     /**
      * Simulate successfully loading the authenticated user's categories.
      */
-    categoryServiceSpy.getCategories.and.returnValue(
-      of(mockCategories),
-    );
+    categoryServiceSpy.getCategories.and.returnValue(of(mockCategories));
 
     await TestBed.configureTestingModule({
-      imports: [
-        UpdateCategoryComponent,
-      ],
+      imports: [UpdateCategoryComponent],
       providers: [
         {
           provide: CategoryService,
@@ -100,12 +84,11 @@ describe('UpdateCategoryComponent', () => {
           provide: AuthService,
           useValue: authServiceSpy,
         },
+        provideRouter([]),
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(
-      UpdateCategoryComponent,
-    );
+    fixture = TestBed.createComponent(UpdateCategoryComponent);
 
     component = fixture.componentInstance;
 
@@ -130,14 +113,10 @@ describe('UpdateCategoryComponent', () => {
     expect(authServiceSpy.getUserId).toHaveBeenCalled();
 
     // Confirm that categories were requested for the correct user.
-    expect(
-      categoryServiceSpy.getCategories,
-    ).toHaveBeenCalledWith(1000);
+    expect(categoryServiceSpy.getCategories).toHaveBeenCalledWith(1000);
 
     // Confirm that the returned categories were stored.
-    expect(component.userCategories).toEqual(
-      mockCategories,
-    );
+    expect(component.userCategories).toEqual(mockCategories);
 
     // Confirm that no category-loading error was displayed.
     expect(component.categoryLoadErrorMessage).toBe('');
@@ -171,9 +150,7 @@ describe('UpdateCategoryComponent', () => {
     });
 
     // Confirm that the category-loaded message was displayed.
-    expect(component.selectMessage).toBe(
-      'Category loaded successfully.',
-    );
+    expect(component.selectMessage).toBe('Category loaded successfully.');
 
     // Confirm that no selection error was displayed.
     expect(component.selectErrorMessage).toBe('');
@@ -209,9 +186,7 @@ describe('UpdateCategoryComponent', () => {
     /**
      * Simulate a successful Update Category API response.
      */
-    categoryServiceSpy.updateCategory.and.returnValue(
-      of(updatedCategory),
-    );
+    categoryServiceSpy.updateCategory.and.returnValue(of(updatedCategory));
 
     // Identify the category being updated.
     component.selectedCategoryId = 2;
@@ -226,9 +201,7 @@ describe('UpdateCategoryComponent', () => {
      * Confirm that the correct categoryId and request body
      * were sent to the service.
      */
-    expect(
-      categoryServiceSpy.updateCategory,
-    ).toHaveBeenCalledWith(
+    expect(categoryServiceSpy.updateCategory).toHaveBeenCalledWith(
       2,
       updateRequest,
     );
@@ -247,9 +220,7 @@ describe('UpdateCategoryComponent', () => {
      * The first call occurs during ngOnInit(), and the second
      * occurs after the successful update.
      */
-    expect(
-      categoryServiceSpy.getCategories,
-    ).toHaveBeenCalledTimes(2);
+    expect(categoryServiceSpy.getCategories).toHaveBeenCalledTimes(2);
   });
 
   /**
@@ -273,16 +244,31 @@ describe('UpdateCategoryComponent', () => {
     component.onSubmit();
 
     // Confirm that the service was not called.
-    expect(
-      categoryServiceSpy.updateCategory,
-    ).not.toHaveBeenCalled();
+    expect(categoryServiceSpy.updateCategory).not.toHaveBeenCalled();
 
     // Confirm that the expected validation message was displayed.
-    expect(component.errorMessage).toBe(
-      'Please complete all required fields.',
-    );
+    expect(component.errorMessage).toBe('Please complete all required fields.');
 
     // Confirm that no success message was displayed.
     expect(component.successMessage).toBe('');
+  });
+
+  /**
+   * Confirms that the back link to the category list is visible
+   * even before a category has been selected, matching the other
+   * category components.
+   */
+  it('should show a back link before a category is selected', () => {
+    // Confirm no category has been loaded for editing yet.
+    expect(component.selectedCategoryId).toBeNull();
+
+    const backLink: HTMLAnchorElement =
+      fixture.nativeElement.querySelector('a.btn');
+
+    // Confirm the back link is rendered regardless of selection state.
+    expect(backLink).toBeTruthy();
+    expect(backLink.getAttribute('ng-reflect-router-link')).toBe(
+      '/list-categories',
+    );
   });
 });

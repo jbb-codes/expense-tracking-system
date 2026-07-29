@@ -16,9 +16,14 @@
 
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, } from '@angular/forms';
-import { Category, CategoryService, UpdateCategory, } from '../category.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { Category, CategoryService, UpdateCategory } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
 import { RouterLink } from '@angular/router';
 
@@ -30,11 +35,7 @@ const SELECT_MESSAGE_DURATION_MS = 3000;
 @Component({
   selector: 'app-update-category',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterLink
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <h1>Update Category</h1>
 
@@ -56,22 +57,13 @@ const SELECT_MESSAGE_DURATION_MS = 3000;
       Allows the user to select an existing category before
       displaying the editable category form.
     -->
-    <form
-      [formGroup]="categorySelectForm"
-      (ngSubmit)="onSelectCategory()"
-    >
+    <form [formGroup]="categorySelectForm" (ngSubmit)="onSelectCategory()">
       <label for="selectedCategoryId">Select Category</label>
 
-      <select
-        id="selectedCategoryId"
-        formControlName="categoryId"
-      >
+      <select id="selectedCategoryId" formControlName="categoryId">
         <option value="">Choose a category</option>
 
-        @for (
-          category of userCategories;
-          track category.categoryId
-        ) {
+        @for (category of userCategories; track category.categoryId) {
           <option [ngValue]="category.categoryId">
             {{ category.name }}
           </option>
@@ -97,10 +89,7 @@ const SELECT_MESSAGE_DURATION_MS = 3000;
       and loads an existing category.
     -->
     @if (selectedCategoryId !== null) {
-      <form
-        [formGroup]="categoryForm"
-        (ngSubmit)="onSubmit()"
-      >
+      <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
         <label for="categoryId">Category ID</label>
 
         <!--
@@ -115,18 +104,10 @@ const SELECT_MESSAGE_DURATION_MS = 3000;
         />
 
         <label for="name">Category Name</label>
-        <input
-          id="name"
-          type="text"
-          formControlName="name"
-        />
+        <input id="name" type="text" formControlName="name" />
 
         <label for="description">Description</label>
-        <input
-          id="description"
-          type="text"
-          formControlName="description"
-        />
+        <input id="description" type="text" formControlName="description" />
 
         <button type="submit">Update Category</button>
 
@@ -138,9 +119,9 @@ const SELECT_MESSAGE_DURATION_MS = 3000;
           <p class="error-msg">{{ errorMessage }}</p>
         }
       </form>
-
-      <a routerLink="/list-categories" class="btn">&#8592; Back</a>
     }
+
+    <a routerLink="/list-categories" class="btn">&#8592; Back</a>
   `,
   styles: `
     form {
@@ -163,9 +144,7 @@ const SELECT_MESSAGE_DURATION_MS = 3000;
     }
   `,
 })
-export class UpdateCategoryComponent
-  implements OnInit, OnDestroy
-{
+export class UpdateCategoryComponent implements OnInit, OnDestroy {
   /**
    * Categories belonging to the currently authenticated user.
    */
@@ -201,8 +180,7 @@ export class UpdateCategoryComponent
    * Stores the temporary message timer so it can be cleared
    * when the component is destroyed or a new message is shown.
    */
-  private selectMessageTimeoutId?:
-    ReturnType<typeof setTimeout>;
+  private selectMessageTimeoutId?: ReturnType<typeof setTimeout>;
 
   constructor(
     private fb: FormBuilder,
@@ -278,8 +256,7 @@ export class UpdateCategoryComponent
         this.userCategories = [];
 
         // Display a user-friendly loading error.
-        this.categoryLoadErrorMessage =
-          'Unable to load categories.';
+        this.categoryLoadErrorMessage = 'Unable to load categories.';
       },
     });
   }
@@ -301,16 +278,13 @@ export class UpdateCategoryComponent
     if (this.categorySelectForm.invalid) {
       clearTimeout(this.selectMessageTimeoutId);
 
-      this.selectErrorMessage =
-        'Please select a category.';
+      this.selectErrorMessage = 'Please select a category.';
       this.selectMessage = '';
       return;
     }
 
     // Convert the selected categoryId to a number.
-    const categoryId = Number(
-      this.categorySelectForm.value.categoryId,
-    );
+    const categoryId = Number(this.categorySelectForm.value.categoryId);
 
     /**
      * Find the full category record from the categories
@@ -325,15 +299,13 @@ export class UpdateCategoryComponent
       clearTimeout(this.selectMessageTimeoutId);
 
       this.selectedCategoryId = null;
-      this.selectErrorMessage =
-        'Unable to load the selected category.';
+      this.selectErrorMessage = 'Unable to load the selected category.';
       this.selectMessage = '';
       return;
     }
 
     // Store the categoryId used by the Update Category API.
-    this.selectedCategoryId =
-      selectedCategory.categoryId;
+    this.selectedCategoryId = selectedCategory.categoryId;
 
     /**
      * Fill the editable form with the category's existing
@@ -341,14 +313,11 @@ export class UpdateCategoryComponent
      */
     this.categoryForm.patchValue({
       name: selectedCategory.name,
-      description:
-        selectedCategory.description || '',
+      description: selectedCategory.description || '',
     });
 
     // Display a temporary success message.
-    this.showSelectMessage(
-      'Category loaded successfully.',
-    );
+    this.showSelectMessage('Category loaded successfully.');
   }
 
   /**
@@ -386,15 +355,13 @@ export class UpdateCategoryComponent
 
     // Ensure a category has been selected before updating.
     if (this.selectedCategoryId === null) {
-      this.errorMessage =
-        'Please select a category before updating.';
+      this.errorMessage = 'Please select a category before updating.';
       return;
     }
 
     // Stop the request when a required field is invalid.
     if (this.categoryForm.invalid) {
-      this.errorMessage =
-        'Please complete all required fields.';
+      this.errorMessage = 'Please complete all required fields.';
       return;
     }
 
@@ -406,37 +373,30 @@ export class UpdateCategoryComponent
      */
     const updatedCategory: UpdateCategory = {
       name: this.categoryForm.value.name,
-      description:
-        this.categoryForm.value.description || '',
+      description: this.categoryForm.value.description || '',
     };
 
     // Send the updated category information to the API.
     this.categoryService
-      .updateCategory(
-        this.selectedCategoryId,
-        updatedCategory,
-      )
+      .updateCategory(this.selectedCategoryId, updatedCategory)
       .subscribe({
         next: (category: Category) => {
           // Display confirmation using the updated category name.
-          this.successMessage =
-            `${category.name} was updated successfully.`;
+          this.successMessage = `${category.name} was updated successfully.`;
           this.errorMessage = '';
 
           /**
            * Refresh the category dropdown so it displays the
            * updated name and description.
            */
-          const userId =
-            this.authService.getUserId();
+          const userId = this.authService.getUserId();
 
           this.loadCategories(userId);
         },
         error: (error: HttpErrorResponse) => {
           // Display the API message when one is available.
           this.errorMessage =
-            error.error?.message ||
-            'Unable to update the category.';
+            error.error?.message || 'Unable to update the category.';
 
           this.successMessage = '';
         },
