@@ -10,6 +10,7 @@ import { ReadExpenseByIdComponent } from './read-expense-by-id.component';
 import { ExpenseService } from '../expense.service';
 import { AuthService } from '../../auth/auth.service';
 import { of, throwError } from 'rxjs';
+import { provideRouter } from '@angular/router';
 
 class MockAuthService {
   getUserId() {
@@ -66,6 +67,7 @@ describe('ReadExpenseByIdComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReadExpenseByIdComponent],
       providers: [
+        provideRouter([]),
         { provide: ExpenseService, useClass: MockExpenseService },
         { provide: AuthService, useClass: MockAuthService },
       ],

@@ -3,6 +3,7 @@ import { of, throwError } from 'rxjs';
 import { DeleteCategoryComponent } from './delete-category.component';
 import { CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
+import { provideRouter } from '@angular/router';
 
 describe('DeleteCategoryComponent', () => {
   let component: DeleteCategoryComponent;
@@ -23,6 +24,7 @@ describe('DeleteCategoryComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DeleteCategoryComponent],
       providers: [
+        provideRouter([]),
         { provide: CategoryService, useValue: categoryServiceSpy },
         { provide: AuthService, useValue: authServiceSpy }
       ]

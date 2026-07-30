@@ -10,6 +10,7 @@ import { ReadCategoryByIdComponent } from './read-category-by-id.component';
 import { AuthService } from '../../auth/auth.service';
 import { CategoryService } from '../category.service';
 import { of, throwError } from 'rxjs';
+import { provideRouter } from '@angular/router';
 
 class MockAuthService {
   getUserId() {
@@ -76,6 +77,7 @@ describe('ReadCategoryByIdComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReadCategoryByIdComponent],
       providers: [
+        provideRouter([]),
         { provide: CategoryService, useClass: MockCategoryService },
         { provide: AuthService, useClass: MockAuthService },
       ],

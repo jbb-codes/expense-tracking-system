@@ -10,6 +10,7 @@ import { of, throwError } from 'rxjs';
 import { SearchExpensesComponent } from './search-expenses.component';
 import { ExpenseService } from '../expense.service';
 import { AuthService } from '../../auth/auth.service';
+import { provideRouter } from '@angular/router';
 
 describe('SearchExpensesComponent', () => {
   let component: SearchExpensesComponent;
@@ -40,6 +41,7 @@ describe('SearchExpensesComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SearchExpensesComponent],
       providers: [
+        provideRouter([]),
         { provide: ExpenseService, useValue: expenseServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
       ],

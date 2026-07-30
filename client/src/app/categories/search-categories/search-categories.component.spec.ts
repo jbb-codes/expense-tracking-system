@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-
+import { provideRouter } from '@angular/router';
 import { SearchCategoriesComponent } from './search-categories.component';
 import { CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
@@ -31,6 +31,7 @@ describe('SearchCategoriesComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SearchCategoriesComponent],
       providers: [
+        provideRouter([]),
         { provide: CategoryService, useValue: categoryServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
       ],
