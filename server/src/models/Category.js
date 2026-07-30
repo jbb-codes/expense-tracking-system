@@ -19,7 +19,7 @@ const categorySchema = new mongoose.Schema(
   { timestamps: { createdAt: "dateCreated", updatedAt: "dateModified" } },
 );
 
-// Category names are unique per user, not across all users.
-categorySchema.index({ userId: 1, name: 1 }, { unique: true });
+// Category names and IDs are unique per user, not across all users.
+categorySchema.index({ userId: 1, name: 1, categoryId: 1 }, { unique: true });
 
 module.exports = mongoose.model("Category", categorySchema);

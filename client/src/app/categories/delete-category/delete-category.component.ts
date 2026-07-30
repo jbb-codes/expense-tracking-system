@@ -98,7 +98,7 @@ export class DeleteCategoryComponent implements OnInit {
 
         // Fetch expense counts for each category
         categories.forEach(cat => {
-          this.categoryService.getExpenseCount(cat.categoryId).subscribe({
+          this.categoryService.getExpenseCount(userId, cat.categoryId).subscribe({
             next: ({ count }) => {
               this.expenseCounts[cat.categoryId] = count;
             },
@@ -115,7 +115,8 @@ export class DeleteCategoryComponent implements OnInit {
   }
 
   attemptDelete(cat: Category): void {
-    this.categoryService.getExpenseCount(cat.categoryId).subscribe({
+    const userId = this.authService.getUserId();
+    this.categoryService.getExpenseCount(userId, cat.categoryId).subscribe({
       next: ({ count }) => {
         if (count > 0) {
           this.errorMessage = `Category "${cat.name}" cannot be deleted because it has ${count} related expenses.`;

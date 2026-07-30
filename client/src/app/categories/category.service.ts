@@ -129,8 +129,11 @@ export class CategoryService {
    * @param categoryId Numeric ID of the selected category.
    * @returns Observable containing expenses assigned to the category.
    */
-  getExpensesByCategory(categoryId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/category/${categoryId}`);
+  getExpensesByCategory(userId: number, categoryId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/category/${categoryId}`,
+      { params: { userId } }
+    );
   }
 
   /**
@@ -142,11 +145,13 @@ export class CategoryService {
    * @param categoryId Numeric ID of the selected category.
    * @returns Observable containing the expense count.
    */
-  getExpenseCount(categoryId: number): Observable<{ count: number }> {
+  getExpenseCount(userId: number, categoryId: number): Observable<{ count: number }> {
     return this.http.get<{ count: number }>(
       `${this.apiUrl}/${categoryId}/expenseCount`,
+      { params: { userId } }
     );
   }
+
 
   /**
    * Kaitlyn Kelly

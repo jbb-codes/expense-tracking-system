@@ -39,6 +39,7 @@ import { AuthService } from '../../auth/auth.service';
       <thead>
         <tr>
           <th>Name</th>
+          <th>ID</th>
           <th>Description</th>
         </tr>
       </thead>
@@ -46,6 +47,7 @@ import { AuthService } from '../../auth/auth.service';
         @for (category of categories; track category) {
           <tr>
             <td>{{ category.name }}</td>
+            <td>{{ category.categoryId }}</td>
             <td>{{ category.description }}</td>
           </tr>
         }

@@ -146,7 +146,9 @@ export class ReadCategoryByIdComponent implements OnInit {
 
     const categoryId = Number(this.categorySelectForm.value.categoryId);
 
-    this.categoryService.getExpensesByCategory(categoryId).subscribe({
+    const userId = this.authService.getUserId();
+    this.categoryService.getExpensesByCategory(userId, categoryId).subscribe({
+
       next: (expenses) => {
         if (!expenses || expenses.length === 0) {
           this.selectedExpenses = [];

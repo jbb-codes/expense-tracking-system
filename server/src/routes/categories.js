@@ -27,8 +27,6 @@
 
 "use strict";
 
-console.log(">>> LOADED CATEGORIES ROUTER FROM:", __filename);
-
 const express = require("express");
 const Category = require("../models/Category");
 const Expense = require("../models/Expense");
@@ -284,40 +282,28 @@ router.get("/user/:userId/search", async (req, res) => {
  */
 router.get("/:id/expenseCount", async (req, res) => {
   try {
-    // Convert the category ID route parameter to a number.
     const categoryId = Number(req.params.id);
+    const userId = Number(req.query.userId);
 
-    // Find the category to retrieve its associated userId.
-    const category = await Category.findOne({ categoryId });
-
-    // Return 404 when the category does not exist.
-    if (!category) {
-      return res.status(404).json({
-        error: "Category not found",
-      });
+    if (isNaN(categoryId) || isNaN(userId)) {
+      return res.status(400).json({ error: "categoryId must be numeric" });
     }
 
-    // Retrieve the userId associated with the category.
-    const userId = category.userId;
+    const category = await Category.findOne({ userId, categoryId });
 
-    // Count expenses assigned to this category for this user.
-    const count = await Expense.countDocuments({
-      userId,
-      categoryId,
-    });
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
 
-    // Return the total number of assigned expenses.
+    const count = await Expense.countDocuments({ userId, categoryId });
+
     return res.status(200).json({ count });
   } catch (err) {
-    // Log the complete error for server-side troubleshooting.
     console.error("Error counting expenses:", err);
-
-    // Return a general server error response.
-    return res.status(500).json({
-      error: "Error counting expenses",
-    });
+    return res.status(500).json({ error: "Error counting expenses" });
   }
 });
+
 
 /**
  * Kaitlyn Kelly
@@ -329,61 +315,65 @@ router.get("/:id/expenseCount", async (req, res) => {
  */
 router.get("/category/:categoryId", async (req, res) => {
   try {
-    // Convert the categoryId route parameter to a number.
     const categoryId = Number(req.params.categoryId);
+    const userId = req.query.userId ? Number(req.query.userId) : null;
 
-    // Validate that categoryId contains a numeric value.
     if (isNaN(categoryId)) {
       return res.status(400).json({
         message: "categoryId must be numeric.",
       });
     }
 
-    // Find the category to retrieve the associated userId.
-    const category = await Category.findOne({ categoryId });
+    let category;
 
-    // Return 404 when the category does not exist.
+    if (userId !== null) {
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          message: "userId must be numeric.",
+        });
+      }
+
+      category = await Category.findOne({ userId, categoryId });
+    } else {
+      category = await Category.findOne({ categoryId });
+    }
+
     if (!category) {
       return res.status(404).json({
         message: "Category not found.",
       });
     }
 
-    // Retrieve the userId associated with the category.
-    const userId = category.userId;
+    const effectiveUserId = userId !== null ? userId : category.userId;
 
-    // Fetch expenses assigned to this category for this user.
     const expenses = await Expense.find({
-      userId,
+      userId: effectiveUserId,
       categoryId,
     });
 
-    // Return 404 when the category has no assigned expenses.
     if (!expenses || expenses.length === 0) {
       return res.status(404).json({
         message: "No expenses found for this category.",
       });
     }
 
-    // Add the category name to each returned expense record.
     const enrichedExpenses = expenses.map((expense) => ({
       ...expense.toObject(),
       categoryName: category.name,
     }));
 
-    // Return the matching expense records.
     return res.status(200).json(enrichedExpenses);
   } catch (err) {
-    // Log the complete error for server-side troubleshooting.
     console.error("Error fetching expenses by category:", err);
-
-    // Return a general server error response.
     return res.status(500).json({
       message: "Error fetching expenses by category.",
       error: err.message,
     });
   }
 });
+
+
+
 
 /**
  * Kaitlyn Kelly
