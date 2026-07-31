@@ -123,7 +123,7 @@ export class DeleteCategoryComponent implements OnInit {
           return;
         }
 
-        this.deleteCategory(cat.categoryId);
+        this.deleteCategory(userId, cat.categoryId);
       },
       error: () => {
         this.errorMessage = 'Error checking related expenses.';
@@ -131,8 +131,8 @@ export class DeleteCategoryComponent implements OnInit {
     });
   }
 
-  deleteCategory(categoryId: number): void {
-  this.categoryService.deleteCategory(categoryId).subscribe({
+  deleteCategory(userId: number, categoryId: number): void {
+  this.categoryService.deleteCategory(userId, categoryId).subscribe({
     next: () => {
       this.categories = this.categories.filter(cat => cat.categoryId !== categoryId);
       delete this.expenseCounts[categoryId];

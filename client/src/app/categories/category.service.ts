@@ -126,7 +126,7 @@ export class CategoryService {
    *
    * Retrieves expenses assigned to a specific category.
    *
-   * @param categoryId Numeric ID of the selected category.
+   * @param userId Numeric ID of the user.
    * @returns Observable containing expenses assigned to the category.
    */
   getExpensesByCategory(userId: number, categoryId: number): Observable<any[]> {
@@ -142,7 +142,7 @@ export class CategoryService {
    *
    * Retrieves the number of expenses assigned to a category.
    *
-   * @param categoryId Numeric ID of the selected category.
+   * @param userId Numeric ID of the user.
    * @returns Observable containing the expense count.
    */
   getExpenseCount(userId: number, categoryId: number): Observable<{ count: number }> {
@@ -159,12 +159,15 @@ export class CategoryService {
    *
    * Sends a DELETE request to remove a category.
    *
-   * @param categoryId Numeric ID of the category being deleted.
+   * @param userId Numeric ID of the user.
    * @returns Observable containing the API response.
    */
-  deleteCategory(categoryId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${categoryId}`);
+  deleteCategory(userId: number, categoryId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${categoryId}`, {
+      params: { userId }
+    });
   }
+
 
   /**
    * Jarren Bess

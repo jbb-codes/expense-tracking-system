@@ -581,8 +581,8 @@ describe("DELETE /api/categories/:categoryId", () => {
       deletedCount: 1,
     });
 
-    // Send a delete request using a valid categoryId.
-    const response = await request(app).delete("/api/categories/3");
+    // Send a delete request using a valid categoryId and userId
+    const response = await request(app).delete("/api/categories/3?userId=123");
 
     // Confirm that the category was deleted successfully.
     expect(response.status).toBe(200);
@@ -590,9 +590,10 @@ describe("DELETE /api/categories/:categoryId", () => {
       message: "Category deleted successfully",
     });
 
-    // Verify that the correct categoryId was used in the delete query.
+    // Verify that the correct categoryId & user Id were used in the delete query.
     expect(Category.deleteOne).toHaveBeenCalledWith({
-      categoryId: 3,
+      userId: 123,
+      categoryId: 3
     });
   });
 

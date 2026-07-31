@@ -81,7 +81,7 @@ describe('DeleteCategoryComponent', () => {
 
     component.attemptDelete(mockCategory);
 
-    expect(categoryServiceSpy.deleteCategory).toHaveBeenCalledWith(1);
+    expect(categoryServiceSpy.deleteCategory).toHaveBeenCalledWith(1, 1);
     expect(component.categories.length).toBe(0);
   });
 });

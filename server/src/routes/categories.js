@@ -385,8 +385,8 @@ router.get("/category/:categoryId", async (req, res) => {
  */
 router.delete("/:categoryId", async (req, res) => {
   try {
-    // Convert the categoryId route parameter to a number.
     const categoryId = Number(req.params.categoryId);
+    const userId = Number(req.query.userId);
 
     // Validate that categoryId is a positive whole number.
     if (!Number.isInteger(categoryId) || categoryId <= 0) {
@@ -395,8 +395,8 @@ router.delete("/:categoryId", async (req, res) => {
       });
     }
 
-    // Delete the category matching the supplied categoryId.
-    const deleted = await Category.deleteOne({ categoryId });
+    // Delete the category matching the supplied categoryId for the specific user
+    const deleted = await Category.deleteOne({ userId, categoryId });
 
     // Return 404 when no category was deleted.
     if (deleted.deletedCount === 0) {
