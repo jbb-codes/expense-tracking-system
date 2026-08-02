@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: '/api'
+  apiUrl: 'https://expense-tracking-system-akxn.onrender.com/api',
 };

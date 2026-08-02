@@ -18,13 +18,14 @@ import {
 import { ExpenseService } from '../expense.service';
 import { Category, CategoryService } from '../../categories/category.service';
 import { AuthService } from '../../auth/auth.service';
+import { RouterLink } from '@angular/router';
 
 const SELECT_MESSAGE_DURATION_MS = 3000;
 
 @Component({
   selector: 'app-update-expense',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <h1>Update Expense</h1>
 
@@ -95,6 +96,8 @@ const SELECT_MESSAGE_DURATION_MS = 3000;
         }
       </form>
     }
+
+    <a routerLink="/list-expenses" class="btn">&#8592; Back</a>
   `,
   styles: `
     form {

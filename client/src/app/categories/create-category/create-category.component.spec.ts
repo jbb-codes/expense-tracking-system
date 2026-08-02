@@ -13,7 +13,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
-
+import { provideRouter } from '@angular/router';
 import { CreateCategoryComponent } from './create-category.component';
 import { CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
@@ -46,6 +46,7 @@ describe('CreateCategoryComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CreateCategoryComponent, ReactiveFormsModule],
       providers: [
+        provideRouter([]),
         {
           provide: CategoryService,
           useValue: categoryServiceSpy,

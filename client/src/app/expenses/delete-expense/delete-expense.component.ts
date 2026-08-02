@@ -9,11 +9,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Expense, ExpenseService } from '../expense.service';
 import { AuthService } from '../../auth/auth.service';
+import { RouterLink } from '@angular/router';
+
 
 @Component({
   selector: 'app-delete-expense',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <h1>Delete an Expense</h1>
 
@@ -64,6 +66,8 @@ import { AuthService } from '../../auth/auth.service';
         }
       </tbody>
     </table>
+
+    <a routerLink="/list-expenses" class="btn">&#8592; Back</a>
   `,
   styles: `
     .delete-btn {

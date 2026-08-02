@@ -1,24 +1,16 @@
-/**
- * Jarren Bess
- * Week 7 - Sprint 2
- * File: search-expenses.component.ts
- * Description: Angular component that searches a user's expenses by description.
- */
-
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Expense, ExpenseService } from '../expense.service';
+import { Category, CategoryService } from '../category.service';
 import { AuthService } from '../../auth/auth.service';
 import { RouterLink } from '@angular/router';
 
-
 @Component({
-  selector: 'app-search-expenses',
+  selector: 'app-search-categories',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
-    <h1>Search Expenses</h1>
+    <h1>Search Categories</h1>
 
     <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="field-row">
       <div class="search-input-wrap">
@@ -33,10 +25,10 @@ import { RouterLink } from '@angular/router';
           <path d="m21 21-4.3-4.3" />
         </svg>
         <input
-          id="description"
+          id="name"
           type="text"
-          formControlName="description"
-          placeholder="Search by description…"
+          formControlName="name"
+          placeholder="Search by name…"
         />
       </div>
 
@@ -47,51 +39,45 @@ import { RouterLink } from '@angular/router';
       <p class="error">{{ errorMessage }}</p>
     }
 
-    @if (expenses.length) {
+    @if (categories.length) {
       <div class="results">
         <div class="table-scroll">
           <table class="result-table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>User ID</th>
-                <th>Category</th>
-                <th>Amount</th>
+                <th>Name</th>
                 <th>Description</th>
               </tr>
             </thead>
             <tbody>
-              @for (expense of expenses; track expense) {
+              @for (category of categories; track category) {
                 <tr>
-                  <td>{{ expense.date | date }}</td>
-                  <td>{{ expense.userId }}</td>
-                  <td>{{ expense.categoryName }}</td>
-                  <td>
-                    {{ expense.amount | currency: 'USD' : 'symbol' : '1.2-2' }}
-                  </td>
-                  <td>{{ expense.description }}</td>
+                  <td>{{ category.name }}</td>
+                  <td>{{ category.description }}</td>
                 </tr>
               }
             </tbody>
           </table>
         </div>
         <p class="results-meta">
-          {{ expenses.length }} result{{ expenses.length === 1 ? '' : 's' }} for
-          "{{ lastSearchTerm }}"
+          {{ categories.length }} result{{
+            categories.length === 1 ? '' : 's'
+          }}
+          for "{{ lastSearchTerm }}"
         </p>
       </div>
     } @else if (hasSearched) {
       <div class="empty-state">
-        No expenses found for "{{ lastSearchTerm }}".
+        No categories found for "{{ lastSearchTerm }}".
       </div>
     }
 
-    <a routerLink="/list-expenses" class="btn">&#8592; Back</a>
+    <a routerLink="/list-categories" class="btn">&#8592; Back</a>
   `,
   styles: ``,
 })
-export class SearchExpensesComponent {
-  expenses: Expense[] = [];
+export class SearchCategoriesComponent {
+  categories: Category[] = [];
   errorMessage = '';
   hasSearched = false;
   lastSearchTerm = '';
@@ -99,34 +85,34 @@ export class SearchExpensesComponent {
 
   constructor(
     private fb: FormBuilder,
-    private expenseService: ExpenseService,
+    private categoryService: CategoryService,
     private authService: AuthService,
   ) {
     this.searchForm = this.fb.group({
-      description: [''],
+      name: [''],
     });
   }
 
   /**
-   * Sends the logged-in user's ID and the entered description to the
-   * Search Expenses API and populates the results table.
+   * Sends the logged-in user's ID and the entered search term to the
+   * Search Categories API and populates the results table.
    */
   onSearch(): void {
     const userId = this.authService.getUserId();
-    const { description } = this.searchForm.value;
+    const { name } = this.searchForm.value;
 
-    this.expenseService.searchExpenses(userId, description).subscribe({
-      next: (expenses) => {
-        this.expenses = expenses;
+    this.categoryService.searchCategories(userId, name).subscribe({
+      next: (categories) => {
+        this.categories = categories;
         this.errorMessage = '';
         this.hasSearched = true;
-        this.lastSearchTerm = description;
+        this.lastSearchTerm = name;
       },
       error: () => {
-        this.expenses = [];
-        this.errorMessage = 'Error searching expenses.';
+        this.categories = [];
+        this.errorMessage = 'Error searching categories.';
         this.hasSearched = true;
-        this.lastSearchTerm = description;
+        this.lastSearchTerm = name;
       },
     });
   }

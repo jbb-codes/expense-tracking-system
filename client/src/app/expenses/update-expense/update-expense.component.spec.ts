@@ -18,6 +18,7 @@ import { UpdateExpenseComponent } from './update-expense.component';
 import { ExpenseService } from '../expense.service';
 import { CategoryService } from '../../categories/category.service';
 import { AuthService } from '../../auth/auth.service';
+import { provideRouter } from '@angular/router';
 
 describe('UpdateExpenseComponent', () => {
   let component: UpdateExpenseComponent;
@@ -56,6 +57,7 @@ describe('UpdateExpenseComponent', () => {
     await TestBed.configureTestingModule({
       imports: [UpdateExpenseComponent],
       providers: [
+        provideRouter([]),
         {
           provide: ExpenseService,
           useValue: expenseServiceSpy,

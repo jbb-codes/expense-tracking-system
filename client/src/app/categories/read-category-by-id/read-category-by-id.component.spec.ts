@@ -10,6 +10,7 @@ import { ReadCategoryByIdComponent } from './read-category-by-id.component';
 import { AuthService } from '../../auth/auth.service';
 import { CategoryService } from '../category.service';
 import { of, throwError } from 'rxjs';
+import { provideRouter } from '@angular/router';
 
 class MockAuthService {
   getUserId() {
@@ -19,51 +20,52 @@ class MockAuthService {
 
 class MockCategoryService {
   getCategories(userId: number) {
+  return of([
+    { _id: 'cat1', userId: 123, categoryId: 1, name: 'Food' },
+    { _id: 'cat2', userId: 123, categoryId: 2, name: 'Travel' },
+  ]);
+}
+
+
+  getExpensesByCategory(userId: number, categoryId: number) {
+  if (categoryId === 1) {
     return of([
-      { _id: 'cat1', userId: 123, categoryId: 1, name: 'Food' },
-      { _id: 'cat2', userId: 123, categoryId: 2, name: 'Travel' },
+      {
+        _id: 'exp1',
+        userId,
+        categoryId: 1,
+        categoryName: 'Food',
+        amount: 20,
+        description: 'Lunch',
+        date: new Date().toISOString(),
+      },
     ]);
   }
 
-  getExpensesByCategory(categoryId: number) {
-    if (categoryId === 1) {
-      return of([
-        {
-          _id: 'exp1',
-          userId: 123,
-          categoryId: 1,
-          categoryName: 'Food',
-          amount: 20,
-          description: 'Lunch',
-          date: new Date().toISOString(),
-        },
-      ]);
-    }
+  if (categoryId === 2) {
+    return of([
+      {
+        _id: 'exp2',
+        userId,
+        categoryId: 2,
+        categoryName: 'Travel',
+        amount: 100,
+        description: 'Gas',
+        date: new Date().toISOString(),
+      },
+      {
+        _id: 'exp3',
+        userId,
+        categoryId: 2,
+        categoryName: 'Travel',
+        amount: 750,
+        description: 'Hotel',
+        date: new Date().toISOString(),
+      },
+    ]);
+  }
 
-    if (categoryId === 2) {
-      return of([
-        {
-          _id: 'exp2',
-          userId: 123,
-          categoryId: 2,
-          categoryName: 'Travel',
-          amount: 100,
-          description: 'Gas',
-          date: new Date().toISOString(),
-        },
-        {
-          _id: 'exp3',
-          userId: 123,
-          categoryId: 2,
-          categoryName: 'Travel',
-          amount: 750,
-          description: 'Hotel',
-          date: new Date().toISOString(),
-        },
-      ]);
-    }
-
-    return of([]);
+  return of([]);
   }
 }
 
@@ -76,6 +78,7 @@ describe('ReadCategoryByIdComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReadCategoryByIdComponent],
       providers: [
+        provideRouter([]),
         { provide: CategoryService, useClass: MockCategoryService },
         { provide: AuthService, useClass: MockAuthService },
       ],
