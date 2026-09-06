@@ -26,14 +26,43 @@ import { AuthService } from './auth/auth.service';
           <button
             type="button"
             class="shell__toggle"
-            aria-label="Toggle navigation menu"
+            [attr.aria-expanded]="isNavOpen"
+            [attr.aria-label]="
+              isNavOpen ? 'Close navigation menu' : 'Open navigation menu'
+            "
             (click)="toggleNav()"
           >
-            <span
-              class="shell__toggle-icon"
-              [class.shell__toggle-icon--open]="!isNavOpen"
-              [class.shell__toggle-icon--close]="isNavOpen"
-            ></span>
+            <svg
+              class="shell__toggle-icon shell__toggle-icon--menu"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="4" y1="6" x2="20" y2="6"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="18" x2="20" y2="18"></line>
+            </svg>
+            <svg
+              class="shell__toggle-icon shell__toggle-icon--close"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
 
           <nav class="sidebar">

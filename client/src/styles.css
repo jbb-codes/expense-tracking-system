@@ -111,55 +111,54 @@ html {
 }
 
 .shell__toggle-icon {
-  position: relative;
+  position: absolute;
   display: block;
-  width: 1.25rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  stroke: #192a53;
+  pointer-events: none;
+  transition:
+    opacity 250ms ease,
+    transform 250ms ease,
+    filter 250ms ease;
 }
 
-.shell__toggle-icon--open {
-  height: 2px;
-  background-color: #424e63;
+/* Closed navigation state: hamburger visible, close icon hidden */
+.shell--nav-closed .shell__toggle-icon--menu,
+.shell__toggle[aria-expanded="false"] .shell__toggle-icon--menu {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
 }
 
-.shell__toggle-icon--open::before,
-.shell__toggle-icon--open::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #424e63;
+.shell--nav-closed .shell__toggle-icon--close,
+.shell__toggle[aria-expanded="false"] .shell__toggle-icon--close {
+  opacity: 0;
+  transform: scale(0.7);
+  filter: blur(4px);
 }
 
-.shell__toggle-icon--open::before {
-  top: -5px;
+/* Open navigation state: close icon visible, hamburger hidden */
+.shell:not(.shell--nav-closed) .shell__toggle-icon--menu,
+.shell__toggle[aria-expanded="true"] .shell__toggle-icon--menu {
+  opacity: 0;
+  transform: scale(0.7);
+  filter: blur(4px);
 }
 
-.shell__toggle-icon--open::after {
-  top: 5px;
+.shell:not(.shell--nav-closed) .shell__toggle-icon--close,
+.shell__toggle[aria-expanded="true"] .shell__toggle-icon--close {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
 }
 
-.shell__toggle-icon--close {
-  height: 1.25rem;
-}
-
-.shell__toggle-icon--close::before,
-.shell__toggle-icon--close::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #424e63;
-}
-
-.shell__toggle-icon--close::before {
-  transform: rotate(45deg);
-}
-
-.shell__toggle-icon--close::after {
-  transform: rotate(-45deg);
+@media (prefers-reduced-motion: reduce) {
+  .shell__toggle-icon {
+    transition: none;
+    transform: none !important;
+    filter: none !important;
+  }
 }
 
 .shell__main {

@@ -80,16 +80,43 @@ describe('AppComponent', () => {
 
       expect(toggleButtons().length).toBe(1);
 
-      toggleButtons()[0].click();
+      const toggleBtn = toggleButtons()[0] as HTMLButtonElement;
+      expect(toggleBtn.getAttribute('aria-expanded')).toBe('false');
+      expect(toggleBtn.getAttribute('aria-label')).toBe('Open navigation menu');
+
+      toggleBtn.click();
       fixture.detectChanges();
 
       const shell = fixture.nativeElement.querySelector('.shell');
       expect(shell.classList.contains('shell--nav-closed')).toBeFalse();
       expect(toggleButtons().length).toBe(1);
+      expect(toggleBtn.getAttribute('aria-expanded')).toBe('true');
+      expect(toggleBtn.getAttribute('aria-label')).toBe('Close navigation menu');
 
-      toggleButtons()[0].click();
+      toggleBtn.click();
       fixture.detectChanges();
       expect(shell.classList.contains('shell--nav-closed')).toBeTrue();
+      expect(toggleBtn.getAttribute('aria-expanded')).toBe('false');
+      expect(toggleBtn.getAttribute('aria-label')).toBe('Open navigation menu');
+    });
+
+    it('should render hamburger and close icons for icon-swap transition', () => {
+      const toggleBtn = fixture.nativeElement.querySelector('.shell__toggle');
+      const menuIcon = toggleBtn.querySelector('.shell__toggle-icon--menu');
+      const closeIcon = toggleBtn.querySelector('.shell__toggle-icon--close');
+
+      expect(menuIcon).not.toBeNull();
+      expect(closeIcon).not.toBeNull();
+      expect(menuIcon.getAttribute('aria-hidden')).toBe('true');
+      expect(closeIcon.getAttribute('aria-hidden')).toBe('true');
+
+      // Hamburger icon has 3 bars
+      const menuLines = menuIcon.querySelectorAll('line');
+      expect(menuLines.length).toBe(3);
+
+      // Close icon has 2 crossing lines
+      const closeLines = closeIcon.querySelectorAll('line');
+      expect(closeLines.length).toBe(2);
     });
 
     it('should keep the user menu popover closed until the avatar is clicked', () => {
